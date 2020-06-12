@@ -25,7 +25,7 @@
     "@types/node": "^14.0.13",
     "dotenv": "^8.2.0",
     "mongoose": "^5.7.12",
-    "telegraf": "^3.33.3",
+    "telegraf": "github:chiliec/telegraf#develop",
     "telegraf-i18n": "^6.6.0",
     "typescript": "^3.7.2"
   }

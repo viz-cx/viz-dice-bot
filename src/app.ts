@@ -8,6 +8,8 @@ import { setupHelp } from './commands/help'
 import { setupI18N } from './helpers/i18n'
 import { setupLanguage } from './commands/language'
 import { attachUser } from './middlewares/attachUser'
+import { setupDice } from './commands/dice'
+import { setupGame } from './commands/game'
 
 // Check time
 bot.use(checkTime)
@@ -18,6 +20,8 @@ setupI18N(bot)
 // Setup commands
 setupHelp(bot)
 setupLanguage(bot)
+setupDice(bot)
+setupGame(bot)
 
 // Start bot
 bot.startPolling()
