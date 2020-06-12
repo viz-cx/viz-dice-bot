@@ -1,10 +1,10 @@
-# Telegram bot template based on telegraf.js.org
+# VIZ Dice bot
 
-Please, enjoy this starter template for Telegram bots based on telegraf.js.org. It includes most common middlewares used by me, MongoDB integration, language picker and internationalization and shows basic encapsulation techniques used by me.
+Telegram bot with dice game on VIZ blockchain.
 
 # Installation and local launch
 
-1. Clone this repo: `git clone https://github.com/backmeupplz/telegraf-template`
+1. Clone this repo: `git clone https://github.com/viz-cx/viz-dice-bot`
 2. Launch the [mongo database](https://www.mongodb.com/) locally
 3. Create `.env` with the environment variables listed below
 4. Run `yarn install` in the root folder
