@@ -1,4 +1,3 @@
-// Dependencies
 import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
 import { readdirSync, readFileSync } from 'fs'
 import { safeLoad } from 'js-yaml'

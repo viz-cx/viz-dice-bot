@@ -1,4 +1,3 @@
-// Dependencies
 import * as mongoose from 'mongoose'
 
 // Connect to mongoose

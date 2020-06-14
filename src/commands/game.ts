@@ -1,4 +1,3 @@
-// Dependencies
 import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
 import { ExtraEditMessage } from 'telegraf/typings/telegram-types'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
@@ -15,7 +14,9 @@ export function setupGame(bot: Telegraf<Context>) {
   bot.action(games, async ctx => {
     let user = ctx.dbuser
     user.game = ctx.callbackQuery.data as DiceEmoji
-    user = await (user as any).save()
+    user.value = 0
+    user.series = 1
+    user = await user.save()
     const message = ctx.callbackQuery.message
 
     const anyI18N = ctx.i18n as any

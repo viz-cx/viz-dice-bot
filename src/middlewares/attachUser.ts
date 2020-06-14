@@ -1,4 +1,3 @@
-// Dependencies
 import { findUser } from '../models'
 import { Context } from 'telegraf'
 

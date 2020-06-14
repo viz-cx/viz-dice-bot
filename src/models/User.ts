@@ -1,6 +1,10 @@
-// Dependencies
 import { prop, getModelForClass } from '@typegoose/typegoose'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
+
+export type UserState =
+  'empty'
+  | 'waitLogin'
+  | 'waitPostingKey'
 
 export class User {
   @prop({ required: true, index: true, unique: true })
@@ -9,8 +13,23 @@ export class User {
   @prop({ required: true, default: 'en' })
   language: string
 
-  @prop({ required: true, enum: ['🎲', '🎯', '🏀'], default: '🎲'})
+  @prop({ required: true, default: 'empty' })
+  state: UserState
+
+  @prop({ required: true, enum: ['🎲', '🎯', '🏀'], default: '🎲' })
   game: DiceEmoji
+
+  @prop({ required: true, default: 0 })
+  value: number
+
+  @prop({ required: true, default: 1 })
+  series: number
+
+  @prop({ required: false, unique: true })
+  login: string
+
+  @prop({ required: false, unique: false })
+  postingKey: string
 }
 
 // Get User model

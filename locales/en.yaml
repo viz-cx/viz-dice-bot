@@ -1,7 +1,19 @@
 name: English
 help: |
-  <b>Bot</b> allows you to see how Telegraf bots can be built.
-language: Please, select the language.
-language_selected: <b>Bot</b> now speaks English.
+  <b>Bot</b> example based on Telegraf and VIZ blockchain
+language: Please, select the language
+language_selected: <b>Bot</b> now speaks English
 game: Change game
-game_selected: Game was successfully changed.
+game_selected: Game was successfully changed
+auth_required: You should be authorized before play /auth
+wait_login: Please send me your <b>login</b> in VIZ blockchain
+wrong_login: |
+  Incorrect login: ${error}
+wait_posting_key: Please send me your <b>private posting key</b>
+wrong_posting_key: Incorrect posting key
+lets_play: Now let's play! /dice
+successful_payout: |
+  Number ${number} dropped out for the <b>${series}th</b> time.
+  Prize <b>${amount}</b> successfully paid!
+out_of_energy: Account does not have enough energy to vote
+something_wrong: Something wrong.

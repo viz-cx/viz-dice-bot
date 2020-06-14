@@ -1,4 +1,3 @@
-// Dependencies
 import { Context, Telegraf } from 'telegraf'
 const TelegrafBot = require('telegraf')
 
