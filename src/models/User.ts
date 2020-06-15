@@ -1,6 +1,6 @@
-import { prop, getModelForClass, pre } from '@typegoose/typegoose'
+import { prop, getModelForClass } from '@typegoose/typegoose'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
-import CryptoJS = require('crypto-js')
+import {AES, enc} from 'crypto-js'
 
 export type UserState =
   'empty'
@@ -32,8 +32,8 @@ export class User {
   @prop({
     required: false, unique: false,
     // encryption in case of leaking database
-    set: (val: string) => val.length == 0 ? '' : CryptoJS.AES.encrypt(val, process.env.SECRET).toString(),
-    get: (val: string) => val.length == 0 ? '' : CryptoJS.AES.decrypt(val, process.env.SECRET).toString(CryptoJS.enc.Utf8)
+    set: (val: string) => (!val || val.length == 0) ? '' : AES.encrypt(val, process.env.SECRET).toString(),
+    get: (val: string) => (!val || val.length == 0) ? '' : AES.decrypt(val, process.env.SECRET).toString(enc.Utf8)
   })
   postingKey: string
 }

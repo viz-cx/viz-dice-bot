@@ -9,6 +9,7 @@
   "private": false,
   "scripts": {
     "distribute": "yarn build-ts && node dist/app.js",
+    "webhook": "yarn build-ts && node dist/webhook.js",
     "develop": "concurrently -k -i -p \"[{name}]\" -n \"Node,TypeScript\" -c \"yellow.bold,cyan.bold\" \"yarn watch-js\" \"yarn watch-ts\"",
     "build-ts": "tsc --skipLibCheck",
     "watch-ts": "tsc -w --skipLibCheck",

@@ -1,8 +1,6 @@
 import { Context } from 'telegraf'
-import { VIZ } from '../helpers/viz'
 
 export async function processState(ctx: Context, next: any) {
-  ctx.viz = new VIZ().viz
   switch (ctx.dbuser.state) {
     case 'empty':
       next()
@@ -12,8 +10,7 @@ export async function processState(ctx: Context, next: any) {
         const user = ctx.dbuser
         user.login = ctx.message.text
         user.state = 'waitPostingKey'
-        const viz = require("viz-js-lib")
-        const msg = await viz.utils.validateAccountName(user.login)
+        const msg = await ctx.viz.utils.validateAccountName(user.login)
         if (!msg) {
           await user.save()
           await ctx.replyWithHTML(ctx.i18n.t('wait_posting_key'))
@@ -35,10 +32,10 @@ export async function processState(ctx: Context, next: any) {
           await ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
           return
         }
-        ctx.viz.api.getAccounts([user.login], function (err, result) {
+        await ctx.viz.api.getAccounts([user.login], async function (err, result) {
           if (err) {
             console.log(err)
-            ctx.reply(ctx.i18n.t('something_wrong'))
+            await ctx.reply(ctx.i18n.t('something_wrong'))
             return
           }
           const publicKeys = result[0].regular_authority.key_auths
@@ -46,18 +43,18 @@ export async function processState(ctx: Context, next: any) {
           if (publicKeys) {
             for (let key of publicKeys) {
               const pubWif = key[0]
-              if (ctx.viz.auth.wifIsValid(user.postingKey, pubWif)) {
+              if (await ctx.viz.auth.wifIsValid(user.postingKey, pubWif)) {
                 accountHasKey = true
                 break
               }
             }
           }
           if (accountHasKey) {
-            user.save()
-            ctx.replyWithHTML(ctx.i18n.t('lets_play'))
-            next()
+            await user.save()
+            await ctx.replyWithHTML(ctx.i18n.t('lets_play'))
+            await next()
           } else {
-            ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
+            await ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
           }
         })
       } else {

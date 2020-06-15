@@ -11,14 +11,14 @@ export function setupDice(bot: Telegraf<Context>) {
     const value = result.dice.value
     var multiplier = parseFloat(`0.${value}`)
     // TODO: Подумать над балансом для компенсации отсутствия шестёрки
-    switch (emoji) {
-      case "🎲": case "🎯": // [1 - 6]
-        multiplier = multiplier * 1
-        break
-      case "🏀": // [1 - 5]
-        multiplier = multiplier * 0.77
-        break
-    }
+    // switch (emoji) {
+    //   case "🎲": case "🎯": // [1 - 6]
+    //     multiplier = multiplier * 1
+    //     break
+    //   case "🏀": // [1 - 5]
+    //     multiplier = multiplier * 0.77
+    //     break
+    // }
     await award(ctx.viz, ctx.dbuser.login, ctx.dbuser.postingKey, ctx.dbuser.game)
       .then(_ => {
         const user = ctx.dbuser
