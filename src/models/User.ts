@@ -26,7 +26,7 @@ export class User {
   @prop({ required: true, default: 1 })
   series: number
 
-  @prop({ required: false, unique: true, trim: true })
+  @prop({ required: false, unique: false })
   login: string
 
   @prop({
