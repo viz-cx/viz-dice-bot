@@ -6,23 +6,23 @@ export function setupDice(bot: Telegraf<Context>) {
       ctx.reply(ctx.i18n.t('auth_required'))
       return
     }
-    const result = await ctx.replyWithDice({ emoji: ctx.dbuser.game })
-    const emoji = result.dice.emoji
-    const value = result.dice.value
-    var multiplier = parseFloat(`0.${value}`)
-    // TODO: Подумать над балансом для компенсации отсутствия шестёрки
-    // switch (emoji) {
-    //   case "🎲": case "🎯": // [1 - 6]
-    //     multiplier = multiplier * 1
-    //     break
-    //   case "🏀": // [1 - 5]
-    //     multiplier = multiplier * 0.77
-    //     break
-    // }
+    var value: number, multiplier: number
     await award(ctx.viz, ctx.dbuser.login, ctx.dbuser.postingKey, ctx.dbuser.game)
-      .then(_ => {
+      .then(_ => ctx.replyWithDice({ emoji: ctx.dbuser.game }))
+      .then(msg => {
         const user = ctx.dbuser
-        if (user.value == value) {
+        value = msg.dice.value
+        multiplier = parseFloat(`0.${value}`)
+        // TODO: Подумать над балансом для компенсации отсутствия шестёрки
+        // switch (msg.dice.emoji) {
+        //   case "🎲": case "🎯": // [1 - 6]
+        //     multiplier = multiplier * 1
+        //     break
+        //   case "🏀": // [1 - 5]
+        //     multiplier = multiplier * 0.77
+        //     break
+        // }
+        if (user.value == msg.dice.value) {
           user.series += 1
         } else {
           user.series = 1
