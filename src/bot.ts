@@ -11,7 +11,7 @@ import { processState } from './middlewares/processState'
 import { setupAuth } from './commands/auth'
 import { setupLanguage } from './commands/language'
 import { setupHelp } from './commands/help'
-import { setupDice } from './commands/dice'
+import { setupPlay } from './commands/play'
 import { setupGame } from './commands/game'
 
 bot.use(checkTime)
@@ -21,7 +21,7 @@ setupAuth(bot)
 bot.use(processState)
 setupHelp(bot)
 setupLanguage(bot)
-setupDice(bot)
+setupPlay(bot)
 setupGame(bot)
 
 export default bot

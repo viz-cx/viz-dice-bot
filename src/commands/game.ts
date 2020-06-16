@@ -7,7 +7,7 @@ const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀']
 export function setupGame(bot: Telegraf<Context>) {
   bot.command('game', ctx => {
     ctx.reply(ctx.i18n.t('game'), {
-      reply_markup: gameKeyboard(),
+      reply_markup: gameKeyboard(ctx),
     })
   })
 
@@ -18,10 +18,6 @@ export function setupGame(bot: Telegraf<Context>) {
     user.series = 1
     user = await user.save()
     const message = ctx.callbackQuery.message
-
-    const anyI18N = ctx.i18n as any
-    anyI18N.locale(ctx.callbackQuery.data)
-
     await ctx.telegram.editMessageText(
       message.chat.id,
       message.message_id,
@@ -32,10 +28,10 @@ export function setupGame(bot: Telegraf<Context>) {
   })
 }
 
-function gameKeyboard() {
+function gameKeyboard(ctx) {
   const result = []
   games.forEach((game, _index) => {
-    result.push([m.callbackButton(game, game)])
+    result.push([m.callbackButton(game + ' ' + ctx.i18n.t(game), game)])
   })
   return m.inlineKeyboard(result)
 }

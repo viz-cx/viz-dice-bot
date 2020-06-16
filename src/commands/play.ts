@@ -1,7 +1,7 @@
 import { Telegraf, Context } from "telegraf"
 
-export function setupDice(bot: Telegraf<Context>) {
-  bot.command(['dice'], async ctx => {
+export function setupPlay(bot: Telegraf<Context>) {
+  bot.command(['play'], async ctx => {
     if (!ctx.dbuser.login || !ctx.dbuser.postingKey) {
       ctx.reply(ctx.i18n.t('auth_required'))
       return
@@ -13,7 +13,7 @@ export function setupDice(bot: Telegraf<Context>) {
         const user = ctx.dbuser
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
-        // TODO: Подумать над балансом для компенсации отсутствия шестёрки
+        // TODO: think about balance to compensate for the lack of six
         // switch (msg.dice.emoji) {
         //   case "🎲": case "🎯": // [1 - 6]
         //     multiplier = multiplier * 1
@@ -33,7 +33,7 @@ export function setupDice(bot: Telegraf<Context>) {
       })
       .then(shares => calculatePayout(ctx.viz, shares))
       .then(shares => {
-        console.log(`${shares} ${multiplier} ${ctx.dbuser.series}`)
+        console.log(`Payout to ${ctx.dbuser.login} ${shares} ${multiplier} ${ctx.dbuser.series}`)
         const amount = shares * multiplier * ctx.dbuser.series
         const memo = ctx.dbuser.game
         return payout(ctx.viz, ctx.dbuser.login, amount, memo)
@@ -45,11 +45,11 @@ export function setupDice(bot: Telegraf<Context>) {
         ctx.replyWithHTML(ctx.i18n.t('successful_payout', { number: number, amount: amount, series: ctx.dbuser.series }))
       })
       .catch(err => {
-        console.log(err)
         if (err.toString().search(/does not have enough energy to vote/) !== -1) {
           ctx.replyWithHTML(ctx.i18n.t('out_of_energy'))
           return
         }
+        console.log(err)
         ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
       })
   })
