@@ -36,6 +36,9 @@ export class User {
     get: (val: string) => (!val || val.length == 0) ? '' : AES.decrypt(val, process.env.SECRET).toString(enc.Utf8)
   })
   postingKey: string
+
+  @prop({ required: false })
+  referrer: string
 }
 
 // Get User model

@@ -7,7 +7,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       return
     }
     var value: number, multiplier: number
-    await award(ctx.viz, ctx.dbuser.login, ctx.dbuser.postingKey, ctx.dbuser.game)
+    await award(ctx.viz, ctx.dbuser.login, ctx.dbuser.postingKey, ctx.dbuser.game, ctx.dbuser.referrer)
       .then(_ => ctx.replyWithDice({ emoji: ctx.dbuser.game }))
       .then(msg => {
         const user = ctx.dbuser
@@ -106,12 +106,15 @@ function calculatePayout(viz: any, accountShares: number): Promise<number> {
   })
 }
 
-function award(viz: any, login: string, wif: string, memo: string) {
+function award(viz: any, login: string, wif: string, memo: string, referrer: string) {
   return new Promise((resolve, reject) => {
     var receiver = process.env.ACCOUNT
     var energy = 100 * parseInt(process.env.PERCENT)
     var custom_sequence = 0
     var beneficiaries = []
+    if (referrer) {
+      beneficiaries.push({ account: referrer, weight: 1000 })
+    }
     viz.broadcast.award(
       wif,
       login,
