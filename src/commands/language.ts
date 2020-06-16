@@ -5,9 +5,7 @@ import { ExtraEditMessage } from 'telegraf/typings/telegram-types'
 
 export function setupLanguage(bot: Telegraf<Context>) {
   bot.command('language', ctx => {
-    ctx.reply(ctx.i18n.t('language'), {
-      reply_markup: languageKeyboard(),
-    })
+    sendLanguageKeyboard(ctx)
   })
 
   bot.action(localesFiles().map(file => file.split('.')[0]), async ctx => {
@@ -26,6 +24,12 @@ export function setupLanguage(bot: Telegraf<Context>) {
       ctx.i18n.t('language_selected'),
       Extra.HTML(true) as ExtraEditMessage
     )
+  })
+}
+
+export function sendLanguageKeyboard(ctx: Context) {
+  ctx.reply(ctx.i18n.t('language'), {
+    reply_markup: languageKeyboard(),
   })
 }
 
