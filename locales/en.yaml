@@ -2,7 +2,7 @@ name: English
 help: |
   @${botname} is an example bot using functionality of the <a href="https://start.viz.plus">VIZ blockchain</a>.
 
-  Each game requires <b>${percent}%</b> of energy and returns liquid <b>VIZ</b> tokens depending on result.
+  Each game requires <b>${percent}%</b> of energy and returns liquid <b>VIZ</b> tokens depending on result: received reward multiplied by [0.1-0.6] depending on game result and multiplied by the number of series in a row.
 
   Available commands:
 
@@ -26,8 +26,8 @@ auth_required: You should be authorized before play /auth
 wait_login: Please send me your <b>login</b> in VIZ blockchain
 wrong_login: |
   Incorrect login: ${error}
-wait_posting_key: Please send me your <b>private posting key</b>
-wrong_posting_key: Incorrect <b>private posting key</b>
+wait_posting_key: Please send me your <b>private posting (regular) key</b>
+wrong_posting_key: Incorrect <b>private posting (regular) key</b>
 lets_play: Now let's play! /play
 successful_payout: |
   Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}.
