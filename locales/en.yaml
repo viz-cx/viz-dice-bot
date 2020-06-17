@@ -31,6 +31,7 @@ wrong_posting_key: Incorrect <b>private posting key</b>
 lets_play: Now let's play! /play
 successful_payout: |
   Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}.
+  Energy spent <b>${energy_spent}%</b>, available <b>${energy_left}%</b>.
   Prize <b>${amount}</b> successfully paid!
 out_of_energy: Account does not have enough energy to vote
 something_wrong: Something wrong.

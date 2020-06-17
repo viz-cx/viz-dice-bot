@@ -31,6 +31,7 @@ wrong_posting_key: Некорректный <b>приватный постинг
 lets_play: Теперь давай поиграем! /play
 successful_payout: |
   Выпал номер ${number}${series > 1 ? ' <b>' + series + '-й</b> раз подряд' : ''}.
+  Потрачено энергии <b>${energy_spent}%</b>, доступно <b>${energy_left}%</b>.
   Приз <b>${amount}</b> успешно отправлен!
 out_of_energy: Недостаточно энергии для игры
 something_wrong: Что-то пошло не так.

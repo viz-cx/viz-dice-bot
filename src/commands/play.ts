@@ -42,7 +42,15 @@ export function setupPlay(bot: Telegraf<Context>) {
         const amount = result['operations'][0][1]['amount']
         const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣']
         const number = numbers[value - 1]
-        ctx.replyWithHTML(ctx.i18n.t('successful_payout', { number: number, amount: amount, series: ctx.dbuser.series }))
+        return getAccountEnergy(ctx.viz, ctx.dbuser.login)
+          .then(
+            energy => {
+              const accountEnergyLeftPercent = (energy / 100).toFixed(2)
+              const energySpent = process.env.PERCENT
+              ctx.replyWithHTML(ctx.i18n.t('successful_payout', { energy_spent: energySpent, energy_left: accountEnergyLeftPercent, number: number, amount: amount, series: ctx.dbuser.series }))
+              removeAccountCache(ctx.dbuser.login)
+            }
+          )
       })
       .catch(err => {
         if (err.toString().search(/does not have enough energy to vote/) !== -1) {
@@ -75,15 +83,29 @@ function payout(viz: any, to: string, amount: number, memo: string): Promise<obj
 
 function getAccountShares(viz: any, login: string): Promise<number> {
   return new Promise((resolve, reject) => {
-    viz.api.getAccounts([login], function (err, result) {
-      if (err) {
-        reject(err)
-        return
-      }
-      const account = result[0]
-      const shares = parseFloat(account['vesting_shares']) + parseFloat(account['received_vesting_shares']) - parseFloat(account['delegated_vesting_shares'])
-      resolve(shares)
-    })
+    getAccount(viz, login)
+      .then(
+        account => {
+          const shares = parseFloat(account['vesting_shares'])
+            + parseFloat(account['received_vesting_shares'])
+            - parseFloat(account['delegated_vesting_shares'])
+          resolve(shares)
+        },
+        err => reject(err)
+      )
+  })
+}
+
+function getAccountEnergy(viz: any, login: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    getAccount(viz, login)
+      .then(
+        account => {
+          const energy = parseFloat(account['energy'])
+          resolve(energy)
+        },
+        err => reject(err)
+      )
   })
 }
 
@@ -131,4 +153,33 @@ function award(viz: any, login: string, wif: string, memo: string, referrer: str
         }
       })
   })
+}
+
+var accountsCache = {}
+
+function getAccount(viz: any, login: string): Promise<Object> {
+  return new Promise((resolve, reject) => {
+    const accountFromCache = accountsCache[login]
+    if (accountFromCache) {
+      resolve(accountFromCache)
+      return
+    }
+    viz.api.getAccounts([login], function (err, result) {
+      if (err) {
+        reject(err)
+        return
+      }
+      const account = result[0]
+      if (account) {
+        accountsCache[login] = account
+        resolve(account)
+      } else {
+        reject(new Error('Account not found in response'))
+      }
+    })
+  })
+}
+
+function removeAccountCache(login: string) {
+  delete accountsCache[login]
 }
