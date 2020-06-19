@@ -12,6 +12,8 @@ help: |
     /language — change language
     /help — information
 
+  ${encodedlogin ? 'Link to invite (to receive 10% of all games of your referrals): https://t.me/' + botname + '?start=' + encodedlogin : 'You are not logged in yet.'}
+  
   Code is fully open and can be found here: https://github.com/viz-cx/viz-dice-bot
 
   If you have any problems or suggestions, please write them in the @viz_cx group

@@ -4,7 +4,8 @@ import { sendLanguageKeyboard } from "./language"
 export function setupStart(bot: Telegraf<Context>) {
     bot.start((ctx) => {
         sendLanguageKeyboard(ctx)
-        const referrer = (ctx as any)['startPayload']
+        const payload = (ctx as any)['startPayload']
+        const referrer = Buffer.from(payload, 'base64').toString()
         var user = ctx.dbuser
         if (!user.referrer && referrer) {
             ctx.viz.isAccountExists(referrer)
