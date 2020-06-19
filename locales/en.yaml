@@ -34,4 +34,5 @@ successful_payout: |
   Energy spent <b>${energy_spent}%</b>, available <b>${energy_left}%</b>.
   Prize <b>${amount}</b> successfully paid!
 out_of_energy: Account does not have enough energy to vote
+too_fast: Stay! not so fast!
 something_wrong: Something wrong.

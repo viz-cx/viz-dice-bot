@@ -34,4 +34,5 @@ successful_payout: |
   Потрачено энергии <b>${energy_spent}%</b>, доступно <b>${energy_left}%</b>.
   Приз <b>${amount}</b> успешно отправлен!
 out_of_energy: Недостаточно энергии для игры
+too_fast: Постой! Не так быстро!
 something_wrong: Что-то пошло не так.

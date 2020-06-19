@@ -57,6 +57,10 @@ export function setupPlay(bot: Telegraf<Context>) {
           ctx.replyWithHTML(ctx.i18n.t('out_of_energy'))
           return
         }
+        if (err.toString().search(/Duplicate transaction check failed/) !== -1) {
+          ctx.replyWithHTML(ctx.i18n.t('too_fast'))
+          return
+        }
         console.log(err)
         ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
       })
