@@ -9,7 +9,9 @@ export function setupMassAward() {
         getActiveUsers(date).then(
             users => {
                 const viz = new VIZ()
-                const logins = users.map(u => u.login)
+                const logins = users
+                    .filter(user => user.login && user.postingKey)
+                    .map(user => user.login)
                 const energyRestoreDays = 5
                 const energy = Math.trunc(10000 / energyRestoreDays / 24 * hoursInterval)
                 viz.massAward(process.env.ACCOUNT, process.env.WIF, '🎲 🎯 🏀', energy, logins).then(
