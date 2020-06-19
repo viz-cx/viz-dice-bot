@@ -10,7 +10,7 @@ export async function processState(ctx: Context, next: any) {
         const user = ctx.dbuser
         user.login = ctx.message.text
         user.state = 'waitPostingKey'
-        const msg = await ctx.viz.utils.validateAccountName(user.login)
+        const msg = await ctx.viz.vizJS.utils.validateAccountName(user.login)
         if (!msg) {
           await user.save()
           await ctx.replyWithHTML(ctx.i18n.t('wait_posting_key'))
@@ -27,12 +27,12 @@ export async function processState(ctx: Context, next: any) {
         const user = ctx.dbuser
         user.postingKey = ctx.message.text
         user.state = 'empty'
-        const isWif = await ctx.viz.auth.isWif(user.postingKey)
+        const isWif = await ctx.viz.vizJS.auth.isWif(user.postingKey)
         if (!isWif) {
           await ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
           return
         }
-        await ctx.viz.api.getAccounts([user.login], async function (err, result) {
+        await ctx.viz.vizJS.api.getAccounts([user.login], async function (err, result) {
           if (err) {
             console.log(err)
             await ctx.reply(ctx.i18n.t('something_wrong'))
@@ -43,7 +43,7 @@ export async function processState(ctx: Context, next: any) {
           if (publicKeys) {
             for (let key of publicKeys) {
               const pubWif = key[0]
-              if (await ctx.viz.auth.wifIsValid(user.postingKey, pubWif)) {
+              if (await ctx.viz.vizJS.auth.wifIsValid(user.postingKey, pubWif)) {
                 accountHasKey = true
                 break
               }

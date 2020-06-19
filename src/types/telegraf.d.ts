@@ -4,12 +4,13 @@ import { User } from '../models'
 import { DocumentType } from '@typegoose/typegoose'
 import { Middleware } from 'telegraf'
 import { TelegrafContext } from 'telegraf/typings/context'
+import { VIZ } from '../helpers/viz'
 
 declare module 'telegraf' {
   export class Context {
     dbuser: DocumentType<User>
     i18n: I18N
-    viz: any
+    viz: VIZ
   }
 
   export interface Composer<TContext extends Context> {

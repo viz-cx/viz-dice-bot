@@ -7,7 +7,7 @@ export function setupStart(bot: Telegraf<Context>) {
         const referrer = (ctx as any)['startPayload']
         var user = ctx.dbuser
         if (!user.referrer && referrer) {
-            isAccountExists(ctx.viz, referrer)
+            ctx.viz.isAccountExists(referrer)
                 .then(
                     result => {
                         if (result) {
@@ -23,14 +23,4 @@ export function setupStart(bot: Telegraf<Context>) {
     })
 }
 
-function isAccountExists(viz: any, login: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
-        viz.api.getAccounts([login], function (err, result) {
-            if (err) {
-                reject(err)
-                return
-            }
-            resolve(result.length > 0)
-        })
-    })
-}
+
