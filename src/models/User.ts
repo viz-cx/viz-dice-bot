@@ -1,6 +1,6 @@
 import { prop, getModelForClass } from '@typegoose/typegoose'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
-import {AES, enc} from 'crypto-js'
+import { AES, enc } from 'crypto-js'
 
 export type UserState =
   'empty'
@@ -58,4 +58,8 @@ export async function findUser(id: number) {
     }
   }
   return user
+}
+
+export async function getActiveUsers(afterDate: Date) {
+  return await UserModel.find({ updatedAt: { $gte: afterDate } })
 }

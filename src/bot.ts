@@ -15,6 +15,8 @@ import { setupStart } from './commands/start'
 import { setupPlay } from './commands/play'
 import { setupGame } from './commands/game'
 
+import { setupMassAward } from './helpers/massAward'
+
 bot.use(checkTime)
 bot.use(attachUser)
 setupI18N(bot)
@@ -25,5 +27,7 @@ setupHelp(bot)
 setupLanguage(bot)
 setupPlay(bot)
 setupGame(bot)
+
+setupMassAward()
 
 export default bot

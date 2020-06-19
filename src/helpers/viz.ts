@@ -42,17 +42,17 @@ export class VIZ {
         })
     }
 
-    public massAward(login: string, wif: string, memo: string, recipients: [string]) {
+    public massAward(login: string, wif: string, memo: string, energy: number, recipients: string[]) {
         return new Promise((resolve, reject) => {
             if (recipients.length <= 0) {
+                reject('0 recipients')
                 return
             }
             var receiver = recipients[0]
-            var energy = 100 * parseInt(process.env.PERCENT)
             var custom_sequence = 0
             var beneficiaries = []
             if (recipients.length > 1) {
-                const weight = 10000 / (recipients.length - 1)
+                const weight = Math.trunc(10000 / recipients.length)
                 for (var i = 1; i < recipients.length; i++) {
                     beneficiaries.push({ account: recipients[i], weight: weight })
                 }
