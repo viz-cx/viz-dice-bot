@@ -14,14 +14,14 @@ export function setupPlay(bot: Telegraf<Context>) {
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
         // TODO: think about balance to compensate for the lack of six
-        // switch (msg.dice.emoji) {
-        //   case "🎲": case "🎯": // [1 - 6]
-        //     multiplier = multiplier * 1
-        //     break
-        //   case "🏀": // [1 - 5]
-        //     multiplier = multiplier * 0.77
-        //     break
-        // }
+        switch (msg.dice.emoji) {
+          case "🎲": case "🎯": // [1 - 6]
+            multiplier = multiplier * 2
+            break
+          case "🏀": // [1 - 5]
+            multiplier = multiplier * 2
+            break
+        }
         if (user.value == msg.dice.value) {
           user.series += 1
         } else {

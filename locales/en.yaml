@@ -2,7 +2,7 @@ name: English
 help: |
   @${botname} is an example bot using functionality of the <a href="https://start.viz.plus">VIZ blockchain</a>.
 
-  Each game requires <b>${percent}%</b> of energy and returns liquid <b>VIZ</b> tokens depending on result: received reward multiplied by [0.1-0.6] depending on game result and multiplied by the number of series in a row.
+  Each game requires <b>${percent}%</b> of energy and returns liquid <b>VIZ</b> tokens depending on result: received reward multiplied by [0.2-1.2] depending on game result and multiplied by the number of series in a row.
 
   Available commands:
 
