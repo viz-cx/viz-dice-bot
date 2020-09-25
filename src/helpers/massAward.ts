@@ -15,7 +15,7 @@ export function setupMassAward() {
                 const energyRestoreDays = 5
                 viz.getAccountEnergy(process.env.ACCOUNT)
                     .then(accountEnergy => {
-                        const energy = Math.trunc(accountEnergy / 5)
+                        const energy = Math.trunc(accountEnergy / energyRestoreDays)
                         viz.massAward(process.env.ACCOUNT, process.env.WIF, '🎲 🎯 🏀', energy, logins).then(
                             _ => console.log('Successfully mass awarded', logins.length, 'accounts'),
                             err => console.log('Mass award failed:', err)

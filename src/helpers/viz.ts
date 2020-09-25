@@ -12,7 +12,7 @@ export class VIZ {
 
     public findBestNode() {
         // TODO: need more nodes!
-        VIZ.vizJS.config.set('websocket', 'https://solox.world')
+        VIZ.vizJS.config.set('websocket', 'https://api.viz.world')
     }
 
     public award(login: string, wif: string, memo: string, referrer: string) {
