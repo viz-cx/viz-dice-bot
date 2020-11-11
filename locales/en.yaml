@@ -23,6 +23,8 @@ game: Change game
 🎲: Dice
 🎯: Darts
 🏀: Basketball
+⚽️: Football
+🎰: Slot machine
 game_selected: Game was successfully changed
 auth_required: You should be authorized before play /auth
 wait_login: Please send me your <b>login</b> in VIZ blockchain

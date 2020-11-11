@@ -18,8 +18,11 @@ export function setupPlay(bot: Telegraf<Context>) {
           case "🎲": case "🎯": // [1 - 6]
             multiplier = multiplier * 2
             break
-          case "🏀": // [1 - 5]
-            multiplier = multiplier * 2
+          case "🏀": case "⚽️": // [1 - 5]
+            multiplier = multiplier * 2.25
+            break
+          case "🎰": // [1 - 64]
+            multiplier = 2.5
             break
         }
         if (user.value == msg.dice.value) {
@@ -61,7 +64,7 @@ export function setupPlay(bot: Telegraf<Context>) {
           ctx.replyWithHTML(ctx.i18n.t('too_fast'))
           return
         }
-        console.log(err)
+        console.log("Error: ", err.toString())
         ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
       })
   })

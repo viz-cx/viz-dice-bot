@@ -2,7 +2,7 @@ import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
 import { ExtraEditMessage } from 'telegraf/typings/telegram-types'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
 
-const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀']
+const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀', '⚽️', '🎰']
 
 export function setupGame(bot: Telegraf<Context>) {
   bot.command('game', ctx => {
@@ -31,7 +31,14 @@ export function setupGame(bot: Telegraf<Context>) {
 function gameKeyboard(ctx) {
   const result = []
   games.forEach((game, _index) => {
-    result.push([m.callbackButton(game + ' ' + ctx.i18n.t(game), game)])
+    const cb = m.callbackButton(game + ' ' + ctx.i18n.t(game), game)
+    if (_index % 2 == 0) {
+      result[_index / 2] = []
+      result[_index / 2][0] = cb
+    } else {
+      const idx = Math.round(_index / 2 - 0.1)
+      result[idx][1] = cb
+    }
   })
   return m.inlineKeyboard(result)
 }
