@@ -985,10 +985,15 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
-node-fetch@2.6.0, node-fetch@^2.2.0:
+node-fetch@2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
   integrity sha512-8dG4H5ujfvFiqDmVu9fQ5bOHUC15JMjMY/Zumv26oOvvVJjM67KF8koCWIabKQ1GJIa9r2mMZscBq/TbdOcmNA==
+
+node-fetch@^2.2.0:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
+  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 nodemon@^2.0.1:
   version "2.0.4"
@@ -1479,9 +1484,9 @@ telegraf-i18n@^6.6.0:
     debug "^4.0.1"
     js-yaml "^3.6.1"
 
-"telegraf@github:chiliec/telegraf#develop":
+"telegraf@github:viz-cx/telegraf#cc62e3b85363e8f1effb36534a82b0f34f4ceec1":
   version "3.38.0"
-  resolved "https://codeload.github.com/chiliec/telegraf/tar.gz/5ee429a90fe63716bb58b889538e5fed6edc6bb9"
+  resolved "https://codeload.github.com/viz-cx/telegraf/tar.gz/cc62e3b85363e8f1effb36534a82b0f34f4ceec1"
   dependencies:
     debug "^4.0.1"
     minimist "^1.2.0"
