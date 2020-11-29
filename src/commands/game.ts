@@ -1,44 +1,56 @@
 import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
-import { ExtraEditMessage } from 'telegraf/typings/telegram-types'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
+import { mainKeyboard } from './start'
 
 const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀', '⚽️', '🎰']
 
 export function setupGame(bot: Telegraf<Context>) {
-  bot.command('game', ctx => {
-    ctx.reply(ctx.i18n.t('game'), {
+  bot.hears(new RegExp('🧩 .*'), ctx => {
+    ctx.reply(ctx.i18n.t('game_button'), {
       reply_markup: gameKeyboard(ctx),
     })
   })
 
-  bot.action(games, async ctx => {
-    let user = ctx.dbuser
-    user.game = ctx.callbackQuery.data as DiceEmoji
+  const regExp = new RegExp('(' + games.join('|') + ') .*')
+  bot.hears(regExp, async ctx => {
+    const game = ctx.match[1] as DiceEmoji
+    var user = ctx.dbuser
+    user.game = game
     user.value = 0
     user.series = 1
     user = await user.save()
-    const message = ctx.callbackQuery.message
-    await ctx.telegram.editMessageText(
-      message.chat.id,
-      message.message_id,
-      undefined,
-      ctx.i18n.t('game_selected'),
-      Extra.HTML(true) as ExtraEditMessage
-    )
+    await ctx.reply(ctx.i18n.t('game_selected'), {
+      reply_markup: mainKeyboard(ctx)
+    })
   })
 }
 
-function gameKeyboard(ctx) {
+function gameButtonText(ctx: Context, emoji: string): string {
+  return emoji + ' ' + ctx.i18n.t(emoji)
+}
+
+function gameKeyboard(ctx: Context) {
   const result = []
-  games.forEach((game, _index) => {
-    const cb = m.callbackButton(game + ' ' + ctx.i18n.t(game), game)
-    if (_index % 2 == 0) {
-      result[_index / 2] = []
-      result[_index / 2][0] = cb
+  games.forEach((emoji, _index) => {
+    const cb = m.callbackButton(gameButtonText(ctx, emoji), emoji)
+    if (_index % 2 === 0) {
+      if (_index === 0) {
+        result.push([cb])
+      } else {
+        result[result.length - 1].push(cb)
+      }
     } else {
-      const idx = Math.round(_index / 2 - 0.1)
-      result[idx][1] = cb
+      result[result.length - 1].push(cb)
+      if (_index < games.length - 1) {
+        result.push([])
+      }
     }
   })
-  return m.inlineKeyboard(result)
+  const backButton = m.callbackButton('🔙 Назад', '🔙 Назад')
+  if (result.length % 2 === 0) {
+    result.push([backButton])
+  } else {
+    result[result.length - 1].push(backButton)
+  }
+  return m.keyboard(result).resize()
 }

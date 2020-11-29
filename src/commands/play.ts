@@ -1,16 +1,33 @@
 import { Telegraf, Context } from "telegraf"
 
 export function setupPlay(bot: Telegraf<Context>) {
-  bot.command(['play'], async ctx => {
-    if (!ctx.dbuser.login || !ctx.dbuser.postingKey) {
-      ctx.reply(ctx.i18n.t('auth_required'))
+  bot.hears(new RegExp('♟ .*'), async ctx => {
+    if (!ctx.dbuser.login) {
+      ctx.dbuser.state = "waitLogin"
+      ctx.dbuser.save()
+      ctx.replyWithHTML(ctx.i18n.t('wait_login'))
       return
     }
+
+    const waitMinutes = parseInt(process.env.MINUTES)
+    const waitDate = ctx.dbuser.payoutDate
+    waitDate.setMinutes(waitMinutes + ctx.dbuser.payoutDate.getMinutes())
+    const now = new Date()
+    if (waitDate > now) {
+      const between = timeUnitsBetween(now, waitDate)
+      const minutes = between['minutes']
+      const seconds = between['seconds']
+      ctx.replyWithHTML(ctx.i18n.t('wait_play', {
+        minutes: minutes,
+        seconds: seconds
+      }))
+      return
+    }
+
     var value: number, multiplier: number
-    await ctx.viz.award(ctx.dbuser.login, ctx.dbuser.postingKey, ctx.dbuser.game, ctx.dbuser.referrer)
-      .then(_ => ctx.replyWithDice({ emoji: ctx.dbuser.game }))
+    await ctx.replyWithDice({ emoji: ctx.dbuser.game })
       .then(msg => {
-        const user = ctx.dbuser
+        var user = ctx.dbuser
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
         // TODO: think about balance to compensate for the lack of six
@@ -22,7 +39,23 @@ export function setupPlay(bot: Telegraf<Context>) {
             multiplier = multiplier * 2.25
             break
           case "🎰": // [1 - 64]
-            multiplier = 2.5
+            switch (value) {
+              case 1: // bars
+                multiplier = 1
+                break
+              case 22: // plums
+                multiplier = 3
+                break
+              case 43: // lemons
+                multiplier = 4
+                break
+              case 64: // sevens
+                multiplier = 5
+                break
+              default: // other cases
+                multiplier = 1.75
+                break
+            }
             break
         }
         if (user.value == msg.dice.value) {
@@ -31,29 +64,24 @@ export function setupPlay(bot: Telegraf<Context>) {
           user.series = 1
         }
         user.value = value
+        user.payoutDate = new Date()
         user.save()
-        return ctx.viz.getAccountShares(ctx.dbuser.login)
+        return ctx.viz.getAccountEnergy(process.env.ACCOUNT)
       })
-      .then(shares => ctx.viz.calculatePayout(shares))
-      .then(shares => {
-        console.log(`Payout to ${ctx.dbuser.login} ${shares} ${multiplier} ${ctx.dbuser.series}`)
-        const amount = shares * multiplier * ctx.dbuser.series
+      .then(remainingEnergy => {
+        const baseEnergy = remainingEnergy / 10000
+        const finalEnergyPercent = baseEnergy * multiplier * ctx.dbuser.series
         const memo = ctx.dbuser.game
-        return ctx.viz.payout(ctx.dbuser.login, amount, memo)
+        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergyPercent}, multiplier ${multiplier}, series ${ctx.dbuser.series}`)
+        return ctx.viz.payout(ctx.dbuser.login, memo, finalEnergyPercent, ctx.dbuser.referrer)
       })
       .then(result => {
-        const amount = result['operations'][0][1]['amount']
-        const numbers = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣']
-        const number = numbers[value - 1]
-        ctx.viz.getAccountEnergy
-        return ctx.viz.getAccountEnergy(ctx.dbuser.login)
-          .then(
-            energy => {
-              const accountEnergyLeftPercent = (energy / 100).toFixed(2)
-              const energySpent = process.env.PERCENT
-              ctx.replyWithHTML(ctx.i18n.t('successful_payout', { energy_spent: energySpent, energy_left: accountEnergyLeftPercent, number: number, amount: amount, series: ctx.dbuser.series }))
-            }
-          )
+        const energySpent = parseFloat(result['operations'][0][1]['energy']) / 100
+        ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
+          energy_spent: energySpent,
+          number: ctx.dbuser.value,
+          series: ctx.dbuser.series
+        }))
       })
       .catch(err => {
         if (err.toString().search(/does not have enough energy to vote/) !== -1) {
@@ -68,4 +96,16 @@ export function setupPlay(bot: Telegraf<Context>) {
         ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
       })
   })
+}
+
+function timeUnitsBetween(startDate, endDate) {
+  let delta = Math.abs(endDate - startDate) / 1000;
+  const isNegative = startDate > endDate ? -1 : 1;
+  const units: [[string, number], [string, number], [string, number], [string, number]] = [
+    ['days', 24 * 60 * 60],
+    ['hours', 60 * 60],
+    ['minutes', 60],
+    ['seconds', 1]
+  ]
+  return units.reduce((acc, [key, value]) => (acc[key] = Math.floor(delta / value) * isNegative, delta -= acc[key] * isNegative * value, acc), {});
 }

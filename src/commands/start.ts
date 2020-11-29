@@ -1,7 +1,11 @@
-import { Telegraf, Context } from "telegraf"
-import { sendLanguageKeyboard } from "./language"
+import { Telegraf, Context, Markup as m } from "telegraf"
+import { sendLanguageKeyboard, emojiByLocaleCode } from "./language"
 
 export function setupStart(bot: Telegraf<Context>) {
+    bot.hears('🔙 Назад', async ctx => {
+        sendMainKeyboard(bot, ctx)
+    })
+
     bot.start((ctx) => {
         sendLanguageKeyboard(ctx)
         const payload = (ctx as any)['startPayload']
@@ -15,7 +19,7 @@ export function setupStart(bot: Telegraf<Context>) {
                             user.referrer = referrer
                             user.save()
                         } else {
-                            console.log('Refereer', referrer, 'doesn\'t exists')
+                            console.log('Referrer', referrer, 'doesn\'t exists')
                         }
                     },
                     err => console.log('Referrer error', referrer, err)
@@ -24,4 +28,26 @@ export function setupStart(bot: Telegraf<Context>) {
     })
 }
 
+export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
+    var params = {
+        botname: bot.options.username,
+        minutes: process.env.MINUTES,
+        encodedlogin: null,
+    }
+    const login = ctx.dbuser.login
+    if (login) {
+        params['encodedlogin'] = Buffer.from(login, 'utf-8').toString('base64')
+    }
+    ctx.replyWithHTML(ctx.i18n.t('help', params), {
+        reply_markup: mainKeyboard(ctx),
+        disable_web_page_preview: true
+    })
+}
 
+export function mainKeyboard(ctx: Context) {
+    const play = m.callbackButton('♟ ' + ctx.i18n.t('play_button'), 'play')
+    const game = m.callbackButton('🧩 ' + ctx.i18n.t('game_button'), 'game')
+    const lang = m.callbackButton('🌐 ' + ctx.i18n.t('language_button'), 'language')
+    const help = m.callbackButton('🙋 ' + ctx.i18n.t('help_button'), 'help')
+    return m.keyboard([[play, game], [lang, help]]).resize()
+}

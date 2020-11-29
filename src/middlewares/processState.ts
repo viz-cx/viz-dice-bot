@@ -1,65 +1,27 @@
 import { Context } from 'telegraf'
-import { VIZ } from '../helpers/viz'
 
 export async function processState(ctx: Context, next: any) {
   switch (ctx.dbuser.state) {
-    case 'empty':
-      next()
-      break
     case 'waitLogin':
       if (ctx.message.text) {
-        const user = ctx.dbuser
-        user.login = ctx.message.text
-        user.state = 'waitPostingKey'
-        const msg = await VIZ.vizJS.utils.validateAccountName(user.login)
-        if (!msg) {
+        const login = ctx.message.text
+        const accountExists = await ctx.viz.isAccountExists(login)
+        if (accountExists) {
+          var user = ctx.dbuser
+          user.login = login
+          user.state = null
           await user.save()
-          await ctx.replyWithHTML(ctx.i18n.t('wait_posting_key'))
+          await ctx.replyWithHTML(ctx.i18n.t('lets_play'))
           next()
         } else {
-          await ctx.replyWithHTML(ctx.i18n.t('wrong_login', { error: msg }))
+          await ctx.replyWithHTML(ctx.i18n.t('wrong_login'))
         }
       } else {
         await ctx.replyWithHTML(ctx.i18n.t('wait_login'))
       }
       break
-    case 'waitPostingKey':
-      if (ctx.message.text) {
-        const user = ctx.dbuser
-        user.postingKey = ctx.message.text
-        user.state = 'empty'
-        const isWif = await VIZ.vizJS.auth.isWif(user.postingKey)
-        if (!isWif) {
-          await ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
-          return
-        }
-        await VIZ.vizJS.api.getAccounts([user.login], async function (err, result) {
-          if (err) {
-            console.log(err)
-            await ctx.reply(ctx.i18n.t('something_wrong'))
-            return
-          }
-          const publicKeys = result[0].regular_authority.key_auths
-          var accountHasKey = false
-          if (publicKeys) {
-            for (let key of publicKeys) {
-              const pubWif = key[0]
-              if (await VIZ.vizJS.auth.wifIsValid(user.postingKey, pubWif)) {
-                accountHasKey = true
-                break
-              }
-            }
-          }
-          if (accountHasKey) {
-            await user.save()
-            await ctx.replyWithHTML(ctx.i18n.t('lets_play'))
-            await next()
-          } else {
-            await ctx.replyWithHTML(ctx.i18n.t('wrong_posting_key'))
-          }
-        })
-      } else {
-        await ctx.replyWithHTML(ctx.i18n.t('wait_posting_key'))
-      } break
+    default:
+      next()
+      break
   }
 }

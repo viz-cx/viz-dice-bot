@@ -1,11 +1,7 @@
 import { prop, getModelForClass } from '@typegoose/typegoose'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
-import { AES, enc } from 'crypto-js'
 
-export type UserState =
-  'empty'
-  | 'waitLogin'
-  | 'waitPostingKey'
+export type UserState = 'waitLogin'
 
 export class User {
   @prop({ required: true, index: true, unique: true })
@@ -14,7 +10,7 @@ export class User {
   @prop({ required: true, default: 'en' })
   language: string
 
-  @prop({ required: true, default: 'empty' })
+  @prop({ required: false })
   state: UserState
 
   @prop({ required: true, enum: ['🎲', '🎯', '🏀', '⚽️', '🎰'], default: '🎲' })
@@ -29,16 +25,11 @@ export class User {
   @prop({ required: false, unique: false })
   login: string
 
-  @prop({
-    required: false, unique: false,
-    // encryption in case of leaking database
-    set: (val: string) => (!val || val.length == 0) ? '' : AES.encrypt(val, process.env.SECRET).toString(),
-    get: (val: string) => (!val || val.length == 0) ? '' : AES.decrypt(val, process.env.SECRET).toString(enc.Utf8)
-  })
-  postingKey: string
-
   @prop({ required: false })
   referrer: string
+
+  @prop({ default: new Date(null) })
+  payoutDate: Date
 }
 
 // Get User model

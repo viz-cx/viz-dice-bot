@@ -18,7 +18,7 @@ And you should be good to go! Feel free to fork and submit pull requests. Thanks
 - `MONGO` — URL of the mongo database
 - `ACCOUNT` — Account in VIZ blockchain
 - `WIF` — Private active key for account
-- `PERCENT` — Energy percent for one game
+- `MINUTES` — Wait before next game
 
 Also, please, consider looking at `.env.sample`.
 

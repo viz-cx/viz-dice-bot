@@ -12,7 +12,7 @@
     "develop": "concurrently -k -i -p \"[{name}]\" -n \"Node,TypeScript\" -c \"yellow.bold,cyan.bold\" \"yarn watch-js\" \"yarn watch-ts\"",
     "build-ts": "tsc --skipLibCheck",
     "watch-ts": "tsc -w --skipLibCheck",
-    "watch-js": "nodemon dist/app.js"
+    "watch-js": "nodemon dist/app.js --ext js,yaml"
   },
   "devDependencies": {
     "concurrently": "^5.0.0",

@@ -2,41 +2,30 @@ name: English
 help: |
   @${botname} is an example bot using functionality of the <a href="https://start.viz.plus">VIZ blockchain</a>.
 
-  Each game requires <b>${percent}%</b> of energy and returns liquid <b>VIZ</b> tokens depending on result: received reward multiplied by [0.2-1.2] depending on game result and multiplied by the number of series in a row.
-
-  Available commands:
-
-    /auth — authorization
-    /game — change game
-    /play — play game
-    /language — change language
-    /help — information
+  Each next game requires <b>${minutes}</b> minutes and award your <b>VIZ</b> account depending on result: reward multiplied depending on selected game and result and multiplied by the number of series in a row.
 
   ${encodedlogin ? 'Link to invite (to receive 10% of all games of your referrals): https://t.me/' + botname + '?start=' + encodedlogin : 'You are not logged in yet.'}
   
-  Code is fully open and can be found here: https://github.com/viz-cx/viz-dice-bot
-
-  If you have any problems or suggestions, please write them in the @viz_cx group
+  Code is fully open and <a href="https://github.com/viz-cx/viz-dice-bot">can be found here</a>. If you have any problems or suggestions, please write them in the @viz_cx group
 language: Please, select the language
 language_selected: Now I will speaks in English. Ask me who I am and what I can do by command /help
-game: Change game
+play_button: Play
+game_button: Change game
+language_button: Language
+help_button: Help
 🎲: Dice
 🎯: Darts
 🏀: Basketball
 ⚽️: Football
 🎰: Slot machine
 game_selected: Game was successfully changed
-auth_required: You should be authorized before play /auth
 wait_login: Please send me your <b>login</b> in VIZ blockchain
-wrong_login: |
-  Incorrect login: ${error}
-wait_posting_key: Please send me your <b>private posting (regular) key</b>
-wrong_posting_key: Incorrect <b>private posting (regular) key</b>
-lets_play: Now let's play! /play
+wrong_login: Incorrect login
+lets_play: Now let's play!
+wait_play: |
+  You can play again after${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 successful_payout: |
-  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}.
-  Energy spent <b>${energy_spent}%</b>, available <b>${energy_left}%</b>.
-  Prize <b>${amount}</b> successfully paid!
+  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize with <b>${energy_spent}%</b> energy successfully awarded!
 out_of_energy: Account does not have enough energy to vote
 too_fast: Stay! not so fast!
 something_wrong: Something wrong.
