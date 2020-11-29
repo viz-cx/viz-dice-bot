@@ -3,13 +3,6 @@ import { readdirSync, readFileSync } from 'fs'
 import { safeLoad } from 'js-yaml'
 import { sendMainKeyboard } from './start'
 
-export function emojiByLocaleCode(localeCode: string) {
-  if (localeCode === 'ru') {
-    return '🇷🇺'
-  }
-  return '🇺🇸'
-}
-
 function emojiByLocaleName(localeName: string) {
   if (localeName === 'Русский') {
     return '🇷🇺'

@@ -1,5 +1,5 @@
 import { Telegraf, Context, Markup as m } from "telegraf"
-import { sendLanguageKeyboard, emojiByLocaleCode } from "./language"
+import { sendLanguageKeyboard } from "./language"
 
 export function setupStart(bot: Telegraf<Context>) {
     bot.hears('🔙 Назад', async ctx => {

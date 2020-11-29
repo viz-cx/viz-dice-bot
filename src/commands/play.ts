@@ -1,6 +1,9 @@
 import { Telegraf, Context } from "telegraf"
 
 export function setupPlay(bot: Telegraf<Context>) {
+  bot.command('play', async ctx => {
+    ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
+  })
   bot.hears(new RegExp('♟ .*'), async ctx => {
     if (!ctx.dbuser.login) {
       ctx.dbuser.state = "waitLogin"
