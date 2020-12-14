@@ -1,4 +1,5 @@
 import bot from './bot'
 
 bot.launch()
-console.info('Bot is up and running')
+    .then(_ => console.info(`Bot ${bot.options.username} is up and running`))
+    .catch(err => console.error(err))

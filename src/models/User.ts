@@ -30,6 +30,9 @@ export class User {
 
   @prop({ default: new Date(null) })
   payoutDate: Date
+
+  @prop({ required: true, default: 1 })
+  payouts: number
 }
 
 // Get User model

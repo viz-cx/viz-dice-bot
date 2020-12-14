@@ -14,7 +14,7 @@ export function setupPlay(bot: Telegraf<Context>) {
 
     const waitMinutes = parseInt(process.env.MINUTES)
     const waitDate = ctx.dbuser.payoutDate
-    waitDate.setMinutes(waitMinutes + ctx.dbuser.payoutDate.getMinutes())
+    waitDate.setMinutes((waitMinutes * ctx.dbuser.payouts) + ctx.dbuser.payoutDate.getMinutes())
     const now = new Date()
     if (waitDate > now) {
       const between = timeUnitsBetween(now, waitDate)
@@ -67,6 +67,15 @@ export function setupPlay(bot: Telegraf<Context>) {
           user.series = 1
         }
         user.value = value
+        
+        var zeroingDate = user.payoutDate
+        zeroingDate.setHours(zeroingDate.getHours() + parseInt(process.env.HOURS))
+        if (user.payoutDate > zeroingDate) {
+          user.payouts = 1
+        } else {
+          user.payouts = user.payouts + 1
+        }
+
         user.payoutDate = new Date()
         user.save()
         return ctx.viz.getAccountEnergy(process.env.ACCOUNT)
