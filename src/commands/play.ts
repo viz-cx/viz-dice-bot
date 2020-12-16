@@ -70,13 +70,13 @@ export function setupPlay(bot: Telegraf<Context>) {
         
         var zeroingDate = user.payoutDate
         zeroingDate.setTime(zeroingDate.getTime() + (parseInt(process.env.HOURS) * 60 * 60 * 1000))
-        if (user.payoutDate > zeroingDate) {
+        if (now > zeroingDate) {
           user.payouts = 1
         } else {
           user.payouts = user.payouts + 1
         }
 
-        user.payoutDate = new Date()
+        user.payoutDate = now
         user.save()
         return ctx.viz.getAccountEnergy(process.env.ACCOUNT)
       })
