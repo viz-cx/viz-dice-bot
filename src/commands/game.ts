@@ -47,7 +47,7 @@ function gameKeyboard(ctx: Context) {
     }
   })
   const backButton = m.callbackButton('🔙 Назад', '🔙 Назад')
-  if (result.length % 2 === 0) {
+  if (result.length === 0 || result[result.length-1].length % 2 === 0) {
     result.push([backButton])
   } else {
     result[result.length - 1].push(backButton)
