@@ -35,7 +35,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         multiplier = parseFloat(`0.${value}`)
         // TODO: think about balance to compensate for the lack of six
         switch (msg.dice.emoji) {
-          case "🎲": case "🎯": // [1 - 6]
+          case "🎲": case "🎯": case "🎳": // [1 - 6]
             multiplier = multiplier * 2
             break
           case "🏀": case "⚽️": // [1 - 5]

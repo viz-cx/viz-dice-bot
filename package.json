@@ -26,7 +26,7 @@
     "crypto-js": "^4.0.0",
     "dotenv": "^8.2.0",
     "mongoose": "^5.7.12",
-    "telegraf": "github:viz-cx/telegraf#cc62e3b85363e8f1effb36534a82b0f34f4ceec1",
+    "telegraf": "github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c",
     "telegraf-i18n": "^6.6.0",
     "typescript": "^3.7.2",
     "viz-js-lib": "^0.9.30"

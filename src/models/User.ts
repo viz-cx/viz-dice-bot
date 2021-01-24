@@ -13,7 +13,7 @@ export class User {
   @prop({ required: false })
   state: UserState
 
-  @prop({ required: true, enum: ['🎲', '🎯', '🏀', '⚽️', '🎰'], default: '🎲' })
+  @prop({ required: true, enum: ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳'], default: '🎲' })
   game: DiceEmoji
 
   @prop({ required: true, default: 0 })

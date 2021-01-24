@@ -2,7 +2,7 @@ import { Telegraf, Context, Markup as m } from 'telegraf'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
 import { mainKeyboard } from './start'
 
-const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀', '⚽️', '🎰']
+const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳']
 
 export function setupGame(bot: Telegraf<Context>) {
   bot.hears(new RegExp('🧩 .*'), ctx => {

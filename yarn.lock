@@ -1484,9 +1484,9 @@ telegraf-i18n@^6.6.0:
     debug "^4.0.1"
     js-yaml "^3.6.1"
 
-"telegraf@github:viz-cx/telegraf#cc62e3b85363e8f1effb36534a82b0f34f4ceec1":
+"telegraf@github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c":
   version "3.38.0"
-  resolved "https://codeload.github.com/viz-cx/telegraf/tar.gz/cc62e3b85363e8f1effb36534a82b0f34f4ceec1"
+  resolved "https://codeload.github.com/viz-cx/telegraf/tar.gz/e6a9b0b002255e8fad45abb597dcd596217b503c"
   dependencies:
     debug "^4.0.1"
     minimist "^1.2.0"
