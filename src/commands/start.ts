@@ -2,7 +2,7 @@ import { Telegraf, Context, Markup as m } from "telegraf"
 import { sendLanguageKeyboard } from "./language"
 
 export function setupStart(bot: Telegraf<Context>) {
-    bot.hears('🔙 Назад', async ctx => {
+    bot.hears(new RegExp('🔙 .*'), async ctx => {
         sendMainKeyboard(bot, ctx)
     })
 

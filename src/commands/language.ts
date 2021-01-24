@@ -2,6 +2,8 @@ import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
 import { readdirSync, readFileSync } from 'fs'
 import { safeLoad } from 'js-yaml'
 import { sendMainKeyboard } from './start'
+import { createTextChangeRange } from 'typescript'
+import I18n from 'telegraf-i18n'
 
 function emojiByLocaleName(localeName: string) {
   if (localeName === 'Русский') {
@@ -46,11 +48,11 @@ export function setupLanguage(bot: Telegraf<Context>) {
 
 export function sendLanguageKeyboard(ctx: Context, addBackButton = false) {
   ctx.reply(ctx.i18n.t('language'), {
-    reply_markup: languageKeyboard(addBackButton),
+    reply_markup: languageKeyboard(ctx, addBackButton),
   })
 }
 
-function languageKeyboard(addBackButton = false) {
+function languageKeyboard(ctx: Context, addBackButton = false) {
   const locWithEmojis = Array.from(locales().values())
     .map(value => emojiByLocaleName(value) + ' ' + value)
   var result = []
@@ -69,7 +71,7 @@ function languageKeyboard(addBackButton = false) {
     }
   })
   if (addBackButton) {
-    const backTitle = '🔙 Назад'
+    const backTitle = '🔙 ' + ctx.i18n.t('back_button')
     if (result.length === 0 || result[result.length-1].length % 2 === 0) {
       result.push([backTitle])
     } else {
