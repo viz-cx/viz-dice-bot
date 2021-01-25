@@ -37,7 +37,6 @@ export class VIZ {
                         reject(err)
                         return
                     }
-                    console.log(account)
                     VIZ.vizJS.api.getDynamicGlobalProperties(function (err, dgp) {
                         if (err) {
                             reject(err)
