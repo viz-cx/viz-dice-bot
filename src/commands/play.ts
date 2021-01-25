@@ -90,9 +90,13 @@ export function setupPlay(bot: Telegraf<Context>) {
       .then(reward => {
         ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
           reward: reward,
+          user: ctx.dbuser.login,
           number: ctx.dbuser.value,
           series: ctx.dbuser.series
-        }))
+        }),{
+          disable_web_page_preview: true, 
+          disable_notification: true
+        })
       })
       .catch(err => {
         if (err.toString().search(/does not have enough energy to vote/) !== -1) {

@@ -27,7 +27,7 @@ lets_play: Теперь можно играть!
 wait_play: |
   Повторно сыграть можно через${minutes > 0 ? ' ' + pluralize(minutes, 'минуту', 'минуты', 'минут') : ''} ${pluralize(seconds, 'секунду', 'секунды', 'секунд')}
 successful_payout: |
-  Выпал номер ${number}${series > 1 ? ' <b>' + series + '-й</b> раз подряд' : ''}. Награда <b>≈${reward} Ƶ</b> успешно отправлена!
+  Выпал номер ${number}${series > 1 ? ' <b>' + series + '-й</b> раз подряд' : ''}. Награда <b>≈${reward} Ƶ</b> для <a href="https://info.viz.plus/accounts/${user}/">${user}</a> успешно отправлена!
 out_of_energy: Недостаточно энергии для игры
 too_fast: Постой! Не так быстро!
 something_wrong: Что-то пошло не так.
