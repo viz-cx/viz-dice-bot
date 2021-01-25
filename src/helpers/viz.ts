@@ -10,14 +10,14 @@ export class VIZ {
         VIZ.vizJS.config.set('websocket', 'https://api.viz.world')
     }
 
-    public payout(receiver: string, memo: string, percent: number, referrer: string = null) {
+    public payout(receiver: string, memo: string, percent: number, referrer: string = null, account: any) {
         const from = process.env.ACCOUNT
         const wif = process.env.WIF
         const energy = parseInt((100 * percent).toFixed(0))
-        return this.award(receiver, from, wif, energy, memo, referrer)
+        return this.award(receiver, from, wif, energy, memo, referrer, account)
     }
 
-    private award(receiver: string, from: string, wif: string, energy: number, memo: string, referrer: string) {
+    private award(receiver: string, from: string, wif: string, energy: number, memo: string, referrer: string, account: any) {
         return new Promise((resolve, reject) => {
             var custom_sequence = 0
             var beneficiaries = []
@@ -35,23 +35,23 @@ export class VIZ {
                 function (err, result) {
                     if (err) {
                         reject(err)
-                    } else {
-                        resolve(result)
+                        return
                     }
+                    console.log(account)
+                    VIZ.vizJS.api.getDynamicGlobalProperties(function (err, dgp) {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            const effectiveShares = parseFloat(account['vesting_shares']) - parseFloat(account['delegated_vesting_shares']) + parseFloat(account['received_vesting_shares'])
+                            const voteShares = effectiveShares * 100 * energy
+                            const totalRewardShares = parseFloat(dgp['total_reward_shares']) + voteShares
+                            const totalRewardFund = parseFloat(dgp['total_reward_fund']) * 1000
+                            const reward = Math.ceil(totalRewardFund * voteShares / totalRewardShares) / 1000
+                            const finalReward = reward * 0.95 // because final value could be less
+                            resolve(finalReward.toFixed(3))
+                        }
+                    })
                 })
-        })
-    }
-
-    public getAccountEnergy(login: string): Promise<number> {
-        return new Promise((resolve, reject) => {
-            this.getAccount(login)
-                .then(
-                    account => {
-                        const energy = parseFloat(account['energy'])
-                        resolve(energy)
-                    },
-                    err => reject(err)
-                )
         })
     }
 
@@ -83,4 +83,17 @@ export class VIZ {
             })
         })
     }
+
+    getDynamicGlobalProperties(): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            VIZ.vizJS.api.getDynamicGlobalProperties(function (err, result) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
+
 }
