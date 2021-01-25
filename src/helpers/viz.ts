@@ -10,10 +10,9 @@ export class VIZ {
         VIZ.vizJS.config.set('websocket', 'https://api.viz.world')
     }
 
-    public payout(receiver: string, memo: string, percent: number, referrer: string = null, account: any) {
+    public payout(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
         const from = process.env.ACCOUNT
         const wif = process.env.WIF
-        const energy = parseInt((100 * percent).toFixed(0))
         return this.award(receiver, from, wif, energy, memo, referrer, account)
     }
 
@@ -32,7 +31,7 @@ export class VIZ {
                 custom_sequence,
                 memo,
                 beneficiaries,
-                function (err, result) {
+                function (err, _) {
                     if (err) {
                         reject(err)
                         return
@@ -46,7 +45,10 @@ export class VIZ {
                             const totalRewardShares = parseFloat(dgp['total_reward_shares']) + voteShares
                             const totalRewardFund = parseFloat(dgp['total_reward_fund']) * 1000
                             const reward = Math.ceil(totalRewardFund * voteShares / totalRewardShares) / 1000
-                            const finalReward = reward * 0.95 // because final value could be less
+                            var finalReward = reward * 0.95 // because final value could be less
+                            if (beneficiaries.length > 0) {
+                                finalReward = finalReward * 0.9
+                            }
                             resolve(finalReward.toFixed(3))
                         }
                     })

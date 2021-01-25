@@ -81,11 +81,11 @@ export function setupPlay(bot: Telegraf<Context>) {
         return ctx.viz.getAccount(process.env.ACCOUNT)
       })
       .then(account => {
-        const baseEnergy = account['energy'] / 10000
-        const finalEnergyPercent = baseEnergy * multiplier * ctx.dbuser.series
+        const baseEnergy = account['energy'] / 100
+        const finalEnergy = Math.ceil(baseEnergy * multiplier * ctx.dbuser.series)
         const memo = ctx.dbuser.game
-        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergyPercent}, multiplier ${multiplier}, series ${ctx.dbuser.series}`)
-        return ctx.viz.payout(ctx.dbuser.login, memo, finalEnergyPercent, ctx.dbuser.referrer, account)
+        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, series ${ctx.dbuser.series}`)
+        return ctx.viz.payout(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
         ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
