@@ -27,7 +27,7 @@ lets_play: Now let's play!
 wait_play: |
   You can play again after${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 successful_payout: |
-  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.plus/accounts/${user}/">${user}</a> successfully awarded!
+  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.plus/accounts/${user}/">@${user}</a> successfully awarded!
 out_of_energy: Account does not have enough energy to vote
 too_fast: Stay! not so fast!
 something_wrong: Something wrong.

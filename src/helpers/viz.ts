@@ -45,11 +45,11 @@ export class VIZ {
                             const totalRewardShares = parseFloat(dgp['total_reward_shares']) + voteShares
                             const totalRewardFund = parseFloat(dgp['total_reward_fund']) * 1000
                             const reward = Math.ceil(totalRewardFund * voteShares / totalRewardShares) / 1000
-                            var finalReward = reward * 0.95 // because final value could be less
+                            var finalReward = reward * 0.995 // because final value could be less
                             if (beneficiaries.length > 0) {
                                 finalReward = finalReward * 0.9
                             }
-                            resolve(finalReward.toFixed(3))
+                            resolve(finalReward.toFixed(4))
                         }
                     })
                 })
