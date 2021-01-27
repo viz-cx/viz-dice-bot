@@ -115,6 +115,9 @@ export function setupPlay(bot: Telegraf<Context>) {
           ctx.replyWithHTML(ctx.i18n.t('too_fast'))
           return
         }
+        if (err.toString().search(/Bad Gateway/) !== -1) {
+          ctx.viz.changeNode()
+        }
         console.log("Error: ", err.toString())
         ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
       })

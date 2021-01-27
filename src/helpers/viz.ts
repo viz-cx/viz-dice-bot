@@ -2,12 +2,23 @@ export class VIZ {
     public static vizJS = require("viz-js-lib")
 
     constructor() {
-        this.findBestNode()
+        VIZ.vizJS.config.set('websocket', 'https://node.viz.cx/')
     }
 
-    private findBestNode() {
-        // TODO: need more nodes!
-        VIZ.vizJS.config.set('websocket', 'https://api.viz.world')
+    public changeNode() {
+        var nodes = [
+            'https://node.viz.cx/',
+            'https://node.viz.plus/',
+            'https://node.viz.media/',
+            'https://viz-node.dpos.space/',
+            'https://vizrpc.lexai.host/',
+            'https://viz.lexai.host/',
+        ]
+        const oldNode = VIZ.vizJS.config.get('websocket')
+        nodes = nodes.filter(e => e !== oldNode)
+        const node = nodes[Math.floor(Math.random() * nodes.length)]
+        console.log('Change public node from %s to %s', oldNode, node)
+        VIZ.vizJS.config.set('websocket', node)
     }
 
     public payout(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
