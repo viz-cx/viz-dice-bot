@@ -7,7 +7,7 @@ export class VIZ {
 
     private findBestNode() {
         // TODO: need more nodes!
-        VIZ.vizJS.config.set('websocket', 'https://node.viz.cx')
+        VIZ.vizJS.config.set('websocket', 'https://api.viz.world')
     }
 
     public payout(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
