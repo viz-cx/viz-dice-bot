@@ -13,7 +13,6 @@ function sendHelp(bot: Telegraf<Context>, ctx: Context) {
   var params = {
     botname: bot.options.username,
     minutes: process.env.MINUTES,
-    hours: process.env.HOURS,
     encodedlogin: null
   }
   const login = ctx.dbuser.login

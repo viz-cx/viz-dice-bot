@@ -13,10 +13,13 @@ export function setupPlay(bot: Telegraf<Context>) {
     }
 
     const waitMinutes = parseInt(process.env.MINUTES)
-    const waitDate = ctx.dbuser.payoutDate
-    waitDate.setTime((waitMinutes * 60 * 1000 * ctx.dbuser.payouts) + ctx.dbuser.payoutDate.getTime())
+    const waitDate = new Date(
+      ctx.dbuser.payoutDate.getTime()
+      + (waitMinutes * 60 * 1000)
+    )
     const now = new Date()
-    if (waitDate > now) {
+    const waitDateToCompare = new Date(waitDate.getTime() - 3000)
+    if (waitDateToCompare > now) {
       const between = timeUnitsBetween(now, waitDate)
       const minutes = between['minutes']
       const seconds = between['seconds']
@@ -67,14 +70,19 @@ export function setupPlay(bot: Telegraf<Context>) {
           user.series = 1
         }
         user.value = value
-        
-        var zeroingDate = user.payoutDate
-        zeroingDate.setTime(zeroingDate.getTime() + (parseInt(process.env.HOURS) * 60 * 60 * 1000))
+
+        const hours = parseInt(process.env.HOURS)
+        const zeroingDate = new Date(
+          user.payoutDate.getTime()
+          + (hours * 60 * 60 * 1000)
+        )
         if (now > zeroingDate) {
           user.payouts = 1
         } else {
           user.payouts = user.payouts + 1
         }
+
+        multiplier = multiplier / user.payouts
 
         user.payoutDate = now
         user.save()
@@ -84,7 +92,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         const baseEnergy = account['energy'] / 100
         const finalEnergy = Math.ceil(baseEnergy * multiplier * ctx.dbuser.series)
         const memo = ctx.dbuser.game
-        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, series ${ctx.dbuser.series}`)
+        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
         return ctx.viz.payout(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
@@ -93,8 +101,8 @@ export function setupPlay(bot: Telegraf<Context>) {
           user: ctx.dbuser.login,
           number: ctx.dbuser.value,
           series: ctx.dbuser.series
-        }),{
-          disable_web_page_preview: true, 
+        }), {
+          disable_web_page_preview: true,
           disable_notification: true
         })
       })
@@ -113,8 +121,8 @@ export function setupPlay(bot: Telegraf<Context>) {
   })
 }
 
-function timeUnitsBetween(startDate, endDate) {
-  let delta = Math.abs(endDate - startDate) / 1000;
+function timeUnitsBetween(startDate: Date, endDate: Date) {
+  let delta = Math.abs(endDate.getTime() - startDate.getTime()) / 1000
   const isNegative = startDate > endDate ? -1 : 1;
   const units: [[string, number], [string, number], [string, number], [string, number]] = [
     ['days', 24 * 60 * 60],
@@ -122,5 +130,5 @@ function timeUnitsBetween(startDate, endDate) {
     ['minutes', 60],
     ['seconds', 1]
   ]
-  return units.reduce((acc, [key, value]) => (acc[key] = Math.floor(delta / value) * isNegative, delta -= acc[key] * isNegative * value, acc), {});
+  return units.reduce((acc, [key, value]) => (acc[key] = Math.floor(delta / value) * isNegative, delta -= acc[key] * isNegative * value, acc), {})
 }
