@@ -21,8 +21,8 @@ back_button: Back
 🎰: Slot machine
 🎳: Bowling
 game_selected: Game was successfully changed
-wait_login: Please send me your <b>login</b> in VIZ blockchain
-wrong_login: Incorrect login
+wait_login: Please send me your <b>login</b> in <a href="https://start.viz.plus">VIZ blockchain</a>
+wrong_login: Incorrect login. You can sign up at <a href="https://start.viz.plus">start.viz.plus</a>
 lets_play: Now let's play!
 wait_play: |
   You can play again after${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}

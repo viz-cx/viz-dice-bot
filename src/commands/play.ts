@@ -8,7 +8,9 @@ export function setupPlay(bot: Telegraf<Context>) {
     if (!ctx.dbuser.login) {
       ctx.dbuser.state = "waitLogin"
       ctx.dbuser.save()
-      ctx.replyWithHTML(ctx.i18n.t('wait_login'))
+      ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
+        disable_web_page_preview: true
+      })
       return
     }
 

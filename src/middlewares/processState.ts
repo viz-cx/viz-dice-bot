@@ -14,10 +14,14 @@ export async function processState(ctx: Context, next: any) {
           await ctx.replyWithHTML(ctx.i18n.t('lets_play'))
           next()
         } else {
-          await ctx.replyWithHTML(ctx.i18n.t('wrong_login'))
+          await ctx.replyWithHTML(ctx.i18n.t('wrong_login'), {
+            disable_web_page_preview: true
+          })
         }
       } else {
-        await ctx.replyWithHTML(ctx.i18n.t('wait_login'))
+        await ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
+          disable_web_page_preview: true
+        })
       }
       break
     default:
