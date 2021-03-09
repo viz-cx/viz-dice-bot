@@ -1,7 +1,10 @@
 import { Context } from 'telegraf'
 
 export async function checkChatType(ctx: Context, next: () => any) {
-    if (ctx.chat.type === 'private') {
+    if (ctx.chat !== null && ctx.chat.type === 'private') {
         next()
+    } else {
+        console.log(ctx)
+        return
     }
 }
