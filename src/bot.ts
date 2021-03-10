@@ -4,7 +4,7 @@ dotenv.config({ path: `${__dirname}/../.env` })
 import { bot } from './helpers/bot'
 import { setupI18N } from './helpers/i18n'
 
-import { checkChatType } from './middlewares/checkChat'
+// import { checkChatType } from './middlewares/checkChat'
 import { checkTime } from './middlewares/checkTime'
 import { attachUser } from './middlewares/attachUser'
 import { processState } from './middlewares/processState'
@@ -15,7 +15,7 @@ import { setupStart } from './commands/start'
 import { setupPlay } from './commands/play'
 import { setupGame } from './commands/game'
 
-bot.use(checkChatType)
+// bot.use(checkChatType)
 bot.use(checkTime)
 bot.use(attachUser)
 setupI18N(bot)
