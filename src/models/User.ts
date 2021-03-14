@@ -57,3 +57,7 @@ export async function findUser(id: number) {
 export async function getActiveUsers(afterDate: Date) {
   return await UserModel.find({ updatedAt: { $gte: afterDate } })
 }
+
+export async function getUsersByLang(lang: string) {
+  return await UserModel.find({ language: { $eq: lang } })
+}

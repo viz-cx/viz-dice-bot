@@ -14,12 +14,14 @@ import { setupHelp } from './commands/help'
 import { setupStart } from './commands/start'
 import { setupPlay } from './commands/play'
 import { setupGame } from './commands/game'
+import { checkForward } from './middlewares/forwardFromChannel'
 
 // bot.use(checkChatType)
 bot.use(checkTime)
 bot.use(attachUser)
 setupI18N(bot)
 bot.use(processState)
+bot.use(checkForward)
 setupStart(bot)
 setupHelp(bot)
 setupLanguage(bot)
