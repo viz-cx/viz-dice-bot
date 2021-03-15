@@ -20,7 +20,7 @@ export async function checkForward(ctx: Context, next: () => any) {
                         russianChannelID,
                         channelMessageID)
                         .then(_ => console.log("Success sended post to", userID))
-                        .catch(err => console.log("Error send post:", err))
+                        .catch(err => console.log("Error send post to", userID))
                 })
         )
     } else {
