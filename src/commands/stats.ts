@@ -2,7 +2,7 @@ import { getUsersCount } from "../models"
 import { Telegraf, Context } from "telegraf"
 
 export function setupStats(bot: Telegraf<Context>) {
-    bot.command(['stats'], async ctx => {
+    bot.command(['stats', 'stat'], async ctx => {
         sendStats(ctx)
     })
 }

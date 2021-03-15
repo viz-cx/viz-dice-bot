@@ -1,6 +1,6 @@
 name: English
 help: |
-  @${botname} is an example bot using functionality of the <a href="https://start.viz.plus">VIZ blockchain</a>.
+  @${botname} is an example bot using functionality of the <a href="https://reg.readdle.me/?set_lang=en">VIZ blockchain</a>.
 
   Each next game requires <b>${minutes} minutes</b> and award your <b>VIZ account</b> depending on result: reward multiplied depending on selected game and result and multiplied by the number of series in a row.
 
@@ -21,8 +21,8 @@ back_button: Back
 🎰: Slot machine
 🎳: Bowling
 game_selected: Game was successfully changed
-wait_login: Please send me your <b>login</b> in <a href="https://start.viz.plus">VIZ blockchain</a>
-wrong_login: Incorrect login. You can sign up at <a href="https://start.viz.plus">start.viz.plus</a>
+wait_login: Please send me your <b>login</b> in <a href="https://reg.readdle.me/?set_lang=en">VIZ blockchain</a>
+wrong_login: Incorrect login. You can sign up at <a href="https://reg.readdle.me/?set_lang=en">reg.readdle.me</a>
 lets_play: Now let's play!
 wait_play: |
   You can play again after${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
