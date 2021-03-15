@@ -16,6 +16,7 @@ import { setupStop } from './commands/stop'
 import { setupPlay } from './commands/play'
 import { setupGame } from './commands/game'
 import { checkForward } from './middlewares/forwardFromChannel'
+import { setupStats } from './commands/stats'
 
 // bot.use(checkChatType)
 bot.use(checkTime)
@@ -29,5 +30,6 @@ setupHelp(bot)
 setupLanguage(bot)
 setupPlay(bot)
 setupGame(bot)
+setupStats(bot)
 
 export default bot

@@ -31,3 +31,6 @@ successful_payout: |
 out_of_energy: Account does not have enough energy to vote
 too_fast: Stay! not so fast!
 something_wrong: Something wrong.
+stats: |
+  All users: ${all} 
+  Last month: ${month}

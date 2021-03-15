@@ -31,3 +31,6 @@ successful_payout: |
 out_of_energy: Недостаточно энергии для игры
 too_fast: Постой! Не так быстро!
 something_wrong: Что-то пошло не так.
+stats: |
+  Всего пользователей: ${all} 
+  За последний месяц: ${month}
