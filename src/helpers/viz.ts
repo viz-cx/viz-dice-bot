@@ -23,14 +23,14 @@ export class VIZ {
 
     public pay(to: string, amount: number, memo: string) {
         const from = process.env.ACCOUNT
-        const wif = process.env.ACTIVE
+        const wif = process.env.WIF
         const stringAmount = amount.toFixed(3) + ' VIZ'
         return this.transfer(wif, from, to, stringAmount, memo)
     }
 
     public makeAward(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
         const from = process.env.ACCOUNT
-        const wif = process.env.REGULAR
+        const wif = process.env.WIF
         return this.award(receiver, from, wif, energy, memo, referrer, account)
     }
 
