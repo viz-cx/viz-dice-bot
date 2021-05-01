@@ -3,7 +3,7 @@ import { VIZ } from './helpers/viz'
 import { AwardModel } from "./models/Award"
 import { bot } from "./helpers/bot"
 
-const winnerBlockDelimiter = 100 //(12 * 60 * 60) / 3
+const winnerBlockDelimiter = (12 * 60 * 60) / 3
 const viz = new VIZ()
 var blockID: number = 0
 var participants = new Map<string, string>() // login => shares
@@ -83,39 +83,38 @@ async function processBlock(blockNumber: number) {
             }
         )
     }
-    await viz.getOpsInBlock(blockNumber).then(
-        async result => {
-            for (const i in result) {
-                const operation = result[i].op[0]
-                if (operation === 'receive_award') {
-                    const data = result[i].op[1]
-                    if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
-                        const userID = parseInt(data.memo)
-                        if (userID == 0) {
-                            continue
-                        }
-                        await findUser(userID)
-                            .then(async user => {
-                                const shares = parseFloat(data.shares)
-                                if (participants.has(user.login)) {
-                                    participants.set(user.login, participants.get(user.login) + shares)
-                                } else {
-                                    participants.set(user.login, shares.toString())
-                                }
-                                // console.log(participants)
-                                var award = new AwardModel()
-                                award.block = blockID
-                                award.initiator = user.login
-                                award.shares = data.shares
-                                await award.save().then(
-                                    _ => console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo),
-                                    rejected => console.log(rejected)
-                                )
-                            })
+    await viz.getOpsInBlock(blockNumber).then(result => {
+        for (const i in result) {
+            const operation = result[i].op[0]
+            if (operation === 'receive_award') {
+                const data = result[i].op[1]
+                if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
+                    const userID = parseInt(data.memo)
+                    if (isNaN(userID)) {
+                        continue
                     }
+                    findUser(userID)
+                        .then(user => {
+                            const shares = parseFloat(data.shares)
+                            if (participants.has(user.login)) {
+                                participants.set(user.login, participants.get(user.login) + shares)
+                            } else {
+                                participants.set(user.login, shares.toString())
+                            }
+                            // console.log(participants)
+                            var award = new AwardModel()
+                            award.block = blockID
+                            award.initiator = user.login
+                            award.shares = data.shares
+                            award.save().then(
+                                _ => console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo),
+                                rejected => console.log(rejected)
+                            )
+                        })
                 }
             }
-        },
+        }
+    },
         rejected => {
             console.log("Rejected: ", rejected)
             viz.changeNode()
