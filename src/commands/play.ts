@@ -1,4 +1,6 @@
+import { isParticipated } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
+import { getLatestLottery } from "../models/Lottery"
 
 export function setupPlay(bot: Telegraf<Context>) {
   bot.command('play', async ctx => {
@@ -41,27 +43,27 @@ export function setupPlay(bot: Telegraf<Context>) {
         // TODO: think about balance to compensate for the lack of six
         switch (msg.dice.emoji) {
           case "🎲": case "🎯": case "🎳": // [1 - 6]
-            multiplier = multiplier * 2
+            multiplier = multiplier * 1
             break
           case "🏀": case "⚽️": // [1 - 5]
-            multiplier = multiplier * 2.25
+            multiplier = multiplier * 1.25
             break
           case "🎰": // [1 - 64]
             switch (value) {
               case 1: // bars
-                multiplier = 1
+                multiplier = 0.1
                 break
               case 22: // plums
-                multiplier = 3
+                multiplier = 2
                 break
               case 43: // lemons
-                multiplier = 4
+                multiplier = 3
                 break
               case 64: // sevens
                 multiplier = 5
                 break
               default: // other cases
-                multiplier = 1.75
+                multiplier = multiplier * 0.9
                 break
             }
             break
@@ -84,6 +86,10 @@ export function setupPlay(bot: Telegraf<Context>) {
           user.payouts = user.payouts + 1
         }
 
+        getLatestLottery()
+          .then(lottery => isParticipated(user.login, lottery.block))
+          .then(participated => { if (participated) multiplier = multiplier * 3 })
+
         multiplier = multiplier / user.payouts
 
         user.payoutDate = now
@@ -95,7 +101,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         const finalEnergy = Math.ceil(baseEnergy * multiplier * ctx.dbuser.series)
         const memo = ctx.dbuser.game
         console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
-        return ctx.viz.payout(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
+        return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
         ctx.replyWithHTML(ctx.i18n.t('successful_payout', {

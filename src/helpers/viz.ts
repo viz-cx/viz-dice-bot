@@ -21,9 +21,16 @@ export class VIZ {
         VIZ.vizJS.config.set('websocket', node)
     }
 
-    public payout(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
+    public pay(to: string, amount: number, memo: string) {
         const from = process.env.ACCOUNT
-        const wif = process.env.WIF
+        const wif = process.env.ACTIVE
+        const stringAmount = amount.toFixed(3) + ' VIZ'
+        return this.transfer(wif, from, to, stringAmount, memo)
+    }
+
+    public makeAward(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
+        const from = process.env.ACCOUNT
+        const wif = process.env.REGULAR
         return this.award(receiver, from, wif, energy, memo, referrer, account)
     }
 
@@ -108,4 +115,40 @@ export class VIZ {
         })
     }
 
+    getBlockHeader(blockID: number): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            VIZ.vizJS.api.getBlockHeader(blockID, function (err, result) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
+
+    getOpsInBlock(blockID: number, onlyVirtual: Boolean = true): Promise<Object> {
+        const virtualOpsOnly = onlyVirtual ? 1 : 0
+        return new Promise((resolve, reject) => {
+            VIZ.vizJS.api.getOpsInBlock(blockID, virtualOpsOnly, function (err, result) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
+
+    private transfer(wif, from, to, amount, memo: string): Promise<Object> {
+        return new Promise((resolve, reject) => {
+            VIZ.vizJS.broadcast.transfer(wif, from, to, amount, memo, function (err, result) {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(result)
+                }
+            })
+        })
+    }
 }

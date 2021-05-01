@@ -17,7 +17,8 @@ And you should be good to go! Feel free to fork and submit pull requests. Thanks
 - `TOKEN` — Telegram bot token
 - `MONGO` — URL of the mongo database
 - `ACCOUNT` — Account in VIZ blockchain
-- `WIF` — Private active key for account
+- `REGULAR` — Private regular key for account
+- `ACTIVE` — Private active key for account
 - `MINUTES` — Wait before next game
 
 Also, please, consider looking at `.env.sample`.
