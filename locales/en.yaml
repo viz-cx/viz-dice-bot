@@ -34,3 +34,9 @@ something_wrong: Something wrong.
 stats: |
   All users: ${all} 
   Last month: ${month}
+lottery: |
+  ${participated ? 'You already': 'You are <b>NOT</b>'} participating in the lottery.
+
+  To participate in the lottery, you need to reward an account <a href="https://info.viz.plus/accounts/${account}">@${account}</a> with memo <b>${memo}</b>
+  The game window is closing every ${winnerBlockDelimiter*60*60/3} (or ~${winnerBlockDelimiter} hours), then the winner is selecting among all participants using the hash of block
+  Maximum winning amount = your award * number of participants, but not more than the sum of all awards

@@ -18,6 +18,7 @@ import { setupGame } from './commands/game'
 import { checkForward } from './middlewares/forwardFromChannel'
 import { setupStats } from './commands/stats'
 import { startLottery } from './lottery'
+import { setupLottery } from './commands/lottery'
 
 startLottery()
 
@@ -34,5 +35,6 @@ setupLanguage(bot)
 setupPlay(bot)
 setupGame(bot)
 setupStats(bot)
+setupLottery(bot)
 
 export default bot

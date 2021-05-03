@@ -3,7 +3,6 @@ import { VIZ } from './helpers/viz'
 import { AwardModel } from "./models/Award"
 import { bot } from "./helpers/bot"
 
-const winnerBlockDelimiter = (12 * 60 * 60) / 3
 const viz = new VIZ()
 var blockID: number = 0
 var participants = new Map<string, string>() // login => shares
@@ -31,6 +30,7 @@ export function startLottery() {
 }
 
 async function processBlock(blockNumber: number) {
+    const winnerBlockDelimiter = parseInt(process.env.LOTTERY) * 60 * 60 / 3
     if (blockNumber % winnerBlockDelimiter === 0) {
         console.log("Looking for a winner")
         var lottery = new LotteryModel()
@@ -58,7 +58,7 @@ async function processBlock(blockNumber: number) {
                     viz.pay(winner, prize, "🔮🎩✨").then(
                         _ => {
                             console.log("Successful payout to", winner, "prize", prize)
-                            // TODO: send message to all
+                            // TODO: send message to all participants
                             const myUserID = 38968897
                             bot.telegram.sendMessage(myUserID, 'Lottery was closed. Winner: ' + winner)
                         },
@@ -90,9 +90,7 @@ async function processBlock(blockNumber: number) {
                 const data = result[i].op[1]
                 if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
                     const userID = parseInt(data.memo)
-                    if (isNaN(userID)) {
-                        continue
-                    }
+                    if (isNaN(userID)) { continue }
                     findUser(userID)
                         .then(user => {
                             const shares = parseFloat(data.shares)

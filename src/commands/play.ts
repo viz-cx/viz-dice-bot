@@ -1,6 +1,6 @@
+import { getLatestLottery } from "../models/Lottery"
 import { isParticipated } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
-import { getLatestLottery } from "../models/Lottery"
 
 export function setupPlay(bot: Telegraf<Context>) {
   bot.command('play', async ctx => {
@@ -34,9 +34,14 @@ export function setupPlay(bot: Telegraf<Context>) {
       return
     }
 
-    var value: number, multiplier: number
-    await ctx.replyWithDice({ emoji: ctx.dbuser.game })
-      .then(msg => {
+    var value: number, multiplier: number, participated: Boolean
+    await Promise.all([
+      ctx.replyWithDice({ emoji: ctx.dbuser.game }),
+      getLatestLottery().then(lottery => isParticipated(ctx.dbuser.login, lottery.block))
+    ])
+      .then(result => {
+        const msg = result[0]
+        participated = result[1]
         var user = ctx.dbuser
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
@@ -86,9 +91,9 @@ export function setupPlay(bot: Telegraf<Context>) {
           user.payouts = user.payouts + 1
         }
 
-        getLatestLottery()
-          .then(lottery => isParticipated(user.login, lottery.block))
-          .then(participated => { if (participated) multiplier = multiplier * 3 })
+        if (participated) {
+          multiplier = multiplier * 3
+        }
 
         multiplier = multiplier / user.payouts
 
@@ -108,7 +113,9 @@ export function setupPlay(bot: Telegraf<Context>) {
           reward: reward,
           user: ctx.dbuser.login,
           number: ctx.dbuser.value,
-          series: ctx.dbuser.series
+          series: ctx.dbuser.series,
+          participated: participated,
+          account: process.env.ACCOUNT
         }), {
           disable_web_page_preview: true,
           disable_notification: true
