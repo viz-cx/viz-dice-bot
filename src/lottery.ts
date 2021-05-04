@@ -58,7 +58,8 @@ async function processBlock(blockNumber: number) {
                     viz.pay(winner, prize, "🔮🎩✨").then(
                         _ => {
                             console.log("Successful payout to", winner, "prize", prize)
-                            // TODO: send message to all participants
+                            // TODO: send message to lottery participants
+                            // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                             const myUserID = 38968897
                             bot.telegram.sendMessage(myUserID, 'Lottery was closed. Winner: ' + winner)
                         },
@@ -71,7 +72,6 @@ async function processBlock(blockNumber: number) {
                 })
         } else {
             console.log('Lottery was closed without winner because no participants')
-            // TODO: send message to all
             const myUserID = 38968897
             bot.telegram.sendMessage(myUserID, 'Lottery was closed without winner because no participants')
         }
@@ -105,7 +105,11 @@ async function processBlock(blockNumber: number) {
                             award.initiator = user.login
                             award.shares = data.shares
                             award.save().then(
-                                _ => console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo),
+                                _ => {
+                                    // TODO: send message with awards sum
+                                    // bot.telegram.sendMessage(userID, "")
+                                    console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
+                                },
                                 rejected => console.log(rejected)
                             )
                         })

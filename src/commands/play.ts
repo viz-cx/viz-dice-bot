@@ -45,7 +45,6 @@ export function setupPlay(bot: Telegraf<Context>) {
         var user = ctx.dbuser
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
-        // TODO: think about balance to compensate for the lack of six
         switch (msg.dice.emoji) {
           case "🎲": case "🎯": case "🎳": // [1 - 6]
             multiplier = multiplier * 1
