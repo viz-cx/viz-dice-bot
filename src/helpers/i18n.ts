@@ -2,7 +2,7 @@ import I18N from 'telegraf-i18n'
 import Telegraf, { Context } from 'telegraf'
 const dirtyI18N = require('telegraf-i18n')
 
-const i18n = new dirtyI18N({
+export const i18n = new dirtyI18N({
   directory: `${__dirname}/../../locales`,
   defaultLanguage: 'en',
   sessionName: 'session',

@@ -20,8 +20,6 @@ import { setupStats } from './commands/stats'
 import { startLottery } from './lottery'
 import { setupLottery } from './commands/lottery'
 
-startLottery()
-
 // bot.use(checkChatType)
 bot.use(checkTime)
 bot.use(checkForward)
@@ -36,5 +34,7 @@ setupPlay(bot)
 setupGame(bot)
 setupStats(bot)
 setupLottery(bot)
+
+startLottery()
 
 export default bot
