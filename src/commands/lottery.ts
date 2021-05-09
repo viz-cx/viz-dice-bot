@@ -32,7 +32,7 @@ export function setupLottery(bot: Telegraf<Context>) {
                     params["allAwardsSum"] = allAwardsSum[0]["sum"].toFixed(3),
                     params["participants"] = participants
                     const maxParticipantPrize = params["userAwardsSum"] * params["participants"]
-                    params["prize"] = (params["allAwardsSum"] > maxParticipantPrize) ? allAwardsSum : maxParticipantPrize
+                    params["prize"] = (maxParticipantPrize > params["allAwardsSum"]) ? params["allAwardsSum"] : maxParticipantPrize
                 }
                 ctx.replyWithHTML(ctx.i18n.t('lottery', params), { disable_web_page_preview: true })
             },

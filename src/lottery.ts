@@ -107,7 +107,7 @@ async function processNextBlock() {
                                 // console.log(participants)
                                 var award = new AwardModel()
                                 award.block = currentBlock
-                                award.initiator = user.login
+                                award.initiator = data.initiator
                                 award.shares = parseFloat(data.shares)
                                 Promise.all([
                                     award.save(),

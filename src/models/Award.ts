@@ -46,7 +46,7 @@ export async function getLatestAward(): Promise<DocumentType<Award>> {
     if (count === 0) {
         var l = new AwardModel()
         l.block = 1
-        l.initiator = ''
+        l.initiator = 'id'
         l.shares = 0
         return l
     }
