@@ -1,11 +1,12 @@
 import { findUser, getLatestLottery, LotteryModel } from "./models"
 import { VIZ } from './helpers/viz'
-import { AwardModel, removeAllAwards, getAwardSum } from "./models/Award"
+import { AwardModel, removeAllAwards, getAwardSum, getLatestAward } from "./models/Award"
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
 
 const viz = new VIZ()
 var currentBlock: number = 0
+var lastNotificationBlock: number = 0
 var participants = new Map<number, number>() // telegramID => shares
 
 export function startLottery() {
@@ -16,6 +17,7 @@ export function startLottery() {
         async resolve => {
             const lastIrreversibleBlock = parseInt(resolve[0]['last_irreversible_block_num'])
             if (currentBlock === 0) {
+                lastNotificationBlock = (await getLatestAward()).block
                 if (!removeAllAwards()) {
                     console.log("Awards not deleted")
                 }
@@ -85,59 +87,61 @@ async function processNextBlock() {
             rejected => sendToAdmin('Lottery not saved because ' + rejected)
         ).finally(() => clearParticipants())
     }
-    await viz.getOpsInBlock(currentBlock).then(result => {
-        for (const i in result) {
-            const operation = result[i].op[0]
-            if (operation === 'receive_award') {
-                const data = result[i].op[1]
-                if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
-                    const userID = parseInt(data.memo)
-                    if (isNaN(userID)) { continue }
-                    findUser(userID)
-                        .then(user => {
-                            // anti-spam
-                            var withMessage = true
-                            if (data.initiator !== user.login) { withMessage = false }
-                            const shares = parseFloat(data.shares)
-                            addShares(user.id, shares)
-                            // console.log(participants)
-                            var award = new AwardModel()
-                            award.block = currentBlock
-                            award.initiator = user.login
-                            award.shares = parseFloat(data.shares)
-                            Promise.all([
-                                award.save(),
-                                getLatestLottery()
-                            ]).then(
-                                result => {
-                                    console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
-                                    if (withMessage) {
-                                        getAwardSum(user.login, result[1].block)
-                                            .then(
-                                                sum => {
-                                                    const firstTime = sum[0]["sum"] == award.shares
-                                                    const payload = {
-                                                        sum: sum[0]["sum"].toFixed(3),
-                                                        firstTime: firstTime
-                                                    }
-                                                    bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload))
-                                                },
-                                                rejected => console.log(rejected)
-                                            )
-                                    }
-                                },
-                                rejected => console.log(rejected)
-                            )
-                        })
+    await viz.getOpsInBlock(currentBlock)
+        .then(
+            result => {
+                for (const i in result) {
+                    const operation = result[i].op[0]
+                    if (operation === 'receive_award') {
+                        const data = result[i].op[1]
+                        if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
+                            const userID = parseInt(data.memo)
+                            if (isNaN(userID)) { continue }
+                            findUser(userID).then(
+                                user => {
+                                // anti-spam
+                                var withMessage = lastNotificationBlock < currentBlock
+                                if (data.initiator !== user.login) { withMessage = false }
+                                const shares = parseFloat(data.shares)
+                                addShares(user.id, shares)
+                                // console.log(participants)
+                                var award = new AwardModel()
+                                award.block = currentBlock
+                                award.initiator = user.login
+                                award.shares = parseFloat(data.shares)
+                                Promise.all([
+                                    award.save(),
+                                    getLatestLottery()
+                                ]).then(
+                                    result => {
+                                        console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
+                                        if (withMessage) {
+                                            getAwardSum(user.login, result[1].block)
+                                                .then(
+                                                    sum => {
+                                                        const firstTime = sum[0]["sum"] == award.shares
+                                                        const payload = {
+                                                            sum: sum[0]["sum"].toFixed(3),
+                                                            firstTime: firstTime
+                                                        }
+                                                        bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload))
+                                                    },
+                                                    rejected => console.log(rejected)
+                                                )
+                                        }
+                                    },
+                                    rejected => console.log(rejected)
+                                )
+                            })
+                        }
+                    }
                 }
+            },
+            rejected => {
+                console.log("Rejected: ", rejected)
+                viz.changeNode()
             }
-        }
-    },
-        rejected => {
-            console.log("Rejected: ", rejected)
-            viz.changeNode()
-        }
-    )
+        )
 }
 
 function hashSum(s: string): number {

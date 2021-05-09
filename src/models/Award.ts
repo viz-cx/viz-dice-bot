@@ -29,3 +29,15 @@ export async function removeAllAwards(): Promise<boolean> {
 export async function isParticipated(login: string, fromBlock: number): Promise<Boolean> {
     return await AwardModel.countDocuments({ initiator: login, block: { $gte: fromBlock } }).exec() > 0
 }
+
+export async function getLatestAward(): Promise<DocumentType<Award>> {
+    const count = await AwardModel.countDocuments().exec()
+    if (count === 0) {
+        var l = new AwardModel()
+        l.block = 1
+        l.initiator = ''
+        l.shares = 0
+        return l
+    }
+    return await AwardModel.findOne().sort({ block: -1 })
+}
