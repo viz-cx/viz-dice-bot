@@ -34,7 +34,7 @@ export function startLottery() {
 }
 
 async function processNextBlock() {
-    const winnerBlockDelimiter = 200 //parseInt(process.env.LOTTERY) * 60 * 60 / 3
+    const winnerBlockDelimiter = parseInt(process.env.LOTTERY) * 60 * 60 / 3
     if (currentBlock % winnerBlockDelimiter === 0) {
         var lottery = new LotteryModel()
         lottery.block = currentBlock
@@ -42,13 +42,11 @@ async function processNextBlock() {
             await viz.getBlockHeader(currentBlock).then(
                 async result => {
                     const hashSumResult = hashSum(result['previous'] + result['witness'])
-                    console.log("Random code from block info:", hashSumResult)
                     const winnerCode = hashSumResult % participants.size
                     const winnerTelegramID = Array.from(participants.keys())[winnerCode]
                     await findUser(winnerTelegramID).then(
                         async user => {
                             const winner = user.login
-                            console.log("Winner", winner)
                             lottery.winner = winner
                             var prize = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
                             const maxParticipantPrize = participants.get(user.id) * participants.size
@@ -69,7 +67,6 @@ async function processNextBlock() {
                                             payload["users"] = users.map(u => u.login).join(', ')
                                             users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
                                         })
-
                                     // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                                 },
                                 failure => sendToAdmin('Failed to pay winner ' + winner + ' with prize ' + prize + ' with error ' + failure)
