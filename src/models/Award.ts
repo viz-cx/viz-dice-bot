@@ -15,11 +15,22 @@ export const AwardModel = getModelForClass(Award, {
     schemaOptions: { timestamps: false },
 })
 
-export async function getAwardSum(initiator: string, afterBlock: number): Promise<DocumentType<Object>> {
+export async function getAwardsSum(initiator: string, afterBlock: number): Promise<DocumentType<Object>> {
     return await AwardModel.aggregate([
         { $match: { initiator: initiator, block: { $gte: afterBlock } } },
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
+}
+
+export async function getAllAwardsSum(afterBlock: number): Promise<DocumentType<Object>> {
+    return await AwardModel.aggregate([
+        { $match: { block: { $gte: afterBlock } } },
+        { $group: { _id: null, sum: { $sum: "$shares" } } }
+    ]).exec()
+}
+
+export async function participantsCount(fromBlock: number): Promise<number> {
+    return await AwardModel.countDocuments({ block: { $gte: fromBlock } }).exec()
 }
 
 export async function removeAllAwards(): Promise<boolean> {

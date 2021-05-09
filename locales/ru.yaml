@@ -37,7 +37,9 @@ stats: |
   Всего пользователей: ${all} 
   За последний месяц: ${month}
 lottery: |
-  ${participated ? '✅ Вы уже': '⛔️ Вы ещё не'} участвуете в лотерее.
+  ${participated ? '✅ Вы уже': '⛔️ Вы ещё не'} участвуете в лотерее ${participated ? 'со ставкой ' + userAwardsSum + ' VIZ' : ''}
+  ${participated ? 'Всего в призовом фонде ' + allAwardsSum + ' VIZ от ' + participants + ' участников' : ''}
+  ${participated ? 'При выигрыше вы претендуете на ' + prize + ' VIZ' : ''}
 
   Для участия в лотерее необходимо <b>наградить</b> произвольным количеством энергии аккаунт <code>${account}</code> с заметкой <code>${memo}</code>
   
@@ -45,7 +47,7 @@ lottery: |
   
   Максимальная сумма выигрыша = ставка * количество участников, но не более чем сумма всех ставок
 
-  Наградить можно через <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/10">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=10&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS приложение</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android приложение</a> или любым другим способом
+  Награждать можно через <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/10">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=10&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS приложение</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android приложение</a> или любым другим способом
 new_award: |
   ${firstTime ? 'Получена новая ставка в размере' : 'Получена ещё одна ставка. Общая ставка в текущем раунде составляет'} ${sum} VIZ
 lottery_result: |

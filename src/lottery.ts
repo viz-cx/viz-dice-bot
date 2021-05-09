@@ -1,6 +1,6 @@
 import { findUser, getLatestLottery, LotteryModel } from "./models"
 import { VIZ } from './helpers/viz'
-import { AwardModel, removeAllAwards, getAwardSum, getLatestAward } from "./models/Award"
+import { AwardModel, removeAllAwards, getAwardsSum, getLatestAward } from "./models/Award"
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
 
@@ -116,7 +116,7 @@ async function processNextBlock() {
                                     result => {
                                         console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
                                         if (withMessage) {
-                                            getAwardSum(user.login, result[1].block)
+                                            getAwardsSum(user.login, result[1].block)
                                                 .then(
                                                     sum => {
                                                         const firstTime = sum[0]["sum"] == award.shares
