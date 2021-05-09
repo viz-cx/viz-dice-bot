@@ -45,4 +45,5 @@ lottery: |
 new_award: |
   ${firstTime ? 'Получена новая ставка в размере' : 'Получена ещё одна ставка. Общая ставка в текущем раунде составляет'} ${sum} VIZ
 lottery_result: |
-  Текущий розыгрыш лотереи завершился на блоке <i>${block}</i>, всего участников ${count}, победитель: <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a>
+  Текущий розыгрыш лотереи завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, проверочный хеш блока <i>${hashSum}</i>, всего ${count} pluralize(count, 'участник', 'участника', 'участников'): ${users}. 
+  Победитель: <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a>

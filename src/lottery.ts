@@ -61,16 +61,15 @@ async function processNextBlock() {
                                     const payload = {
                                         block: currentBlock,
                                         winner: winner,
-                                        count: participants.size
+                                        hashSum: hashSumResult
                                     }
-                                    const participantTelegramIDs = Array.from(participants.keys())
-                                    participantTelegramIDs
-                                        .map(telegramID => findUser(telegramID))
-                                        .forEach(async user => {
-                                            await user.then(
-                                                async u => await bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), {parse_mode: 'HTML', disable_web_page_preview: true})
-                                            )
+                                    Promise.all(Array.from(participants.keys()).map(telegramID => findUser(telegramID)))
+                                        .then(users => {
+                                            payload["count"] = users.length
+                                            payload["users"] = users.map(u => u.login).join(', ')
+                                            users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
                                         })
+
                                     // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                                 },
                                 failure => sendToAdmin('Failed to pay winner ' + winner + ' with prize ' + prize + ' with error ' + failure)
