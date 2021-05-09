@@ -2,7 +2,7 @@ name: English
 help: |
   @${botname} is an example bot using functionality of the <a href="https://reg.readdle.me/?set_lang=en">VIZ blockchain</a>.
 
-  Each next game requires <b>${minutes} minutes</b> and award your <b>VIZ account</b> depending on result: reward multiplied depending on selected game and result and multiplied by the number of series in a row.
+  Each next game requires <b>${minutes} minutes</b> and award your <b>VIZ account</b> depending on result: reward multiplied depending on selected game and result and multiplied by the number of series in a row and multiplied by three if you participate in the /lottery
 
   ${encodedlogin ? 'Link to invite (to receive 10% of all games of your referrals): https://t.me/' + botname + '?start=' + encodedlogin : 'You are not logged in yet.'}
   
