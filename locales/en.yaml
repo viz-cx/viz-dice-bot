@@ -39,11 +39,11 @@ stats: |
 lottery: |
   ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery.
 
-  To participate in the lottery, you need to reward an account <a href="https://info.viz.plus/accounts/${account}">@${account}</a> with memo <b>${memo}</b>
+  To participate in the lottery, you need to <a href="https://my.viz.plus/assets/award/">award</a> an account <a href="https://info.viz.plus/accounts/${account}">@${account}</a> with memo <b>${memo}</b>
   The game window is closing every ${winnerBlockDelimiter*60*60/3} blocks (~${winnerBlockDelimiter} hours), then the winner is selecting among all participants using the hash of final block
   Maximum winning amount = your award * number of participants, but not more than the sum of all awards
 new_award: |
   ${firstTime ? 'Received new bid' : 'Received another bid. Total bet in the current round is'} ${sum} VIZ
 lottery_result: |
-  Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, checksum <i>${hashSum}</i>, ${count} participants: ${users}. 
+  Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, checksum <i>${hashSum}</i>, ${count} ${pluralize(count, 'participant', 'participants')}: ${users}. 
   Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a>

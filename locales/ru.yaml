@@ -39,11 +39,11 @@ stats: |
 lottery: |
   ${participated ? '✅ Вы уже': '⛔️ Вы ещё не'} участвуете в лотерее.
 
-  Для участия в лотерее необходимо наградить аккаунт <a href="https://info.viz.plus/accounts/${account}/">@${account}</a> с заметкой <b>${memo}</b>
+  Для участия в лотерее необходимо <a href="https://my.viz.plus/assets/award/">наградить</a> аккаунт <a href="https://info.viz.plus/accounts/${account}/">@${account}</a> с заметкой <b>${memo}</b>
   Игровое окно закрывается каждые ${winnerBlockDelimiter*60*60/3} блоков (~${winnerBlockDelimiter} часов), затем выбирается победитель среди всех участников при помощи хеш-суммы от итогового блока
   Максимальная сумма выигрыша = ставка * количество участников, но не более чем сумма всех ставок
 new_award: |
   ${firstTime ? 'Получена новая ставка в размере' : 'Получена ещё одна ставка. Общая ставка в текущем раунде составляет'} ${sum} VIZ
 lottery_result: |
-  Текущий розыгрыш лотереи завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, проверочный хеш блока <i>${hashSum}</i>, всего ${count} pluralize(count, 'участник', 'участника', 'участников'): ${users}. 
+  Текущий розыгрыш лотереи завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, проверочный хеш блока <i>${hashSum}</i>, всего ${count} ${pluralize(count, 'участник', 'участника', 'участников')}: ${users}. 
   Победитель: <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a>
