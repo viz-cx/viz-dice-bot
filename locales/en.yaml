@@ -21,7 +21,7 @@ back_button: Back
 🎰: Slot machine
 🎳: Bowling
 game_selected: Game was successfully changed
-wait_login: Please send me your <b>login</b> in <a href="https://reg.readdle.me/?set_lang=en">VIZ blockchain</a>
+wait_login: Please send me your <code>login</code> in <a href="https://reg.readdle.me/?set_lang=en">VIZ blockchain</a>
 wrong_login: Incorrect login. You can sign up at <a href="https://reg.readdle.me/?set_lang=en">reg.readdle.me</a>
 lets_play: Now let's play!
 wait_play: |
@@ -39,9 +39,13 @@ stats: |
 lottery: |
   ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery.
 
-  To participate in the lottery, you need to <a href="https://my.viz.plus/assets/award/">award</a> an account <a href="https://info.viz.plus/accounts/${account}">@${account}</a> with memo <b>${memo}</b>
+  To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code>
+  
   The game window is closing every ${winnerBlockDelimiter*60*60/3} blocks (~${winnerBlockDelimiter} hours), then the winner is selecting among all participants using the hash of final block
+  
   Maximum winning amount = your award * number of participants, but not more than the sum of all awards
+
+  You can award through <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/10">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=10&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS app</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android app</a> or otherwise
 new_award: |
   ${firstTime ? 'Received new bid' : 'Received another bid. Total bet in the current round is'} ${sum} VIZ
 lottery_result: |
