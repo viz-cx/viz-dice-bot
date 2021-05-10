@@ -96,43 +96,50 @@ async function processNextBlock() {
                         const data = result[i].op[1]
                         if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
                             const userID = parseInt(data.memo)
-                            if (isNaN(userID)) { continue }
+                            if (isNaN(userID)) {
+                                console.log('Empty memo from', data.initiator)
+                                continue
+                            }
                             findUser(userID).then(
                                 user => {
-                                // anti-spam
-                                var withMessage = lastNotificationBlock < currentBlock
-                                if (data.initiator !== user.login) { withMessage = false }
-                                const shares = parseFloat(data.shares)
-                                addShares(user.id, shares)
-                                // console.log(participants)
-                                var award = new AwardModel()
-                                award.block = currentBlock
-                                award.initiator = data.initiator
-                                award.shares = parseFloat(data.shares)
-                                Promise.all([
-                                    award.save(),
-                                    getLatestLottery()
-                                ]).then(
-                                    result => {
-                                        console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
-                                        if (withMessage) {
-                                            getAwardsSum(user.login, result[1].block)
-                                                .then(
-                                                    sum => {
-                                                        const firstTime = sum[0]["sum"] == award.shares
-                                                        const payload = {
-                                                            sum: sum[0]["sum"].toFixed(3),
-                                                            firstTime: firstTime
-                                                        }
-                                                        bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload))
-                                                    },
-                                                    rejected => console.log(rejected)
-                                                )
-                                        }
-                                    },
-                                    rejected => console.log(rejected)
-                                )
-                            })
+                                    if (!user.login) {
+                                        console.log('Empty login at', user.id)
+                                        return
+                                    }
+                                    // anti-spam
+                                    var withMessage = lastNotificationBlock < currentBlock
+                                    if (data.initiator !== user.login) { withMessage = false }
+                                    const shares = parseFloat(data.shares)
+                                    addShares(user.id, shares)
+                                    // console.log(participants)
+                                    var award = new AwardModel()
+                                    award.block = currentBlock
+                                    award.initiator = data.initiator
+                                    award.shares = parseFloat(data.shares)
+                                    Promise.all([
+                                        award.save(),
+                                        getLatestLottery()
+                                    ]).then(
+                                        result => {
+                                            console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
+                                            if (withMessage) {
+                                                getAwardsSum(user.login, result[1].block)
+                                                    .then(
+                                                        sum => {
+                                                            const firstTime = sum[0]["sum"] == award.shares
+                                                            const payload = {
+                                                                sum: sum[0]["sum"].toFixed(3),
+                                                                firstTime: firstTime
+                                                            }
+                                                            bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload))
+                                                        },
+                                                        rejected => console.log(rejected)
+                                                    )
+                                            }
+                                        },
+                                        rejected => console.log(rejected)
+                                    )
+                                })
                         }
                     }
                 }
