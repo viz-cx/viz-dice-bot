@@ -70,8 +70,8 @@ async function processNextBlock() {
                                 hashSum: hashSumResult,
                                 count: users.length,
                                 users: users.map(u => u.login).join(', '),
-                                prize: prize,
-                                fund: fund
+                                prize: prize.toFixed(3),
+                                fund: fund.toFixed(3)
                             }
                             users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
                             // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
