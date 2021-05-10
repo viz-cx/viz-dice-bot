@@ -53,4 +53,4 @@ new_award: |
 lottery_result: |
   Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
   
-  Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ of total amount ${fund} VIZ
+  Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ ${prize == fund ? '' : 'of total amount ' + fund + ' VIZ'}

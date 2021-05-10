@@ -53,4 +53,4 @@ new_award: |
 lottery_result: |
   Текущий розыгрыш лотереи завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, хеш-сумма <i>${hashSum}</i>, всего ${pluralize(count, 'участник', 'участника', 'участников')}: ${users}
   
-  Победитель <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> получает ${prize} VIZ из общего фонда раунда ${fund} VIZ
+  Победитель <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> получает ${prize} VIZ ${prize == fund ? '' : 'из общего фонда раунда ' + fund + ' VIZ'}
