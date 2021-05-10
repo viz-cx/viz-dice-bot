@@ -41,40 +41,39 @@ async function processNextBlock() {
         var lottery = new LotteryModel()
         lottery.block = currentBlock
         if (participants.size > 0) {
-            await viz.getBlockHeader(currentBlock).then(
+            const users = (await Promise.all(Array.from(participants.keys())
+                .map(telegramID => findUser(telegramID))))
+                .filter(u => u.login !== '')
+            await Promise.all([
+                users,
+                viz.getBlockHeader(currentBlock)
+            ]).then(
                 async result => {
-                    const hashSumResult = hashSum(result['previous'] + result['witness'])
-                    const winnerCode = hashSumResult % participants.size
-                    const winnerTelegramID = Array.from(participants.keys())[winnerCode]
-                    await findUser(winnerTelegramID).then(
-                        async user => {
-                            const winner = user.login
-                            lottery.winner = winner
-                            var prize = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
-                            const maxParticipantPrize = participants.get(user.id) * participants.size
-                            if (prize > maxParticipantPrize) {
-                                prize = maxParticipantPrize
+                    const users = result[0]
+                    const blockHeader = result[1]
+                    const hashSumResult = hashSum(blockHeader['previous'] + blockHeader['witness'])
+                    const winnerCode = hashSumResult % users.length
+                    const winner = users[winnerCode]
+                    lottery.winner = winner.login
+                    var prize = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
+                    const maxWinnerPrize = participants.get(winner.id) * participants.size
+                    if (prize > maxWinnerPrize) {
+                        prize = maxWinnerPrize
+                    }
+                    await viz.pay(winner.login, prize, "🔮🎩✨").then(
+                        _ => {
+                            console.log("Successful payout to", winner.login, "prize", prize)
+                            const payload = {
+                                block: currentBlock,
+                                winner: winner.login,
+                                hashSum: hashSumResult,
+                                count: users.length,
+                                users: users.map(u => u.login).join(', ')
                             }
-                            await viz.pay(winner, prize, "🔮🎩✨").then(
-                                _ => {
-                                    console.log("Successful payout to", winner, "prize", prize)
-                                    const payload = {
-                                        block: currentBlock,
-                                        winner: winner,
-                                        hashSum: hashSumResult
-                                    }
-                                    Promise.all(Array.from(participants.keys()).map(telegramID => findUser(telegramID)))
-                                        .then(users => {
-                                            payload["count"] = users.length
-                                            payload["users"] = users.map(u => u.login).join(', ')
-                                            users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
-                                        })
-                                    // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
-                                },
-                                failure => sendToAdmin('Failed to pay winner ' + winner + ' with prize ' + prize + ' with error ' + failure)
-                            )
+                            users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
+                            // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                         },
-                        rejected => sendToAdmin("Failed to find winner " + rejected)
+                        failure => sendToAdmin('Failed to pay winner ' + winner.login + ' with prize ' + prize + ' with error ' + failure)
                     )
                 },
                 rejected => sendToAdmin('Get block header failed: ' + rejected)
@@ -97,13 +96,13 @@ async function processNextBlock() {
                         if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
                             const userID = parseInt(data.memo)
                             if (isNaN(userID)) {
-                                console.log('Empty memo from', data.initiator)
+                                console.log('Bet failed: empty memo from', data.initiator, 'with', data.shares)
                                 continue
                             }
                             findUser(userID).then(
                                 user => {
                                     if (!user.login) {
-                                        console.log('Empty login at', user.id)
+                                        console.log('Bet failed: empty login for id', user.id, 'with', data.shares)
                                         return
                                     }
                                     // anti-spam
