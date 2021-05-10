@@ -5,7 +5,7 @@ import { mainKeyboard } from './start'
 const games: Array<DiceEmoji> = ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳']
 
 export function setupGame(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('🧩 .*'), ctx => {
+  bot.hears(new RegExp('🎮 .*'), ctx => {
     ctx.reply(ctx.i18n.t('game_button'), {
       reply_markup: gameKeyboard(ctx),
     })

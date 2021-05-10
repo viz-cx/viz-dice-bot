@@ -12,7 +12,7 @@ language_selected: Now I will speaks in English. Ask me who I am and what I can 
 play_button: Play
 game_button: Change game
 language_button: Language
-help_button: Help
+lottery_button: Lottery
 back_button: Back
 🎲: Dice
 🎯: Darts
@@ -41,7 +41,7 @@ lottery: |
   ${participated ? 'Total in the prize pool ' + allAwardsSum + ' VIZ from ' + participants + ' participants' : ''}
   ${participated ? 'If you win you will get ' + prize + ' VIZ' : ''}
 
-  To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code>
+  To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
   
   The game window is closing every ${winnerBlockDelimiter*60*60/3} blocks (~${winnerBlockDelimiter} hours), then the winner is selecting among all participants using the hash of final block
   

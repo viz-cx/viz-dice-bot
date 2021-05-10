@@ -46,8 +46,8 @@ export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
 
 export function mainKeyboard(ctx: Context) {
     const play = m.callbackButton('♟ ' + ctx.i18n.t('play_button'), 'play')
-    const game = m.callbackButton('🧩 ' + ctx.i18n.t('game_button'), 'game')
+    const game = m.callbackButton('🎮 ' + ctx.i18n.t('game_button'), 'game')
     const lang = m.callbackButton('🌐 ' + ctx.i18n.t('language_button'), 'language')
-    const help = m.callbackButton('🙋 ' + ctx.i18n.t('help_button'), 'help')
-    return m.keyboard([[play, game], [lang, help]]).resize()
+    const lottery = m.callbackButton('🍀 ' + ctx.i18n.t('lottery_button'), 'lottery')
+    return m.keyboard([[play, game], [lang, lottery]]).resize()
 }
