@@ -55,7 +55,8 @@ async function processNextBlock() {
                     const winnerCode = hashSumResult % users.length
                     const winner = users[winnerCode]
                     lottery.winner = winner.login
-                    var prize = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
+                    const fund = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
+                    var prize = fund
                     const maxWinnerPrize = participants.get(winner.id) * participants.size
                     if (prize > maxWinnerPrize) {
                         prize = maxWinnerPrize
@@ -68,7 +69,9 @@ async function processNextBlock() {
                                 winner: winner.login,
                                 hashSum: hashSumResult,
                                 count: users.length,
-                                users: users.map(u => u.login).join(', ')
+                                users: users.map(u => u.login).join(', '),
+                                prize: prize,
+                                fund: fund
                             }
                             users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
                             // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants

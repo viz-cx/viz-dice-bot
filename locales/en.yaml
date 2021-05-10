@@ -52,4 +52,5 @@ new_award: |
   ${firstTime ? 'Received new bid' : 'Received another bid. Total bet in the current round is'} ${sum} VIZ
 lottery_result: |
   Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
-  Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a>
+  
+  Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ of total amount ${fund} VIZ
