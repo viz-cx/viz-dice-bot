@@ -10,7 +10,5 @@ export async function attachUser(ctx: Context, next) {
     ctx.dbuser = dbuser
     ctx.viz = viz
     next()
-  } else {
-    console.log("Context from empty:", ctx)
   }
 }

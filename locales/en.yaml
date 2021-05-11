@@ -29,7 +29,7 @@ wait_play: |
 successful_payout: |
   Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.plus/accounts/${user}/">@${user}</a> successfully awarded!
 
-  ${participated ? '' : 'You can <b>triple your reward</b> by taking part in the /lottery'}
+  ${participated ? '' : 'You can <b>triple your reward</b> by taking part in the /lottery (and get a chance to win VIZ in lottery itself)'}
 out_of_energy: Account does not have enough energy to vote
 too_fast: Stay! not so fast!
 something_wrong: Something wrong.
@@ -37,9 +37,7 @@ stats: |
   All users: ${all} 
   Last month: ${month}
 lottery: |
-  ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery ${participated ? 'with bet ' + userAwardsSum + ' VIZ' : ''}
-  ${participated ? 'Total in the prize pool ' + allAwardsSum + ' VIZ from ' + participants + ' participants' : ''}
-  ${participated ? 'If you win you will get ' + prize + ' VIZ' : ''}
+  ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery ${participated ? 'with bet ' + userAwardsSum + ' VIZ \n💰 Total in the prize pool ' + allAwardsSum + ' VIZ from ' + participants + ' participants \n🎁 If you win you will get ' + prize + ' VIZ' : ''}
 
   To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
   
