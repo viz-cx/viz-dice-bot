@@ -11,18 +11,22 @@ export async function checkForward(ctx: Context, next: () => any) {
         && ctx.message.forward_from_chat
         && ctx.message.forward_from_chat.id === russianChannelID) {
         const channelMessageID = ctx.message.forward_from_message_id
-        getUsersByLang(lang).then(users =>
-            users
-                .map(u => u.id)
-                .forEach(userID => {
-                    bot.telegram.forwardMessage(
-                        userID,
-                        russianChannelID,
-                        channelMessageID)
-                        .then(_ => console.log("Success sended post to", userID))
-                        .catch(err => console.log("Error send post to", userID))
-                })
-        )
+        getUsersByLang(lang)
+            .then(async users => {
+                const messages = users
+                    .map(u => u.id)
+                    .map(userID => {
+                        return bot.telegram.forwardMessage(
+                            userID,
+                            russianChannelID,
+                            channelMessageID)
+                    })
+                Promise.allSettled(messages)
+                    .then(result => {
+                        const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
+                        bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + sendedMessages + ' people')
+                    })
+            })
     } else {
         next()
     }
