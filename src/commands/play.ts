@@ -41,8 +41,8 @@ export function setupPlay(bot: Telegraf<Context>) {
     await Promise.all([
       ctx.replyWithDice({ emoji: ctx.dbuser.game }),
       getLatestLottery().then(lottery => isParticipated(ctx.dbuser.login, lottery.block))
-    ])
-      .then(result => {
+    ]).then(
+      result => {
         const msg = result[0]
         participated = result[1]
         value = msg.dice.value

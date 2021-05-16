@@ -7,6 +7,9 @@ export class Award {
     @prop({ required: true })
     initiator: string
 
+    @prop({ required: true, default: 0 })
+    userID: number
+
     @prop({ required: true })
     shares: number
 }
@@ -17,7 +20,7 @@ export const AwardModel = getModelForClass(Award, {
 
 export async function getAwardsSum(initiator: string, afterBlock: number): Promise<number> {
     const result = await AwardModel.aggregate([
-        { $match: { initiator: initiator, block: { $gte: afterBlock } } },
+        { $match: { initiator: initiator, block: { $gt: afterBlock } } },
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
     if (result.length === 0) {
@@ -26,27 +29,26 @@ export async function getAwardsSum(initiator: string, afterBlock: number): Promi
     return parseFloat(result[0]["sum"])
 }
 
-export async function getAllAwardsSum(afterBlock: number): Promise<number> {
+export async function getAllAwardsSum(): Promise<number> {
     const result = await AwardModel.aggregate([
-        { $match: { block: { $gte: afterBlock } } },
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
     if (result.length === 0) {
         return 0
     }
     return parseFloat(result[0]["sum"])
+}
+
+export async function getAllAwards(afterBlock: number): Promise<DocumentType<Award>[]> {
+    return await AwardModel.find({ block: { $gt: afterBlock } })
 }
 
 export async function participantsCount(afterBlock: number): Promise<number> {
-    return (await AwardModel.distinct('initiator', { block: { $gte: afterBlock } }).exec()).length
-}
-
-export async function removeAllAwards(): Promise<boolean> {
-    return (await AwardModel.deleteMany({})).ok == 1
+    return (await AwardModel.distinct('initiator', { block: { $gt: afterBlock } }).exec()).length
 }
 
 export async function isParticipated(login: string, fromBlock: number): Promise<Boolean> {
-    return await AwardModel.countDocuments({ initiator: login, block: { $gte: fromBlock } }).exec() > 0
+    return await AwardModel.countDocuments({ initiator: login, block: { $gt: fromBlock } }).exec() > 0
 }
 
 export async function getLatestAward(): Promise<DocumentType<Award>> {

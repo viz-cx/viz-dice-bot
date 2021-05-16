@@ -58,11 +58,11 @@ export async function getOrCreateUser(id: number) {
 }
 
 export async function getActiveUsers(afterDate: Date) {
-  return await UserModel.find({ updatedAt: { $gte: afterDate } })
+  return await UserModel.find({ updatedAt: { $gt: afterDate } })
 }
 
 export async function getUsersCount(afterDate: Date = new Date(0)) {
-  return await UserModel.countDocuments({ updatedAt: { $gte: afterDate } }).exec()
+  return await UserModel.countDocuments({ updatedAt: { $gt: afterDate } }).exec()
 }
 
 export async function getUsersByLang(lang: string) {

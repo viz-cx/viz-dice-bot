@@ -6,6 +6,9 @@ export class Lottery {
 
     @prop({ required: false })
     winner: string
+
+    @prop({ required: true, default: 0})
+    amount: number
 }
 
 export const LotteryModel = getModelForClass(Lottery, {
@@ -21,4 +24,15 @@ export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
         return l
     }
     return await LotteryModel.findOne().sort({ block: -1 })
+}
+
+export async function getAllPayoutsSum(): Promise<number> {
+    const result = await LotteryModel.aggregate([
+        { $match: { amount: { $gt: 0 } } },
+        { $group: { _id: null, sum: { $sum: "$amount" } } }
+    ]).exec()
+    if (result.length === 0) {
+        return 0
+    }
+    return parseFloat(result[0]["sum"])
 }

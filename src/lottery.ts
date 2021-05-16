@@ -1,29 +1,34 @@
-import { findUser, getLatestLottery, LotteryModel } from "./models"
+import { findUser, getAllPayoutsSum, getLatestLottery, Lottery, LotteryModel } from "./models"
 import { VIZ } from './helpers/viz'
-import { AwardModel, removeAllAwards, getAwardsSum, getLatestAward } from "./models/Award"
+import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, participantsCount, getAllAwards } from "./models/Award"
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
+import { DocumentType } from "@typegoose/typegoose"
 
 const viz = new VIZ()
 var currentBlock: number = 0
-var lastNotificationBlock: number = 0
-var participants = new Map<number, number>() // telegramID => shares
 
 export function startLottery() {
-    Promise.all([
-        viz.getDynamicGlobalProperties(),
-        getLatestLottery()
-    ]).then(
+    var promises = Promise.all([viz.getDynamicGlobalProperties()])
+    if (currentBlock === 0) {
+        promises = Promise.all([
+            viz.getDynamicGlobalProperties(),
+            getLatestAward(),
+            getLatestLottery()
+        ])
+    }
+    promises.then(
         async resolve => {
             const lastIrreversibleBlock = parseInt(resolve[0]['last_irreversible_block_num'])
             if (currentBlock === 0) {
-                if (process.env.PRODUCTION === "false") {
-                    currentBlock = lastIrreversibleBlock + 1
+                const latestAward = resolve[1] as DocumentType<Award>
+                const latestLottery = resolve[2] as DocumentType<Lottery>
+                if (latestAward.block > latestLottery.block) {
+                    currentBlock = latestAward.block + 1
                 } else {
-                    lastNotificationBlock = (await getLatestAward()).block
-                    await removeAllAwards()
-                    currentBlock = resolve[1].block + 1 // lastIrreversibleBlock
+                    currentBlock = latestLottery.block + 1
                 }
+                // currentBlock = lastIrreversibleBlock
                 console.log("Lottery continued from block", currentBlock)
             }
             while (lastIrreversibleBlock > currentBlock) {
@@ -38,29 +43,35 @@ export function startLottery() {
 }
 
 async function findWinner() {
-    var lottery = new LotteryModel()
-    lottery.block = currentBlock
-    if (participants.size > 0) {
-        const users = (await Promise.all(Array.from(participants.keys())
-            .map(telegramID => findUser(telegramID))))
-            .filter(u => u.login !== '')
-        await Promise.all([
-            users,
-            viz.getBlockHeader(currentBlock)
-        ]).then(
+    var currentLottery = new LotteryModel()
+    currentLottery.block = currentBlock
+    const latestLotteryBlock = (await getLatestLottery()).block
+    const participantCount = await participantsCount(latestLotteryBlock)
+        .then(participants => participants)
+    if (participantCount > 0) {
+        const currentAwards = await getAllAwards(latestLotteryBlock)
+        const participants = await Promise.all(
+            [...new Set(currentAwards.map(award => award.userID))]
+                .map(async userID => findUser(userID).then(user => user))
+        )
+        await viz.getBlockHeader(currentBlock).then(
             async result => {
-                const users = result[0]
-                const blockHeader = result[1]
-                const hashSumResult = hashSum(blockHeader['previous'] + blockHeader['witness'])
-                const winnerCode = hashSumResult % users.length
-                const winner = users[winnerCode]
-                lottery.winner = winner.login
-                const fund = Array.from(participants.values()).reduce((prev, current) => prev + current, 0)
+                const hashSumResult = hashSum(result['previous'] + result['witness'])
+                const winnerCode = hashSumResult % participants.length
+                const winner = participants[winnerCode]
+                currentLottery.winner = winner.login
+                const allAwardsShares = await getAllAwardsSum()
+                const allPayoutsSum = await getAllPayoutsSum()
+                const fund = allAwardsShares - allPayoutsSum
                 var prize = fund
-                const maxWinnerPrize = participants.get(winner.id) * participants.size
+                const winnerAwardSum = currentAwards
+                    .filter(award => award.userID == winner.id)
+                    .reduce((prev, award) => prev + award.shares, 0)
+                const maxWinnerPrize = winnerAwardSum * participants.length
                 if (prize > maxWinnerPrize) {
                     prize = maxWinnerPrize
                 }
+                currentLottery.amount = prize
                 await viz.pay(winner.login, prize, "🔮🎩✨").then(
                     _ => {
                         console.log("Successful payout to", winner.login, "prize", prize)
@@ -68,12 +79,18 @@ async function findWinner() {
                             block: currentBlock,
                             winner: winner.login,
                             hashSum: hashSumResult,
-                            count: users.length,
-                            users: users.map(u => u.login).join(', '),
+                            count: participants.length,
+                            users: participants.map(u => u.login).join(', '),
                             prize: prize.toFixed(3),
                             fund: fund.toFixed(3)
                         }
-                        users.forEach(u => bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true }))
+                        participants.forEach(u => {
+                            try {
+                                bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true })
+                            } catch (e) {
+                                console.log(e)
+                            }
+                        })
                         // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                     },
                     failure => sendToAdmin('Failed to pay winner ' + winner.login + ' with prize ' + prize + ' with error ' + failure)
@@ -84,10 +101,7 @@ async function findWinner() {
     } else {
         console.log('Lottery was closed in block', currentBlock, 'without winner')
     }
-    await lottery.save().then(
-        _ => { },
-        rejected => sendToAdmin('Lottery not saved because ' + rejected)
-    ).finally(() => clearParticipants())
+    await currentLottery.save().catch(rejected => sendToAdmin('Lottery not saved because ' + rejected))
 }
 
 async function processAward(data: BlockchainAward) {
@@ -101,7 +115,7 @@ async function processAward(data: BlockchainAward) {
             sendToAdmin('Bet failed: memo from ' + data.initiator + ' with memo ' + data.memo + ' and ' + data.shares)
             return
         }
-        findUser(userID).then(
+        await findUser(userID).then(
             user => {
                 if (!user || !user.id) {
                     sendToAdmin('User with user id ' + userID + ' not found')
@@ -112,14 +126,12 @@ async function processAward(data: BlockchainAward) {
                     return
                 }
                 // anti-spam
-                var withMessage = lastNotificationBlock < currentBlock
-                if (data.initiator !== user.login) { withMessage = false }
-                const shares = parseFloat(data.shares)
-                addShares(user.id, shares)
+                var withMessage: boolean = data.initiator == user.login
                 // console.log(participants)
                 var award = new AwardModel()
                 award.block = currentBlock
                 award.initiator = data.initiator
+                award.userID = user.id
                 award.shares = parseFloat(data.shares)
                 Promise.all([
                     award.save(),
@@ -157,15 +169,6 @@ class BlockchainAward {
 }
 
 async function processNextBlock() {
-    var winnerBlockDelimiter: number
-    if (process.env.PRODUCTION === "false") {
-        winnerBlockDelimiter = 100
-    } else {
-        winnerBlockDelimiter = parseInt(process.env.LOTTERY) * 60 * 60 / 3
-    }
-    if (currentBlock % winnerBlockDelimiter === 0) {
-        await findWinner()
-    }
     await viz.getOpsInBlock(currentBlock)
         .then(
             result => {
@@ -182,6 +185,15 @@ async function processNextBlock() {
                 viz.changeNode()
             }
         )
+    var winnerBlockDelimiter: number
+    if (process.env.PRODUCTION === "false") {
+        winnerBlockDelimiter = 100
+    } else {
+        winnerBlockDelimiter = parseInt(process.env.LOTTERY) * 60 * 60 / 3
+    }
+    if (currentBlock % winnerBlockDelimiter === 0) {
+        await findWinner()
+    }
 }
 
 function hashSum(s: string): number {
@@ -189,18 +201,6 @@ function hashSum(s: string): number {
         a = ((a << 5) - a) + b.charCodeAt(0)
         return Math.abs(a & a)
     }, 0)
-}
-
-function addShares(telegramID: number, shares: number) {
-    if (participants.has(telegramID)) {
-        participants.set(telegramID, participants.get(telegramID) + shares)
-    } else {
-        participants.set(telegramID, shares)
-    }
-}
-
-function clearParticipants() {
-    participants = new Map()
 }
 
 function sendToAdmin(message: string) {
