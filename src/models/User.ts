@@ -41,7 +41,7 @@ const UserModel = getModelForClass(User, {
 })
 
 export async function findUser(id: number) {
-  return await UserModel.findOne({ id })
+  return await UserModel.findOne({ id }).exec()
 }
 
 export async function getOrCreateUser(id: number) {

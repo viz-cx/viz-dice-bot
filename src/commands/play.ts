@@ -33,6 +33,9 @@ export function setupPlay(bot: Telegraf<Context>) {
       }))
       return
     }
+    var user = ctx.dbuser
+    user.payoutDate = now
+    user.save()
 
     var value: number, multiplier: number, participated: Boolean
     await Promise.all([
@@ -42,7 +45,6 @@ export function setupPlay(bot: Telegraf<Context>) {
       .then(result => {
         const msg = result[0]
         participated = result[1]
-        var user = ctx.dbuser
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
         switch (msg.dice.emoji) {
@@ -102,7 +104,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       })
       .then(account => {
         const baseEnergy = account['energy'] / 100
-        const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
+        const finalEnergy = multiplier > 0.05 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
         console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)

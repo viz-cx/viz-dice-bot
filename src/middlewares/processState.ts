@@ -10,8 +10,10 @@ export async function processState(ctx: Context, next: any) {
           var user = ctx.dbuser
           user.login = login
           user.state = null
-          await user.save()
-          await ctx.replyWithHTML(ctx.i18n.t('lets_play'))
+          await user.save().then(
+            _ => ctx.replyWithHTML(ctx.i18n.t('lets_play')),
+            rejected => console.log(rejected)
+          )
           next()
         } else {
           await ctx.replyWithHTML(ctx.i18n.t('wrong_login'), {

@@ -24,7 +24,7 @@ export async function checkForward(ctx: Context, next: () => any) {
                 Promise.allSettled(messages)
                     .then(result => {
                         const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
-                        bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + sendedMessages + ' people')
+                        bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + sendedMessages + ' users')
                     })
             })
     } else {

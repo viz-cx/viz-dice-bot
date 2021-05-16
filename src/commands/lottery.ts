@@ -28,7 +28,7 @@ function sendLottery(bot: Telegraf<Context>, ctx: Context) {
             const participated = result[0]
             const userAwardsSum = result[1]
             const allAwardsSum = result[2]
-            const participants = result[3]
+            const participantCount = result[3]
             var params = {
                 account: process.env.ACCOUNT,
                 participated: participated,
@@ -36,11 +36,12 @@ function sendLottery(bot: Telegraf<Context>, ctx: Context) {
                 winnerBlockDelimiter: process.env.LOTTERY
             }
             if (participated) {
-                params["userAwardsSum"] = userAwardsSum[0]["sum"].toFixed(3),
-                    params["allAwardsSum"] = allAwardsSum[0]["sum"].toFixed(3),
-                    params["participants"] = participants
-                const maxParticipantPrize = params["userAwardsSum"] * params["participants"]
-                params["prize"] = (maxParticipantPrize > params["allAwardsSum"]) ? params["allAwardsSum"] : maxParticipantPrize
+                const maxParticipantPrize = userAwardsSum * participantCount
+                const prize: number = (maxParticipantPrize > allAwardsSum) ? allAwardsSum : maxParticipantPrize
+                params["prize"] = prize.toFixed(3)
+                params["userAwardsSum"] = userAwardsSum.toFixed(3)
+                params["allAwardsSum"] = allAwardsSum.toFixed(3)
+                params["participants"] = participantCount
             }
             ctx.replyWithHTML(ctx.i18n.t('lottery', params), { disable_web_page_preview: true })
         },
