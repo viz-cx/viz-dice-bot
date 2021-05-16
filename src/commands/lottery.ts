@@ -42,7 +42,7 @@ function sendLottery(bot: Telegraf<Context>, ctx: Context) {
                 participated: participated,
                 memo: ctx.dbuser.id,
                 winnerBlockDelimiter: process.env.LOTTERY,
-                botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + 'donation', 'utf8').toString('base64'),
+                botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + ctx.dbuser.id, 'utf8').toString('base64'),
                 percent: Math.ceil(energy / 100)
             }
             if (participated) {
