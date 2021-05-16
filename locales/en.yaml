@@ -37,7 +37,7 @@ stats: |
   All users: ${all} 
   Last month: ${month}
 lottery: |
-  ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery ${participated ? 'with bet ' + userAwardsSum + ' VIZ \n💰 Total in the prize pool ' + allAwardsSum + ' VIZ from ' + pluralize(participants, 'participant', 'participants') + ' participants \n🎁 If you win you will get ' + prize + ' VIZ' : ''}
+  ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery ${participated ? 'with bet ' + userAwardsSum + ' VIZ \n💰 Total in the prize pool ' + allAwardsSum + ' VIZ from ' + pluralize(participants, 'participant', 'participants') + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
 
   To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
   
