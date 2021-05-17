@@ -94,14 +94,14 @@ async function findWinner() {
                         // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
                     },
                     failure => sendToAdmin('Failed to pay winner ' + winner.login + ' with prize ' + prize + ' with error ' + failure)
-                )
+                ).catch(error => { sendToAdmin(error) })
             },
             rejected => sendToAdmin('Get block header failed: ' + rejected)
-        )
+        ).catch(error => sendToAdmin(error))
     } else {
         console.log('Lottery was closed in block', currentBlock, 'without winner')
     }
-    await currentLottery.save().catch(rejected => sendToAdmin('Lottery not saved because ' + rejected))
+    await currentLottery.save().catch(error => sendToAdmin('Lottery not saved because ' + error))
 }
 
 async function processAward(data: BlockchainAward) {
