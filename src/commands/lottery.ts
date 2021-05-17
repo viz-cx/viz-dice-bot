@@ -13,6 +13,14 @@ export function setupLottery(bot: Telegraf<Context>) {
 }
 
 async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
+    if (!ctx.dbuser.login) {
+        ctx.dbuser.state = "waitLogin"
+        ctx.dbuser.save()
+        ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
+            disable_web_page_preview: true
+        })
+        return
+    }
     const lastIrreversibleBlock = (await ctx.viz.getDynamicGlobalProperties().catch(_ => ctx.viz.changeNode()))['last_irreversible_block_num']
     const latestLottery = await getLatestLottery()
     const winnerBlockDelimiter = parseInt(process.env.LOTTERY)
