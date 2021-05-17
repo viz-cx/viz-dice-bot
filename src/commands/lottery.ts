@@ -13,7 +13,7 @@ export function setupLottery(bot: Telegraf<Context>) {
 }
 
 async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
-    const lastIrreversibleBlock = (await ctx.viz.getDynamicGlobalProperties())['last_irreversible_block_num']
+    const lastIrreversibleBlock = (await ctx.viz.getDynamicGlobalProperties().catch(_ => ctx.viz.changeNode()))['last_irreversible_block_num']
     const latestLottery = await getLatestLottery()
     const winnerBlockDelimiter = parseInt(process.env.LOTTERY)
     const blocksLeft = latestLottery.block + (winnerBlockDelimiter * 60 * 60 / 3) - lastIrreversibleBlock
@@ -21,7 +21,7 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
     const userAwardsSum = await getAwardsSum(ctx.dbuser.login, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
     const participantCount = await participantsCount(latestLottery.block)
-    const vizAccount = await findUser(ctx.dbuser.id).then(user => ctx.viz.getAccount(user.login))
+    const vizAccount = await findUser(ctx.dbuser.id).then(user => ctx.viz.getAccount(user.login).catch(_ => ctx.viz.changeNode()))
     var energy = 10
     if (vizAccount) {
         energy = vizAccount['energy'] / 5
