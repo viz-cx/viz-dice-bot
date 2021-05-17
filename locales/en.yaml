@@ -37,7 +37,10 @@ stats: |
   All users: ${all} 
   Last month: ${month}
 lottery: |
-  ${participated ? '✅ You already': '⛔️ You are not yet'} participating in the lottery ${participated ? 'with bet ' + userAwardsSum + ' VIZ \n💰 Total in the prize pool ' + allAwardsSum + ' VIZ and ' + pluralize(participants, 'participant', 'participants') + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
+  ${participated ? '✅ You alredy participating': '⛔️ You are not yet participating'} ${participated ? 'with bet ' + userAwardsSum + ' VIZ' + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
+  💰 Total prize pool ${allAwardsSum} VIZ 
+  👀 Total participate ${pluralize(participants, 'person', 'people')}
+  ⌛️ ${blocksLeft} blocks left until the end of the round
 
   To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
   
@@ -49,6 +52,6 @@ lottery: |
 new_award: |
   ${firstTime ? 'Received new bid' : 'Received another bid. Total bet in the current round is'} ${sum} VIZ
 lottery_result: |
-  Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
+  🤹 Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
   
-  Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ ${prize == fund ? '' : 'of total ' + fund + ' VIZ'}
+  🏆 Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ ${prize == fund ? '' : 'of total ' + fund + ' VIZ'}
