@@ -34,6 +34,11 @@ export function setupPlay(bot: Telegraf<Context>) {
       return
     }
     var user = ctx.dbuser
+    const hours = parseInt(process.env.HOURS)
+    const zeroingDate = new Date(
+      user.payoutDate.getTime()
+      + (hours * 60 * 60 * 1000)
+    )
     user.payoutDate = now
     user.save()
 
@@ -81,11 +86,6 @@ export function setupPlay(bot: Telegraf<Context>) {
         }
         user.value = value
 
-        const hours = parseInt(process.env.HOURS)
-        const zeroingDate = new Date(
-          user.payoutDate.getTime()
-          + (hours * 60 * 60 * 1000)
-        )
         if (now > zeroingDate) {
           user.payouts = 1
         } else {
@@ -104,7 +104,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       })
       .then(account => {
         const baseEnergy = account['energy'] / 100
-        const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
+        const finalEnergy = multiplier > 0.05 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
         console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
