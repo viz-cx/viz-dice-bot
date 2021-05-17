@@ -60,9 +60,9 @@ async function findWinner() {
                 const winnerCode = hashSumResult % participants.length
                 const winner = participants[winnerCode]
                 currentLottery.winner = winner.login
-                const allAwardsShares = await getAllAwardsSum()
+                const allAwardsSum = await getAllAwardsSum()
                 const allPayoutsSum = await getAllPayoutsSum()
-                const fund = allAwardsShares - allPayoutsSum
+                const fund = allAwardsSum - allPayoutsSum
                 var prize = fund
                 const winnerAwardSum = currentAwards
                     .filter(award => award.userID == winner.id)

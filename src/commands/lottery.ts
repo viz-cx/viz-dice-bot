@@ -17,6 +17,9 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
     const latestLottery = await getLatestLottery()
     const winnerBlockDelimiter = parseInt(process.env.LOTTERY)
     const blocksLeft = latestLottery.block + (winnerBlockDelimiter * 60 * 60 / 3) - lastIrreversibleBlock
+    const date = new Date(blocksLeft / 3 * 1000)
+    const hours = date.getHours()
+    const minutes = date.getMinutes()
     const participated = await isParticipated(ctx.dbuser.login, latestLottery.block)
     const userAwardsSum = await getAwardsSum(ctx.dbuser.login, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
@@ -34,6 +37,8 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
         botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + ctx.dbuser.id, 'utf8').toString('base64'),
         percent: Math.ceil(energy / 100),
         blocksLeft: blocksLeft,
+        hours: hours,
+        minutes: minutes,
         allAwardsSum: allAwardsSum.toFixed(3),
         participants: participantCount
     }
