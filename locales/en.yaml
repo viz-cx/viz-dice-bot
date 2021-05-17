@@ -40,7 +40,7 @@ lottery: |
   ${participated ? '✅ You alredy participating': '⛔️ You are not yet participating'} ${participated ? 'with bet ' + userAwardsSum + ' VIZ' + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
   💰 Total prize pool ${allAwardsSum} VIZ 
   👀 Total participate ${pluralize(participants, 'person', 'people')}
-  ⌛️ ${blocksLeft} blocks left (${hours} hours ${minutes} minutes)
+  ⌛️ ${blocksLeft} blocks left
 
   To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
   
