@@ -2,6 +2,7 @@ import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
 import { getAwardsSum, getAllAwardsSum, isParticipated, participantsCount } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
 import { findUser } from "../models/User"
+import { timeUnitsBetween } from "../commands/play"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
@@ -23,11 +24,15 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
     }
     const lastIrreversibleBlock = (await ctx.viz.getDynamicGlobalProperties().catch(_ => ctx.viz.changeNode()))['last_irreversible_block_num']
     const latestLottery = await getLatestLottery()
-    const winnerBlockDelimiter = parseInt(process.env.LOTTERY)
-    const blocksLeft = latestLottery.block + (winnerBlockDelimiter * 60 * 60 / 3) - lastIrreversibleBlock
-    const date = new Date(blocksLeft / 3 * 1000)
-    const hours = date.getHours()
-    const minutes = date.getMinutes()
+    const lotteryHours = parseInt(process.env.LOTTERY)
+    const roundTime = lotteryHours * 60 * 60
+    const timePassed = (lastIrreversibleBlock - latestLottery.block) * 3
+    const timeLeft = (roundTime - timePassed) * 1000
+    const finalTime = new Date(new Date().getTime() + timeLeft)
+    const between = timeUnitsBetween(new Date(), finalTime)
+    const hours = between['hours']
+    const minutes = between['minutes']
+    const seconds = between['seconds']
     const participated = await isParticipated(ctx.dbuser.login, latestLottery.block)
     const userAwardsSum = await getAwardsSum(ctx.dbuser.login, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
@@ -41,12 +46,12 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
         account: process.env.ACCOUNT,
         participated: participated,
         memo: ctx.dbuser.id,
-        winnerBlockDelimiter: winnerBlockDelimiter,
+        winnerBlockDelimiter: lotteryHours,
         botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + ctx.dbuser.id, 'utf8').toString('base64'),
         percent: Math.ceil(energy / 100),
-        blocksLeft: blocksLeft,
         hours: hours,
         minutes: minutes,
+        seconds: seconds,
         allAwardsSum: allAwardsSum.toFixed(3),
         participants: participantCount
     }

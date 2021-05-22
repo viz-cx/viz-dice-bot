@@ -48,6 +48,7 @@ async function findWinner() {
     const latestLotteryBlock = (await getLatestLottery()).block
     const participantCount = await participantsCount(latestLotteryBlock)
         .then(participants => participants)
+    await currentLottery.save().catch(error => sendToAdmin('Lottery not saved because ' + error))
     if (participantCount > 0) {
         const currentAwards = await getAllAwards(latestLotteryBlock)
         const participants = await Promise.all(
@@ -101,7 +102,6 @@ async function findWinner() {
     } else {
         console.log('Lottery was closed in block', currentBlock, 'without winner')
     }
-    await currentLottery.save().catch(error => sendToAdmin('Lottery not saved because ' + error))
 }
 
 async function processAward(data: BlockchainAward) {
