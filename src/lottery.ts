@@ -73,7 +73,7 @@ async function findWinner() {
                     prize = maxWinnerPrize
                 }
                 currentLottery.amount = prize
-                await viz.pay(winner.login, prize, "🔮🎩✨").then(
+                await viz.pay(winner.login, prize).then(
                     _ => {
                         console.log("Successful payout to", winner.login, "prize", prize)
                         const payload = {

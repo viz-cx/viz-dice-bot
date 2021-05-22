@@ -21,11 +21,11 @@ export class VIZ {
         VIZ.vizJS.config.set('websocket', node)
     }
 
-    public pay(to: string, amount: number, memo: string) {
+    public pay(to: string, amount: number) {
         const from = process.env.ACCOUNT
         const wif = process.env.WIF
         const stringAmount = amount.toFixed(3) + ' VIZ'
-        return this.transfer(wif, from, to, stringAmount, memo)
+        return this.transferToVesting(wif, from, to, stringAmount)
     }
 
     public makeAward(receiver: string, memo: string, energy: number, referrer: string = null, account: any) {
@@ -140,9 +140,9 @@ export class VIZ {
         })
     }
 
-    private transfer(wif, from, to, amount, memo: string): Promise<Object> {
+    private transferToVesting(wif, from, to, amount: string): Promise<Object> {
         return new Promise((resolve, reject) => {
-            VIZ.vizJS.broadcast.transfer(wif, from, to, amount, memo, function (err, result) {
+            VIZ.vizJS.broadcast.transferToVesting(wif, from, to, amount, function (err, result) {
                 if (err) {
                     reject(err)
                 } else {
