@@ -32,6 +32,7 @@ successful_payout: |
   ${participated ? '' : 'You can <b>triple your reward</b> by taking part in the /lottery (and get a chance to win VIZ in lottery itself)'}
 out_of_energy: Account does not have enough energy to vote
 too_fast: Stay! not so fast!
+try_later: Out of rewards for you temporarily... Please try again later
 something_wrong: Something wrong.
 stats: |
   All users: ${all} 

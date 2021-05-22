@@ -74,7 +74,7 @@ export function setupPlay(bot: Telegraf<Context>) {
                 multiplier = 5
                 break
               default: // other cases
-                multiplier = multiplier * 0.9
+                multiplier = multiplier * 0.7
                 break
             }
             break
@@ -106,7 +106,10 @@ export function setupPlay(bot: Telegraf<Context>) {
         const baseEnergy = account['energy'] / 100
         const finalEnergy = multiplier > 0.05 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
-        console.log(`Payout to ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
+        if (finalEnergy === 0) {
+          return Promise.reject('Zero final energy')
+        }
+        console.log(`Award ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
@@ -123,6 +126,10 @@ export function setupPlay(bot: Telegraf<Context>) {
         })
       })
       .catch(err => {
+        if (err.toString().search(/Zero final energy/) !== -1) {
+          ctx.replyWithHTML(ctx.i18n.t('try_later'))
+          return
+        }
         if (err.toString().search(/does not have enough energy to vote/) !== -1) {
           ctx.replyWithHTML(ctx.i18n.t('out_of_energy'))
           return
