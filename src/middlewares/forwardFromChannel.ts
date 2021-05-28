@@ -13,21 +13,30 @@ export async function checkForward(ctx: Context, next: () => any) {
         const channelMessageID = ctx.message.forward_from_message_id
         getUsersByLang(lang)
             .then(async users => {
-                const messages = users
-                    .map(u => u.id)
-                    .map(userID => {
-                        return bot.telegram.forwardMessage(
-                            userID,
-                            russianChannelID,
-                            channelMessageID)
-                    })
-                Promise.allSettled(messages)
-                    .then(result => {
-                        const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
-                        bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + sendedMessages + ' users')
-                    })
+                var successCounter = 0
+                while (users.length > 0) {
+                    const messages = users.splice(0, 29)
+                        .map(u => u.id)
+                        .map(userID => {
+                            return bot.telegram.forwardMessage(
+                                userID,
+                                russianChannelID,
+                                channelMessageID)
+                        })
+                    Promise.allSettled(messages)
+                        .then(result => {
+                            const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
+                            successCounter += sendedMessages
+                        })
+                    await sleep(1000)
+                }
+                bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + successCounter + ' users')
             })
     } else {
         next()
     }
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }
