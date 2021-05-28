@@ -13,6 +13,8 @@ export async function checkForward(ctx: Context, next: () => any) {
         const channelMessageID = ctx.message.forward_from_message_id
         getUsersByLang(lang)
             .then(async users => {
+                var users = users
+                console.log('Start sending to', users.length, 'users')
                 var successCounter = 0
                 while (users.length > 0) {
                     const messages = users.splice(0, 29)
@@ -26,9 +28,10 @@ export async function checkForward(ctx: Context, next: () => any) {
                     Promise.allSettled(messages)
                         .then(result => {
                             const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
+                            console.log('Successfully sended to', sendedMessages, 'users. Now waiting...')
                             successCounter += sendedMessages
                         })
-                    await sleep(1000)
+                    await sleep(3000)
                 }
                 bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + successCounter + ' users')
             })
