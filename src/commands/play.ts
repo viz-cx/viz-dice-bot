@@ -1,6 +1,7 @@
 import { getLatestLottery } from "../models/Lottery"
 import { isParticipated } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
+import { mainKeyboard } from "./start"
 
 export function setupPlay(bot: Telegraf<Context>) {
   bot.command('play', async ctx => {
@@ -122,27 +123,25 @@ export function setupPlay(bot: Telegraf<Context>) {
           account: process.env.ACCOUNT
         }), {
           disable_web_page_preview: true,
-          disable_notification: true
+          disable_notification: true,
+          reply_markup: mainKeyboard(ctx)
         })
       })
       .catch(err => {
-        if (err.toString().search(/Zero final energy/) !== -1) {
-          ctx.replyWithHTML(ctx.i18n.t('try_later'))
-          return
-        }
-        if (err.toString().search(/does not have enough energy to vote/) !== -1) {
-          ctx.replyWithHTML(ctx.i18n.t('out_of_energy'))
-          return
-        }
-        if (err.toString().search(/Duplicate transaction check failed/) !== -1) {
-          ctx.replyWithHTML(ctx.i18n.t('too_fast'))
-          return
-        }
+        let message = ctx.i18n.t('something_wrong')
         if (err.toString().search(/Bad Gateway/) !== -1) {
           ctx.viz.changeNode()
         }
-        console.log("Error: ", err.toString())
-        ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
+        if (err.toString().search(/Zero final energy/) !== -1) {
+          message = ctx.i18n.t('try_later')
+        }
+        if (err.toString().search(/does not have enough energy to vote/) !== -1) {
+          message = ctx.i18n.t('out_of_energy')
+        }
+        if (err.toString().search(/Duplicate transaction check failed/) !== -1) {
+          message = ctx.i18n.t('too_fast')
+        }
+        ctx.replyWithHTML(message, { reply_markup: mainKeyboard(ctx) })
       })
   })
 }

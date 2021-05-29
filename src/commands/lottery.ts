@@ -3,6 +3,7 @@ import { getAwardsSum, getAllAwardsSum, isParticipated, participantsCount } from
 import { Telegraf, Context } from "telegraf"
 import { findUser } from "../models/User"
 import { timeUnitsBetween } from "../commands/play"
+import { mainKeyboard } from "./start"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
@@ -61,5 +62,5 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
         params["prize"] = prize.toFixed(3)
         params["userAwardsSum"] = userAwardsSum.toFixed(3)
     }
-    ctx.replyWithHTML(ctx.i18n.t('lottery', params), { disable_web_page_preview: true })
+    ctx.replyWithHTML(ctx.i18n.t('lottery', params), { reply_markup: mainKeyboard(ctx), disable_web_page_preview: true })
 }
