@@ -1,9 +1,10 @@
 import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
 import { getAwardsSum, getAllAwardsSum, isParticipated, participantsCount } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
-import { findUser } from "../models/User"
+import { findUser, User } from "../models/User"
 import { timeUnitsBetween } from "../commands/play"
 import { mainKeyboard } from "./start"
+import { VIZ } from "../helpers/viz"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
@@ -23,7 +24,12 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
         })
         return
     }
-    const lastIrreversibleBlock = (await ctx.viz.getDynamicGlobalProperties().catch(_ => ctx.viz.changeNode()))['last_irreversible_block_num']
+    const params = await lotteryParams(ctx.viz, ctx.dbuser)
+    ctx.replyWithHTML(ctx.i18n.t('lottery', params), { reply_markup: mainKeyboard(ctx), disable_web_page_preview: true })
+}
+
+export async function lotteryParams(viz: VIZ, user: User) {
+    const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties().catch(_ => viz.changeNode()))['last_irreversible_block_num']
     const latestLottery = await getLatestLottery()
     const lotteryHours = parseInt(process.env.LOTTERY)
     const roundTime = lotteryHours * 60 * 60
@@ -34,11 +40,11 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
     const hours = between['hours']
     const minutes = between['minutes']
     const seconds = between['seconds']
-    const participated = await isParticipated(ctx.dbuser.login, latestLottery.block)
-    const userAwardsSum = await getAwardsSum(ctx.dbuser.login, latestLottery.block)
+    const participated = await isParticipated(user.login, latestLottery.block)
+    const userAwardsSum = await getAwardsSum(user.login, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
     const participantCount = await participantsCount(latestLottery.block)
-    const vizAccount = await findUser(ctx.dbuser.id).then(user => ctx.viz.getAccount(user.login).catch(_ => ctx.viz.changeNode()))
+    const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
     var energy = 10
     if (vizAccount) {
         energy = vizAccount['energy'] / 5
@@ -46,9 +52,9 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
     var params = {
         account: process.env.ACCOUNT,
         participated: participated,
-        memo: ctx.dbuser.id,
+        memo: user.id,
         winnerBlockDelimiter: lotteryHours,
-        botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + ctx.dbuser.id, 'utf8').toString('base64'),
+        botBase64: Buffer.from(process.env.ACCOUNT + '|' + Math.ceil(energy) + '|0|' + user.id, 'utf8').toString('base64'),
         percent: Math.ceil(energy / 100),
         hours: hours,
         minutes: minutes,
@@ -62,5 +68,5 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
         params["prize"] = prize.toFixed(3)
         params["userAwardsSum"] = userAwardsSum.toFixed(3)
     }
-    ctx.replyWithHTML(ctx.i18n.t('lottery', params), { reply_markup: mainKeyboard(ctx), disable_web_page_preview: true })
+    return params
 }
