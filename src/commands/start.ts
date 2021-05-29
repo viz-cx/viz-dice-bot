@@ -1,3 +1,4 @@
+import { i18n } from "../helpers/i18n"
 import { Telegraf, Context, Markup as m } from "telegraf"
 import { sendLanguageKeyboard } from "./language"
 
@@ -45,9 +46,13 @@ export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
 }
 
 export function mainKeyboard(ctx: Context) {
-    const play = m.callbackButton('♟ ' + ctx.i18n.t('play_button'), 'play')
-    const game = m.callbackButton('🎮 ' + ctx.i18n.t('game_button'), 'game')
-    const lang = m.callbackButton('🌐 ' + ctx.i18n.t('language_button'), 'language')
-    const lottery = m.callbackButton('🍀 ' + ctx.i18n.t('lottery_button'), 'lottery')
+    return mainKeyboardByLanguage(ctx.i18n.locale())
+}
+
+export function mainKeyboardByLanguage(language: string) {
+    const play = m.callbackButton('♟ ' + i18n.t(language, 'play_button'), 'play')
+    const game = m.callbackButton('🎮 ' + i18n.t(language, 'game_button'), 'game')
+    const lang = m.callbackButton('🌐 ' + i18n.t(language, 'language_button'), 'language')
+    const lottery = m.callbackButton('🍀 ' + i18n.t(language, 'lottery_button'), 'lottery')
     return m.keyboard([[play, game], [lang, lottery]]).resize()
 }

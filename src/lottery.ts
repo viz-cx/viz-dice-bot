@@ -4,6 +4,7 @@ import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, parti
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
 import { DocumentType } from "@typegoose/typegoose"
+import { mainKeyboardByLanguage } from "./commands/start"
 
 const viz = new VIZ()
 var currentBlock: number = 0
@@ -28,7 +29,9 @@ export function startLottery() {
                 } else {
                     currentBlock = latestLottery.block + 1
                 }
-                // currentBlock = lastIrreversibleBlock
+                if (process.env.PRODUCTION === "false") {
+                    currentBlock = lastIrreversibleBlock
+                }
                 console.log("Lottery continued from block", currentBlock)
             }
             while (lastIrreversibleBlock > currentBlock) {
@@ -148,7 +151,9 @@ async function processAward(data: BlockchainAward) {
                                             sum: sum.toFixed(3),
                                             firstTime: firstTime
                                         }
-                                        bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload))
+                                        bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
+                                            reply_markup: mainKeyboardByLanguage(user.language)
+                                        })
                                     },
                                     rejected => console.log(rejected)
                                 )
