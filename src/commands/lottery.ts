@@ -40,8 +40,8 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const hours = between['hours']
     const minutes = between['minutes']
     const seconds = between['seconds']
-    const participated = await isParticipated(user.login, latestLottery.block)
-    const userAwardsSum = await getAwardsSum(user.login, latestLottery.block)
+    const participated = await isParticipated(user.id, latestLottery.block)
+    const userAwardsSum = await getAwardsSum(user.id, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
     const participantCount = await participantsCount(latestLottery.block)
     const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))

@@ -144,7 +144,7 @@ async function processAward(data: BlockchainAward) {
                     result => {
                         console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
                         if (withMessage) {
-                            getAwardsSum(user.login, result[1].block)
+                            getAwardsSum(user.id, result[1].block)
                                 .then(
                                     sum => {
                                         const firstTime = sum == award.shares

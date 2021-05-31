@@ -18,9 +18,9 @@ export const AwardModel = getModelForClass(Award, {
     schemaOptions: { timestamps: false },
 })
 
-export async function getAwardsSum(initiator: string, afterBlock: number): Promise<number> {
+export async function getAwardsSum(userID: number, afterBlock: number): Promise<number> {
     const result = await AwardModel.aggregate([
-        { $match: { initiator: initiator, block: { $gt: afterBlock } } },
+        { $match: { userID: userID, block: { $gt: afterBlock } } },
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
     if (result.length === 0) {
@@ -47,8 +47,8 @@ export async function participantsCount(afterBlock: number): Promise<number> {
     return (await AwardModel.distinct('initiator', { block: { $gt: afterBlock } }).exec()).length
 }
 
-export async function isParticipated(login: string, fromBlock: number): Promise<Boolean> {
-    return await AwardModel.countDocuments({ initiator: login, block: { $gt: fromBlock } }).exec() > 0
+export async function isParticipated(userID: number, fromBlock: number): Promise<Boolean> {
+    return await AwardModel.countDocuments({ userID: userID, block: { $gt: fromBlock } }).exec() > 0
 }
 
 export async function getLatestAward(): Promise<DocumentType<Award>> {
