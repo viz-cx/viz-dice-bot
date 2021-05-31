@@ -5,11 +5,21 @@ import { bot } from '../helpers/bot'
 export async function checkForward(ctx: Context, next: () => any) {
     const myUserID = 38968897
     const russianChannelID = -1001277359853
-    const lang = 'ru'
+    const englishChannelID = -1001454664691
     if (ctx.updateType === 'message'
         && ctx.chat.id === myUserID
         && ctx.message.forward_from_chat
-        && ctx.message.forward_from_chat.id === russianChannelID) {
+        && ctx.message.forward_from_chat.id) {
+        const channelID = ctx.message.forward_from_chat.id
+        let lang: string
+        if (channelID === russianChannelID) {
+            lang = 'ru'
+        } else if (channelID === englishChannelID) {
+            lang = 'en'
+        } else {
+            console.log('Unknown channel')
+            return
+        }
         const channelMessageID = ctx.message.forward_from_message_id
         await getUsersByLang(lang)
             .then(async users => {
@@ -22,14 +32,14 @@ export async function checkForward(ctx: Context, next: () => any) {
                         .map(userID => {
                             return bot.telegram.forwardMessage(
                                 userID,
-                                russianChannelID,
+                                channelID,
                                 channelMessageID)
                         })
                     await Promise.allSettled(messages)
                         .then(result => {
-                            const sendedMessages = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
-                            console.log('Successfully sended to', sendedMessages, 'users. Now waiting...')
-                            successCounter += sendedMessages
+                            const sendedMessagesCount = result.map(msg => msg.status).filter(status => status == 'fulfilled').length
+                            console.log('Successfully sended to', sendedMessagesCount, 'users. Now waiting...')
+                            successCounter += sendedMessagesCount
                         })
                     await sleep(3000)
                 }
