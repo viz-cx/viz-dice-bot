@@ -44,10 +44,6 @@ lottery: |
   ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 
   To participate in the lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
-  
-  The game window is closing every ${winnerBlockDelimiter*60*60/3} blocks (~${winnerBlockDelimiter} hours), then the winner is selecting among all participants using the hash of final block
-  
-  Maximum winning amount = your award * number of participants, but not more than the sum of all awards
 
   You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS app</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android app</a> or otherwise
 new_award: |
@@ -57,6 +53,6 @@ new_award: |
   👀 Total participate ${pluralize(participants, 'person', 'people')}
   ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 lottery_result: |
-  🤹 Current lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
-  
   🏆 Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ ${prize == fund ? '' : 'of total ' + fund + ' VIZ'}
+
+  🤹 Lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}

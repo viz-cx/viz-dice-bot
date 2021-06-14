@@ -58,7 +58,7 @@ export function setupPlay(bot: Telegraf<Context>) {
             multiplier = multiplier * 1
             break
           case "🏀": case "⚽️": // [1 - 5]
-            multiplier = multiplier * 1.25
+            multiplier = multiplier * 1.15
             break
           case "🎰": // [1 - 64]
             switch (value) {
@@ -75,7 +75,7 @@ export function setupPlay(bot: Telegraf<Context>) {
                 multiplier = 5
                 break
               default: // other cases
-                multiplier = multiplier * 0.7
+                multiplier = multiplier * 0.35
                 break
             }
             break
@@ -105,9 +105,10 @@ export function setupPlay(bot: Telegraf<Context>) {
       })
       .then(account => {
         const baseEnergy = account['energy'] / 100
-        const finalEnergy = multiplier > 0.05 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
+        const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
         if (finalEnergy === 0) {
+          console.log(`Decline award to ${ctx.dbuser.login} because multiplier = ${multiplier} (${ctx.dbuser.payouts} payouts)`)
           return Promise.reject('Zero final energy')
         }
         console.log(`Award ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
