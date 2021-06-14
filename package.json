@@ -23,6 +23,7 @@
     "@types/mongoose": "^5.5.32",
     "@types/node": "^14.0.13",
     "dotenv": "^8.2.0",
+    "markdown-table-ts": "^1.0.3",
     "mongoose": "5.10.18",
     "telegraf": "github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c",
     "telegraf-i18n": "^6.6.0",

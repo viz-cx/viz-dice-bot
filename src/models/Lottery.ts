@@ -7,7 +7,7 @@ export class Lottery {
     @prop({ required: false })
     winner: string
 
-    @prop({ required: true, default: 0})
+    @prop({ required: true, default: 0 })
     amount: number
 }
 
@@ -24,6 +24,21 @@ export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
         return l
     }
     return await LotteryModel.findOne().sort({ block: -1 })
+}
+
+export async function getTopLuckers() {
+    return await LotteryModel.aggregate([
+        {
+            $group: {
+                _id: {"name": "$winner"},
+                winner: { "$first": "$winner" },
+                count: { "$sum": 1 },
+                sum: { "$sum": "$amount" }
+            }
+        },
+        { $sort: { sum: -1 } },
+        { $limit: 10 }
+    ]).exec()
 }
 
 export async function getAllPayoutsSum(): Promise<number> {

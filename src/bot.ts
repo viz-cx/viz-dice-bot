@@ -19,6 +19,7 @@ import { checkForward } from './middlewares/forwardFromChannel'
 import { setupStats } from './commands/stats'
 import { startLottery } from './lottery'
 import { setupLottery } from './commands/lottery'
+import { setupTop } from './commands/top'
 
 bot.use(checkChatType)
 bot.use(checkTime)
@@ -34,6 +35,7 @@ setupPlay(bot)
 setupGame(bot)
 setupStats(bot)
 setupLottery(bot)
+setupTop(bot)
 
 startLottery()
 
