@@ -1,23 +1,37 @@
 import { getTopLuckers } from "../models"
 import { Telegraf, Context } from "telegraf"
-import { Align, getMarkdownTable } from 'markdown-table-ts'
+import { getMarkdownTable } from 'markdown-table-ts'
 
 
 export function setupTop(bot: Telegraf<Context>) {
-    bot.command('top', async ctx => {
-        sendTop(ctx)
+    bot.command(['topByCount'], async ctx => {
+        sendTopByCount(ctx)
+    })
+    bot.command(['top', 'topBySum'], async ctx => {
+        sendTopBySum(ctx)
     })
 }
 
-function sendTop(ctx: Context) {
-    getTopLuckers().then(results => {
+function sendTopBySum(ctx: Context) {
+    getTopLuckers('sum').then(results => {
         const md = '```\n' + getMarkdownTable({
             table: {
-                head: ['Winner', 'Count', 'Sum'],
-                body: results.map(v => [String(v.winner), String(v.count), String(v.sum.toFixed(2))]),
+                head: ['User', 'Sum'],
+                body: results.map(v => [String(v.winner), String(v.sum.toFixed(2))]),
             },
         }) + '\n```'
-        console.log(md)
+        ctx.replyWithMarkdown(md)
+    })
+}
+
+function sendTopByCount(ctx: Context) {
+    getTopLuckers('count').then(results => {
+        const md = '```\n' + getMarkdownTable({
+            table: {
+                head: ['User', 'Count'],
+                body: results.map(v => [String(v.winner), String(v.count)]),
+            },
+        }) + '\n```'
         ctx.replyWithMarkdown(md)
     })
 }

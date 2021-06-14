@@ -26,7 +26,7 @@ export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
     return await LotteryModel.findOne().sort({ block: -1 })
 }
 
-export async function getTopLuckers() {
+export async function getTopLuckers(sortBy: string = "count") {
     return await LotteryModel.aggregate([
         {
             $group: {
@@ -36,7 +36,7 @@ export async function getTopLuckers() {
                 sum: { "$sum": "$amount" }
             }
         },
-        { $sort: { sum: -1 } },
+        { $sort: { [sortBy]: -1 } },
         { $limit: 10 }
     ]).exec()
 }
