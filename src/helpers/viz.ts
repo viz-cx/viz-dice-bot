@@ -91,6 +91,42 @@ export class VIZ {
         })
     }
 
+    public unstakeExcessShares() {
+        return new Promise((resolve, reject) => {
+            const from = process.env.ACCOUNT
+            const wif = process.env.WIF
+            this.getAccount(from)
+                .then(
+                    account => {
+                        const amount = parseFloat(account['vesting_shares']) - parseFloat(process.env.BALANCE)
+                        const shares = `${amount.toFixed(6)} SHARES`
+                        this.unstake(wif, from, shares)
+                            .then(unstakeResult => resolve(unstakeResult),
+                                rejected => reject(rejected))
+                    },
+                    rejected => reject(rejected)
+                )
+                .catch(err => reject(err))
+        })
+
+    }
+
+    private unstake(wif: string, username: string, shares: string) {
+        return new Promise((resolve, reject) => {
+            VIZ.vizJS.broadcast.withdrawVesting(
+                wif,
+                username,
+                shares,
+                function (err, result) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve(result)
+                    }
+                })
+        })
+    }
+
     isAccountExists(login: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getAccounts([login], function (err, result) {

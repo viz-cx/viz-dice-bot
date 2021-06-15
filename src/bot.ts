@@ -20,6 +20,7 @@ import { setupStats } from './commands/stats'
 import { startLottery } from './lottery'
 import { setupLottery } from './commands/lottery'
 import { setupTop } from './commands/top'
+import { startUnstaking } from './unstake'
 
 bot.use(checkChatType)
 bot.use(checkTime)
@@ -38,5 +39,6 @@ setupLottery(bot)
 setupTop(bot)
 
 startLottery()
+startUnstaking()
 
 export default bot
