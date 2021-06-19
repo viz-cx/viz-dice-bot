@@ -1,4 +1,4 @@
-import { prop, getModelForClass } from '@typegoose/typegoose'
+import { prop, getModelForClass, DocumentType } from '@typegoose/typegoose'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
 
 export type UserState = 'waitLogin'
@@ -65,6 +65,6 @@ export async function getUsersCount(afterDate: Date = new Date(0)) {
   return await UserModel.countDocuments({ updatedAt: { $gt: afterDate } }).exec()
 }
 
-export async function getUsersByLang(lang: string) {
+export async function getUsersByLang(lang: string): Promise<DocumentType<User[]>> {
   return await UserModel.find({ language: { $eq: lang } })
 }

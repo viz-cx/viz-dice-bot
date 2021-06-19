@@ -1,6 +1,6 @@
 import { Context } from 'telegraf'
 
-export async function processState(ctx: Context, next: any) {
+export async function processState(ctx: Context, next: () => any) {
   switch (ctx.dbuser.state) {
     case 'waitLogin':
       if (ctx.message.text) {
@@ -14,7 +14,7 @@ export async function processState(ctx: Context, next: any) {
             _ => ctx.replyWithHTML(ctx.i18n.t('lets_play')),
             rejected => console.log(rejected)
           )
-          next()
+          return next()
         } else {
           await ctx.replyWithHTML(ctx.i18n.t('wrong_login'), {
             disable_web_page_preview: true
@@ -27,7 +27,6 @@ export async function processState(ctx: Context, next: any) {
       }
       break
     default:
-      next()
-      break
+      return next()
   }
 }

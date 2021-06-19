@@ -1,6 +1,7 @@
 import { getUsersByLang } from '../models/User'
 import { Context } from 'telegraf'
 import { bot } from '../helpers/bot'
+import { Message } from 'telegram-typings'
 
 export async function checkForward(ctx: Context, next: () => any) {
     const myUserID = 38968897
@@ -27,7 +28,7 @@ export async function checkForward(ctx: Context, next: () => any) {
                 console.log('Start sending to', users.length, 'users')
                 var successCounter = 0
                 while (users.length > 0) {
-                    const messages = users.splice(0, 29)
+                    const messages: Promise<Message>[] = users.splice(0, 29)
                         .map(u => u.id)
                         .map(userID => {
                             return bot.telegram.forwardMessage(
@@ -46,7 +47,7 @@ export async function checkForward(ctx: Context, next: () => any) {
                 await bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + successCounter + ' users')
             })
     } else {
-        next()
+        return next()
     }
 }
 

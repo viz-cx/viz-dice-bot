@@ -1,9 +1,7 @@
-import { Telegraf, Context, Markup as m, Extra } from 'telegraf'
+import { Telegraf, Context, Markup as m } from 'telegraf'
 import { readdirSync, readFileSync } from 'fs'
 import { safeLoad } from 'js-yaml'
 import { sendMainKeyboard } from './start'
-import { createTextChangeRange } from 'typescript'
-import I18n from 'telegraf-i18n'
 
 function emojiByLocaleName(localeName: string) {
   if (localeName === 'Русский') {

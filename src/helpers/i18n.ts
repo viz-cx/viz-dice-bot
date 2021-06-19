@@ -12,9 +12,9 @@ export const i18n = new dirtyI18N({
 
 export function setupI18N(bot: Telegraf<Context>) {
   bot.use(i18n.middleware())
-  bot.use((ctx, next) => {
+  bot.use((ctx, next: () => any) => {
     const anyI18N = ctx.i18n as any
     anyI18N.locale(ctx.dbuser.language)
-    next()
+    return next()
   })
 }
