@@ -104,7 +104,14 @@ export function setupPlay(bot: Telegraf<Context>) {
         return ctx.viz.getAccount(process.env.ACCOUNT)
       })
       .then(account => {
-        const baseEnergy = account['energy'] / 100
+        let lastVoteTime = Date.parse(account['last_vote_time'])
+        let deltaTime = (new Date().getTime() - lastVoteTime + (new Date().getTimezoneOffset() * 60000)) / 1000
+        let energy = account['energy']
+        let new_energy = parseInt(energy + (deltaTime * 10000 / 432000)) //CHAIN_ENERGY_REGENERATION_SECONDS 5 days
+        if (new_energy > 10000) {
+            new_energy = 10000
+        }
+        const baseEnergy = new_energy / 100
         const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
         if (finalEnergy === 0) {
