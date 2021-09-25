@@ -35,7 +35,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       return
     }
     var user = ctx.dbuser
-    const hours = parseInt(process.env.HOURS)
+    const hours = Math.random()
     const zeroingDate = new Date(
       user.payoutDate.getTime()
       + (hours * 60 * 60 * 1000)
