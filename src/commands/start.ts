@@ -12,7 +12,7 @@ export function setupStart(bot: Telegraf<Context>) {
         const payload = (ctx as any)['startPayload']
         const referrer = Buffer.from(payload, 'base64').toString()
         var user = ctx.dbuser
-        if (!user.referrer && referrer) {
+        if (!user.referrer && referrer && user.login !== referrer) {
             ctx.viz.isAccountExists(referrer)
                 .then(
                     result => {
