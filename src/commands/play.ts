@@ -1,5 +1,5 @@
 import { getLatestLottery } from "../models/Lottery"
-import { isParticipated } from "../models/Award"
+import { getAwardsSum } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
 import { mainKeyboard } from "./start"
 
@@ -46,11 +46,11 @@ export function setupPlay(bot: Telegraf<Context>) {
     var value: number, multiplier: number, participated: Boolean
     await Promise.all([
       ctx.replyWithDice({ emoji: ctx.dbuser.game }),
-      getLatestLottery().then(lottery => isParticipated(ctx.dbuser.id, lottery.block))
+      getLatestLottery().then(lottery => getAwardsSum(ctx.dbuser.id, lottery.block))
     ]).then(
       result => {
         const msg = result[0]
-        participated = result[1]
+        participated = result[1] > 0
         value = msg.dice.value
         multiplier = parseFloat(`0.${value}`)
         switch (msg.dice.emoji) {
