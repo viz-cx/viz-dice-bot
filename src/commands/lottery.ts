@@ -8,14 +8,14 @@ import { VIZ } from "../helpers/viz"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
-        await sendLottery(bot, ctx)
+        await sendLottery(ctx)
     })
     bot.command(['lottery'], async ctx => {
-        await sendLottery(bot, ctx)
+        await sendLottery(ctx)
     })
 }
 
-async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
+async function sendLottery(ctx: Context) {
     if (!ctx.dbuser.login) {
         ctx.dbuser.state = "waitLogin"
         ctx.dbuser.save()
@@ -31,7 +31,7 @@ async function sendLottery(bot: Telegraf<Context>, ctx: Context) {
 export async function lotteryParams(viz: VIZ, user: User) {
     const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties().catch(_ => viz.changeNode()))['last_irreversible_block_num']
     const latestLottery = await getLatestLottery()
-    const lotteryHours = parseInt(process.env.LOTTERY)
+    const lotteryHours = parseInt(process.env.LOTTERY_HOURS)
     const roundTime = lotteryHours * 60 * 60
     const timePassed = (lastIrreversibleBlock - latestLottery.block) * 3
     const timeLeft = (roundTime - timePassed) * 1000
@@ -43,7 +43,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const participated = await isParticipated(user.id, latestLottery.block)
     const userAwardsSum = await getAwardsSum(user.id, latestLottery.block)
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
-    const participantCount = await participantsCount(latestLottery.block)
+    const participantCount = await participantsCount(latestLottery.block, null)
     const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
     var energy = 10
     if (vizAccount) {
@@ -60,7 +60,9 @@ export async function lotteryParams(viz: VIZ, user: User) {
         minutes: minutes,
         seconds: seconds,
         allAwardsSum: allAwardsSum.toFixed(3),
-        participants: participantCount
+        participants: participantCount,
+        prize: '0.000',
+        userAwardsSum: '0.000'
     }
     if (participated) {
         const maxParticipantPrize = userAwardsSum * participantCount

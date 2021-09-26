@@ -43,12 +43,17 @@ export async function getAllAwards(afterBlock: number): Promise<DocumentType<Awa
     return await AwardModel.find({ block: { $gt: afterBlock } })
 }
 
-export async function participantsCount(afterBlock: number): Promise<number> {
-    return (await AwardModel.distinct('initiator', { block: { $gt: afterBlock } }).exec()).length
+export async function getAllAwardsByUserID(userID: number, afterBlock: number): Promise<DocumentType<Award>[]> {
+    return await AwardModel.find({ userID: userID, block: { $gt: afterBlock } })
 }
 
-export async function isParticipated(userID: number, fromBlock: number): Promise<Boolean> {
-    return await AwardModel.countDocuments({ userID: userID, block: { $gt: fromBlock } }).exec() > 0
+export async function participantsCount(afterBlock: number, userID: number): Promise<number> {
+    return (await getWorthyLotteryParticipantIDs(afterBlock, userID)).length
+}
+
+export async function isParticipated(userID: number, afterBlock: number): Promise<Boolean> {
+    const worthyUserIDs = await participantsCount(afterBlock, userID)
+    return worthyUserIDs > 0
 }
 
 export async function getLatestAward(): Promise<DocumentType<Award>> {
@@ -61,4 +66,31 @@ export async function getLatestAward(): Promise<DocumentType<Award>> {
         return l
     }
     return await AwardModel.findOne().sort({ block: -1 })
+}
+
+export async function getWorthyLotteryParticipantIDs(afterBlock: number, userID: number = null): Promise<number[]> {
+    let currentAwards: DocumentType<Award>[]
+    if (!userID) {
+        currentAwards = await getAllAwards(afterBlock)
+    } else {
+        currentAwards = await getAllAwardsByUserID(userID, afterBlock)
+    }
+    let sumByUser = {}
+    currentAwards.forEach(function (a) {
+        if (sumByUser.hasOwnProperty(a.userID)) {
+            sumByUser[a.userID] = sumByUser[a.userID] + a.shares
+        } else {
+            sumByUser[a.userID] = a.shares
+        }
+    })
+    let worthyUserIDs = []
+    const worthyBet = parseInt(process.env.LOTTERY_WORTHY_BET)
+    for (var userIDStr in sumByUser) {
+        let shares = sumByUser[userIDStr]
+        let userID = parseInt(userIDStr)
+        if (shares >= worthyBet) {
+            worthyUserIDs.push(userID)
+        }
+    }
+    return worthyUserIDs
 }

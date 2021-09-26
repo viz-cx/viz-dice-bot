@@ -1,6 +1,6 @@
 import { findUser, getAllPayoutsSum, getLatestLottery, Lottery, LotteryModel } from "./models"
 import { VIZ } from './helpers/viz'
-import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, participantsCount, getAllAwards } from "./models/Award"
+import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, getWorthyLotteryParticipantIDs } from "./models/Award"
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
 import { DocumentType } from "@typegoose/typegoose"
@@ -50,14 +50,10 @@ async function findWinner() {
     var currentLottery = new LotteryModel()
     currentLottery.block = currentBlock
     const latestLotteryBlock = (await getLatestLottery()).block
-    const participantCount = await participantsCount(latestLotteryBlock)
-        .then(participants => participants)
+    const worthyUserIDs = await getWorthyLotteryParticipantIDs(latestLotteryBlock)
+    const participantCount = worthyUserIDs.length
     if (participantCount > 0) {
-        const currentAwards = await getAllAwards(latestLotteryBlock)
-        const participants = await Promise.all(
-            [...new Set(currentAwards.map(award => award.userID))]
-                .map(async userID => findUser(userID).then(user => user))
-        )
+        const participants = await Promise.all(worthyUserIDs.map(userID => findUser(userID)))
         await viz.getBlockHeader(currentBlock).then(
             async result => {
                 const hashSumResult = hashSum(result['previous'] + result['witness'])
@@ -68,9 +64,7 @@ async function findWinner() {
                 const allPayoutsSum = await getAllPayoutsSum()
                 const fund = allAwardsSum - allPayoutsSum
                 var prize = fund
-                const winnerAwardSum = currentAwards
-                    .filter(award => award.userID == winner.id)
-                    .reduce((prev, award) => prev + award.shares, 0)
+                const winnerAwardSum = await getAwardsSum(winner.id, latestLotteryBlock)
                 const maxWinnerPrize = winnerAwardSum * participants.length
                 if (prize > maxWinnerPrize) {
                     prize = maxWinnerPrize
@@ -148,13 +142,18 @@ async function processAward(data: BlockchainAward) {
                                 .then(
                                     sum => {
                                         const firstTime = sum == award.shares
+                                        const worthyBet = parseInt(process.env.LOTTERY_WORTHY_BET)
+                                        const needed = worthyBet - sum
+                                        const isWorthy = sum >= needed
                                         lotteryParams(viz, user).then(
                                             params => {
                                                 const payload = {
                                                     ...params,
                                                     shares: award.shares.toFixed(3),
                                                     sum: sum.toFixed(3),
-                                                    firstTime: firstTime
+                                                    firstTime: firstTime,
+                                                    needed: needed.toFixed(3),
+                                                    isWorthy: isWorthy
                                                 }
                                                 bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
                                                     reply_markup: mainKeyboardByLanguage(user.language)
@@ -201,7 +200,7 @@ async function processNextBlock() {
     if (process.env.PRODUCTION === "false") {
         winnerBlockDelimiter = 100
     } else {
-        winnerBlockDelimiter = parseInt(process.env.LOTTERY) * 60 * 60 / 3
+        winnerBlockDelimiter = parseInt(process.env.LOTTERY_HOURS) * 60 * 60 / 3
     }
     if (currentBlock % winnerBlockDelimiter === 0) {
         await findWinner()
