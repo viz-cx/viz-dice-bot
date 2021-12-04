@@ -46,66 +46,133 @@ export function startLottery() {
     ).finally(() => setTimeout(startLottery, 15000))
 }
 
-async function findWinner() {
-    var currentLottery = new LotteryModel()
-    currentLottery.block = currentBlock
-    const latestLotteryBlock = (await getLatestLottery()).block
-    const participantCount = await participantsCount(latestLotteryBlock)
-    if (participantCount > 0) {
-        const currentAwards = await getAllAwards(latestLotteryBlock)
-        const participants = await Promise.all(
-            [...new Set(currentAwards.map(award => award.userID))]
-                .map(async userID => findUser(userID).then(user => user))
-        )
-        await viz.getBlockHeader(currentBlock).then(
-            async result => {
-                const hashSumResult = hashSum(result['previous'] + result['witness'])
-                const winnerCode = hashSumResult % participants.length
-                const winner = participants[winnerCode]
-                currentLottery.winner = winner.login
-                const allAwardsSum = await getAllAwardsSum()
-                const allPayoutsSum = await getAllPayoutsSum()
-                const fund = allAwardsSum - allPayoutsSum
-                var prize = fund
-                const winnerAwardSum = currentAwards
-                    .filter(award => award.userID == winner.id)
-                    .reduce((prev, award) => prev + award.shares, 0)
-                const maxWinnerPrize = winnerAwardSum * participants.length
-                if (prize > maxWinnerPrize) {
-                    prize = maxWinnerPrize
+async function findWinners() {
+    try {
+        const latestLotteryBlock = (await getLatestLottery()).block
+        const participantCount = await participantsCount(latestLotteryBlock)
+        if (participantCount === 0) {
+            console.log('Lottery was closed in block', currentBlock, 'without winner')
+            return
+        }
+        const blockHeader = await viz.getBlockHeader(currentBlock)
+        const hashSumResult = hashSum(blockHeader['previous'] + blockHeader['witness'])
+        const allAwardsSum = await getAllAwardsSum()
+        const allPayoutsSum = await getAllPayoutsSum()
+        const fund = allAwardsSum - allPayoutsSum
+
+        let currentAwards: DocumentType<Award>[] = await getAllAwards(currentBlock)
+        let sumByUser = {}
+        currentAwards.forEach(function (a) {
+            if (sumByUser.hasOwnProperty(a.userID)) {
+                sumByUser[a.userID] = sumByUser[a.userID] + a.shares
+            } else {
+                sumByUser[a.userID] = a.shares
+            }
+        })
+        let fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
+        for (var userIDStr in sumByUser) {
+            let shares = sumByUser[userIDStr]
+            let userID = parseInt(userIDStr)
+            if (shares < 1) {
+                fishIDs.push(userID)
+            }
+            if (shares >= 1 && shares < 10) {
+                dolphinIDs.push(userID)
+            }
+            if (shares >= 10) {
+                whaleIDs.push(userID)
+            }
+        }
+        const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
+        const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
+        const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
+        const allParticipants = [...fishParticipants, ...dolphinParticipants, ...whaleParticipants]
+        var pays: Promise<Object>[] = []
+
+        if (fishParticipants.length > 0) {
+            const fishWinnerCode = hashSumResult % fishParticipants.length
+            const fishWinner = fishParticipants[fishWinnerCode]
+            var fishPrize = fund
+            const winnerAwardSum = await getAwardsSum(fishWinner.id, latestLotteryBlock)
+            const maxFishWinnerPrize = winnerAwardSum * fishParticipants.length
+            if (fishPrize > maxFishWinnerPrize) {
+                fishPrize = maxFishWinnerPrize
+            }
+            console.log('Fish winner', fishWinner.login, 'with price', fishPrize)
+            pays.push(viz.pay(fishWinner.login, fishPrize))
+            var fishLottery = new LotteryModel()
+            fishLottery.block = currentBlock
+            fishLottery.winner = fishWinner.login
+            fishLottery.type = 'fish'
+            fishLottery.amount = fishPrize
+            await fishLottery.save()
+        }
+
+        if (dolphinParticipants.length > 0) {
+            const dolphinWinnerCode = hashSumResult % dolphinParticipants.length
+            const dolphinWinner = dolphinParticipants[dolphinWinnerCode]
+            var dolphinPrize = fund
+            const winnerAwardSum = await getAwardsSum(dolphinWinner.id, latestLotteryBlock)
+            const maxdolphinWinnerPrize = winnerAwardSum * dolphinParticipants.length
+            if (dolphinPrize > maxdolphinWinnerPrize) {
+                dolphinPrize = maxdolphinWinnerPrize
+            }
+            console.log('Dolphin winner', dolphinWinner.login, 'with price', dolphinPrize)
+            pays.push(viz.pay(dolphinWinner.login, dolphinPrize))
+            var dolphinLottery = new LotteryModel()
+            dolphinLottery.block = currentBlock
+            dolphinLottery.winner = dolphinWinner.login
+            dolphinLottery.type = 'dolphin'
+            dolphinLottery.amount = dolphinPrize
+            await dolphinLottery.save()
+        }
+
+        if (whaleParticipants.length > 0) {
+            const whaleWinnerCode = hashSumResult % whaleParticipants.length
+            const whaleWinner = whaleParticipants[whaleWinnerCode]
+            var whalePrize = fund
+            const winnerAwardSum = await getAwardsSum(whaleWinner.id, latestLotteryBlock)
+            const maxwhaleWinnerPrize = winnerAwardSum * whaleParticipants.length
+            if (whalePrize > maxwhaleWinnerPrize) {
+                whalePrize = maxwhaleWinnerPrize
+            }
+            console.log('Whale winner', whaleWinner.login, 'with price', whalePrize)
+            pays.push(viz.pay(whaleWinner.login, whalePrize))
+            var whaleLottery = new LotteryModel()
+            whaleLottery.block = currentBlock
+            whaleLottery.winner = whaleWinner.login
+            whaleLottery.type = 'whale'
+            whaleLottery.amount = whalePrize
+            await whaleLottery.save()
+        }
+
+        await Promise.all(pays).then(
+            _ => {
+                const payload = {
+                    block: currentBlock,
+                    winner: 'winner.login',
+                    hashSum: hashSumResult,
+                    count: allParticipants.length,
+                    users: allParticipants.map(u => u.login).join(', '),
+                    prize: 'prize.toFixed(3)',
+                    fund: fund.toFixed(3)
                 }
-                currentLottery.amount = prize
-                await viz.pay(winner.login, prize).then(
-                    _ => {
-                        console.log("Successful payout to", winner.login, "prize", prize)
-                        const payload = {
-                            block: currentBlock,
-                            winner: winner.login,
-                            hashSum: hashSumResult,
-                            count: participants.length,
-                            users: participants.map(u => u.login).join(', '),
-                            prize: prize.toFixed(3),
-                            fund: fund.toFixed(3)
-                        }
-                        participants.forEach(u => {
-                            try {
-                                bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true })
-                            } catch (e) {
-                                console.log(e)
-                            }
-                        })
-                        // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
-                    },
-                    failure => sendToAdmin('Failed to pay winner ' + winner.login + ' with prize ' + prize + ' with error ' + failure)
-                ).catch(error => { sendToAdmin(error) })
+                allParticipants.forEach(u => {
+                    try {
+                        bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true })
+                    } catch (e) {
+                        console.log(e)
+                    }
+                })
+                // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
             },
-            rejected => sendToAdmin('Get block header failed: ' + rejected)
-        ).catch(error => sendToAdmin(error))
-    } else {
-        console.log('Lottery was closed in block', currentBlock, 'without winner')
+            failure => sendToAdmin('Failed to pay winners ' + failure)
+        ).catch(error => { sendToAdmin(error) })
+    } catch (err) {
+        console.log('Finding winners error: ', err)
+        sendToAdmin(err)
+        viz.changeNode()
     }
-    await currentLottery.save()
-        .catch(error => sendToAdmin('Lottery not saved because ' + error))
 }
 
 async function processAward(data: BlockchainAward) {
@@ -204,7 +271,7 @@ async function processNextBlock() {
         winnerBlockDelimiter = parseInt(process.env.LOTTERY_HOURS) * 60 * 60 / 3
     }
     if (currentBlock % winnerBlockDelimiter === 0) {
-        await findWinner()
+        await findWinners()
     }
 }
 

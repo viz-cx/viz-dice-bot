@@ -1,8 +1,13 @@
 import { prop, getModelForClass, DocumentType } from '@typegoose/typegoose'
 
+export type LotteryType = 'fish' | 'dolphin' | 'whale'
+
 export class Lottery {
-    @prop({ required: true, index: true, unique: true })
+    @prop({ required: true })
     block: number
+
+    @prop({ required: true, enum: ['fish', 'dolphin', 'whale'] })
+    type: LotteryType
 
     @prop({ required: false })
     winner: string
@@ -30,7 +35,7 @@ export async function getTopLuckers(sortBy: string = "count") {
     return await LotteryModel.aggregate([
         {
             $group: {
-                _id: {"name": "$winner"},
+                _id: { "name": "$winner" },
                 winner: { "$first": "$winner" },
                 count: { "$sum": 1 },
                 sum: { "$sum": "$amount" }
