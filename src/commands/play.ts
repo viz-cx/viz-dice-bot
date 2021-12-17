@@ -35,7 +35,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       return
     }
     var user = ctx.dbuser
-    const hours = Math.random()
+    const hours = Math.random() * 5
     const zeroingDate = new Date(
       user.payoutDate.getTime()
       + (hours * 60 * 60 * 1000)
@@ -114,7 +114,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         const baseEnergy = new_energy / 100
         const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
         const memo = ctx.dbuser.game
-        if (finalEnergy === 0) {
+        if (finalEnergy <= 0) {
           console.log(`Decline award to ${ctx.dbuser.login} because multiplier = ${multiplier} (${ctx.dbuser.payouts} payouts)`)
           return Promise.reject('Zero final energy')
         }
