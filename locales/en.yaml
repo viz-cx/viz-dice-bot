@@ -48,11 +48,11 @@ lottery: |
   You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS app</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android app</a> or otherwise
 new_award: |
   ✅ Received new bid ${shares} VIZ${firstTime ? '' : '. Total ' + sum + ' VIZ'}
-  ${isWorthy ? '🎁 If you win you will get ' + prize + ' VIZ': '⛔️ To participate the lottery make award equal or more ' + needed + ' VIZ'}
+  🎁 If you win you will get ${prize} VIZ
   💰 Total prize pool ${allAwardsSum} VIZ 
   👀 Total participate ${pluralize(participants, 'person', 'people')}
   ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 lottery_result: |
-  🏆 Winner <a href="https://info.viz.plus/accounts/${winner}/">@${winner}</a> receives ${prize} VIZ ${prize == fund ? '' : 'of total ' + fund + ' VIZ'}
-
-  🤹 Lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}: ${users}
+  🏆 Winner ${fishWinner.length > 0 ? '🐟' + fishWinner + ' receives ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + '🐬' + dolphinWinner + ' receives ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + '🐳' + whaleWinner + ' receives ' + whalePrize + ' VIZ' : ''} of total ${fund} VIZ
+   
+  🤹 Lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}:${fishUsers.length > 0 ? '\n🐟 ' + fishUsers : ''}${dolphinUsers.length > 0 ? '\n🐬 ' + dolphinUsers : ''}${whaleUsers.length > 0 ? '\n🐳 ' + whaleUsers : ''}
