@@ -46,6 +46,37 @@ export function startLottery() {
     ).finally(() => setTimeout(startLottery, 15000))
 }
 
+export async function participantIdsByCategory(fromBlock: number): Promise<{
+    fishIDs: number[]
+    dolphinIDs: number[]
+    whaleIDs: number[]
+}> {
+    let currentAwards: DocumentType<Award>[] = await getAllAwards(fromBlock)
+    let sumByUser = {}
+    currentAwards.forEach(function (a) {
+        if (sumByUser.hasOwnProperty(a.userID)) {
+            sumByUser[a.userID] = sumByUser[a.userID] + a.shares
+        } else {
+            sumByUser[a.userID] = a.shares
+        }
+    })
+    var fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
+    for (var userIDStr in sumByUser) {
+        let shares = sumByUser[userIDStr]
+        let userID = parseInt(userIDStr)
+        if (shares < 1) {
+            fishIDs.push(userID)
+        }
+        if (shares >= 1 && shares < 10) {
+            dolphinIDs.push(userID)
+        }
+        if (shares >= 10) {
+            whaleIDs.push(userID)
+        }
+    }
+    return { fishIDs, dolphinIDs, whaleIDs }
+}
+
 async function findWinners() {
     try {
         const latestLotteryBlock = (await getLatestLottery()).block
@@ -60,29 +91,7 @@ async function findWinners() {
         const allPayoutsSum = await getAllPayoutsSum()
         const fund = allAwardsSum - allPayoutsSum
 
-        let currentAwards: DocumentType<Award>[] = await getAllAwards(latestLotteryBlock)
-        let sumByUser = {}
-        currentAwards.forEach(function (a) {
-            if (sumByUser.hasOwnProperty(a.userID)) {
-                sumByUser[a.userID] = sumByUser[a.userID] + a.shares
-            } else {
-                sumByUser[a.userID] = a.shares
-            }
-        })
-        var fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
-        for (var userIDStr in sumByUser) {
-            let shares = sumByUser[userIDStr]
-            let userID = parseInt(userIDStr)
-            if (shares < 1) {
-                fishIDs.push(userID)
-            }
-            if (shares >= 1 && shares < 10) {
-                dolphinIDs.push(userID)
-            }
-            if (shares >= 10) {
-                whaleIDs.push(userID)
-            }
-        }
+        const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
         const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
         const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
         const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))

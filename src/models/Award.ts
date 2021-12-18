@@ -47,10 +47,6 @@ export async function participantsCount(afterBlock: number): Promise<number> {
     return (await AwardModel.distinct('initiator', { block: { $gt: afterBlock } }).exec()).length
 }
 
-export async function isParticipated(userID: number, fromBlock: number): Promise<Boolean> {
-    return await AwardModel.countDocuments({ userID: userID, block: { $gt: fromBlock } }).exec() > 0
-}
-
 export async function getLatestAward(): Promise<DocumentType<Award>> {
     const count = await AwardModel.countDocuments().exec()
     if (count === 0) {
