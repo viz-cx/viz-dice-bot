@@ -109,7 +109,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         let energy = account['energy']
         let new_energy = parseInt(energy + (deltaTime * 10000 / 432000)) //CHAIN_ENERGY_REGENERATION_SECONDS 5 days
         if (new_energy > 10000) {
-            new_energy = 10000
+          new_energy = 10000
         }
         const baseEnergy = new_energy / 100
         const finalEnergy = multiplier > 0.01 ? Math.ceil(baseEnergy * multiplier * ctx.dbuser.series) : 0
@@ -156,7 +156,7 @@ export function setupPlay(bot: Telegraf<Context>) {
 
 export function timeUnitsBetween(startDate: Date, endDate: Date) {
   let delta = Math.abs(endDate.getTime() - startDate.getTime()) / 1000
-  const isNegative = startDate > endDate ? -1 : 1;
+  const isNegative = startDate > endDate ? -1 : 1
   const units: [[string, number], [string, number], [string, number], [string, number]] = [
     ['days', 24 * 60 * 60],
     ['hours', 60 * 60],

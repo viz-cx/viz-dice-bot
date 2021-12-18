@@ -26,6 +26,8 @@ export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
         var l = new LotteryModel()
         l.block = 0
         l.winner = ''
+        l.type = 'fish'
+        l.amount = 0
         return l
     }
     return await LotteryModel.findOne().sort({ block: -1 })

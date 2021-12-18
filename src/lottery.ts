@@ -31,7 +31,7 @@ export function startLottery() {
                     currentBlock = latestLottery.block + 1
                 }
                 if (process.env.PRODUCTION === "false") {
-                    currentBlock = lastIrreversibleBlock
+                    currentBlock = lastIrreversibleBlock - 10
                 }
                 console.log("Lottery continued from block", currentBlock)
             }
@@ -60,7 +60,7 @@ async function findWinners() {
         const allPayoutsSum = await getAllPayoutsSum()
         const fund = allAwardsSum - allPayoutsSum
 
-        let currentAwards: DocumentType<Award>[] = await getAllAwards(currentBlock)
+        let currentAwards: DocumentType<Award>[] = await getAllAwards(latestLotteryBlock)
         let sumByUser = {}
         currentAwards.forEach(function (a) {
             if (sumByUser.hasOwnProperty(a.userID)) {
@@ -69,7 +69,7 @@ async function findWinners() {
                 sumByUser[a.userID] = a.shares
             }
         })
-        let fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
+        var fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
         for (var userIDStr in sumByUser) {
             let shares = sumByUser[userIDStr]
             let userID = parseInt(userIDStr)
@@ -87,6 +87,8 @@ async function findWinners() {
         const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
         const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
         const allParticipants = [...fishParticipants, ...dolphinParticipants, ...whaleParticipants]
+        var messagePayload = {}
+        messagePayload = { ...messagePayload, fishWinner: '', dolphinWinner: '', whaleWinner: '' }
         var pays: Promise<Object>[] = []
 
         if (fishParticipants.length > 0) {
@@ -106,6 +108,11 @@ async function findWinners() {
             fishLottery.type = 'fish'
             fishLottery.amount = fishPrize
             await fishLottery.save()
+            messagePayload = {
+                ...messagePayload,
+                fishWinner: accountLink(fishWinner.login),
+                fishPrize: fishPrize.toFixed(3)
+            }
         }
 
         if (dolphinParticipants.length > 0) {
@@ -125,6 +132,11 @@ async function findWinners() {
             dolphinLottery.type = 'dolphin'
             dolphinLottery.amount = dolphinPrize
             await dolphinLottery.save()
+            messagePayload = {
+                ...messagePayload,
+                dolphinWinner: accountLink(dolphinWinner.login),
+                dolphinPrize: dolphinPrize.toFixed(3)
+            }
         }
 
         if (whaleParticipants.length > 0) {
@@ -144,22 +156,28 @@ async function findWinners() {
             whaleLottery.type = 'whale'
             whaleLottery.amount = whalePrize
             await whaleLottery.save()
+            messagePayload = {
+                ...messagePayload,
+                whaleWinner: accountLink(whaleWinner.login),
+                whalePrize: whalePrize.toFixed(3)
+            }
         }
 
         await Promise.all(pays).then(
             _ => {
-                const payload = {
+                messagePayload = {
+                    ...messagePayload,
                     block: currentBlock,
-                    winner: 'winner.login',
                     hashSum: hashSumResult,
                     count: allParticipants.length,
-                    users: allParticipants.map(u => u.login).join(', '),
-                    prize: 'prize.toFixed(3)',
+                    fishUsers: fishParticipants.map(u => accountLink(u.login)).join(', '),
+                    dolphinUsers: dolphinParticipants.map(u => accountLink(u.login)).join(', '),
+                    whaleUsers: whaleParticipants.map(u => accountLink(u.login)).join(', '),
                     fund: fund.toFixed(3)
                 }
                 allParticipants.forEach(u => {
                     try {
-                        bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', payload), { parse_mode: 'HTML', disable_web_page_preview: true })
+                        bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', messagePayload), { parse_mode: 'HTML', disable_web_page_preview: true })
                     } catch (e) {
                         console.log(e)
                     }
@@ -173,6 +191,10 @@ async function findWinners() {
         sendToAdmin(err)
         viz.changeNode()
     }
+}
+
+function accountLink(account: string): string {
+    return '<a href="https://info.viz.plus/accounts/' + account + '/">' + account + '</a>'
 }
 
 async function processAward(data: BlockchainAward) {
@@ -266,7 +288,7 @@ async function processNextBlock() {
         )
     var winnerBlockDelimiter: number
     if (process.env.PRODUCTION === "false") {
-        winnerBlockDelimiter = 100
+        winnerBlockDelimiter = 50
     } else {
         winnerBlockDelimiter = parseInt(process.env.LOTTERY_HOURS) * 60 * 60 / 3
     }
