@@ -1,10 +1,11 @@
 import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
-import { getAwardsSum, getAllAwardsSum, isParticipated, participantsCount } from "../models/Award"
+import { getAwardsSum, getAllAwardsSum, participantsCount } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
 import { findUser, User } from "../models/User"
 import { timeUnitsBetween } from "../commands/play"
 import { mainKeyboard } from "./start"
 import { VIZ } from "../helpers/viz"
+import { participantIdsByCategory } from "../lottery"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
@@ -30,20 +31,20 @@ async function sendLottery(ctx: Context) {
 
 export async function lotteryParams(viz: VIZ, user: User) {
     const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties().catch(_ => viz.changeNode()))['last_irreversible_block_num']
-    const latestLottery = await getLatestLottery()
+    const latestLotteryBlock = (await getLatestLottery()).block
     const lotteryHours = parseInt(process.env.LOTTERY_HOURS)
     const roundTime = lotteryHours * 60 * 60
-    const timePassed = (lastIrreversibleBlock - latestLottery.block) * 3
+    const timePassed = (lastIrreversibleBlock - latestLotteryBlock) * 3
     const timeLeft = (roundTime - timePassed) * 1000
     const finalTime = new Date(new Date().getTime() + timeLeft)
     const between = timeUnitsBetween(new Date(), finalTime)
     const hours = between['hours']
     const minutes = between['minutes']
     const seconds = between['seconds']
-    const participated = await isParticipated(user.id, latestLottery.block)
-    const userAwardsSum = await getAwardsSum(user.id, latestLottery.block)
+    const userAwardsSum = await getAwardsSum(user.id, latestLotteryBlock)
+    const participated = userAwardsSum > 0
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
-    const participantCount = await participantsCount(latestLottery.block)
+    const participantCount = await participantsCount(latestLotteryBlock)
     const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
     var energy = 10
     if (vizAccount) {
@@ -65,6 +66,15 @@ export async function lotteryParams(viz: VIZ, user: User) {
         userAwardsSum: '0.000'
     }
     if (participated) {
+        var multiplier = 0
+        const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
+        if (userAwardsSum > 10) {
+            multiplier = whaleIDs.length
+        } else if (userAwardsSum >= 1) {
+            multiplier = dolphinIDs.length
+        } else {
+            multiplier = fishIDs.length
+        }
         const maxParticipantPrize = userAwardsSum * participantCount
         const prize: number = (maxParticipantPrize > allAwardsSum) ? allAwardsSum : maxParticipantPrize
         params["prize"] = prize.toFixed(3)
