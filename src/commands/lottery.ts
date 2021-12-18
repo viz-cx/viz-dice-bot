@@ -75,7 +75,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
         } else {
             multiplier = fishIDs.length
         }
-        const maxParticipantPrize = userAwardsSum * participantCount
+        const maxParticipantPrize = userAwardsSum * multiplier
         const prize: number = (maxParticipantPrize > allAwardsSum) ? allAwardsSum : maxParticipantPrize
         params["prize"] = prize.toFixed(3)
         params["userAwardsSum"] = userAwardsSum.toFixed(3)
