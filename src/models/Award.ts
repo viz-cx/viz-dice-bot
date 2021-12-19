@@ -43,10 +43,6 @@ export async function getAllAwards(afterBlock: number): Promise<DocumentType<Awa
     return await AwardModel.find({ block: { $gt: afterBlock } })
 }
 
-export async function participantsCount(afterBlock: number): Promise<number> {
-    return (await AwardModel.distinct('initiator', { block: { $gt: afterBlock } }).exec()).length
-}
-
 export async function getLatestAward(): Promise<DocumentType<Award>> {
     const count = await AwardModel.countDocuments().exec()
     if (count === 0) {
