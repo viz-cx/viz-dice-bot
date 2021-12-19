@@ -1,6 +1,6 @@
 import { findUser, getAllPayoutsSum, getLatestLottery, Lottery, LotteryModel } from "./models"
 import { VIZ } from './helpers/viz'
-import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, participantsCount, getAllAwards } from "./models/Award"
+import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, getAllAwards } from "./models/Award"
 import { bot } from "./helpers/bot"
 import { i18n } from "./helpers/i18n"
 import { DocumentType } from "@typegoose/typegoose"
@@ -64,14 +64,12 @@ export async function participantIdsByCategory(fromBlock: number): Promise<{
     for (var userIDStr in sumByUser) {
         let shares = sumByUser[userIDStr]
         let userID = parseInt(userIDStr)
-        if (shares < 1) {
-            fishIDs.push(userID)
-        }
-        if (shares >= 1 && shares < 10) {
-            dolphinIDs.push(userID)
-        }
         if (shares >= 10) {
             whaleIDs.push(userID)
+        } else if (shares >= 1) {
+            dolphinIDs.push(userID)
+        } else {
+            fishIDs.push(userID)
         }
     }
     return { fishIDs, dolphinIDs, whaleIDs }
@@ -80,7 +78,8 @@ export async function participantIdsByCategory(fromBlock: number): Promise<{
 async function findWinners() {
     try {
         const latestLotteryBlock = (await getLatestLottery()).block
-        const participantCount = await participantsCount(latestLotteryBlock)
+        const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
+        const participantCount = [...fishIDs, ...dolphinIDs, ...whaleIDs].length
         if (participantCount === 0) {
             console.log('Lottery was closed in block', currentBlock, 'without winner')
             return
@@ -91,7 +90,6 @@ async function findWinners() {
         const allPayoutsSum = await getAllPayoutsSum()
         const fund = allAwardsSum - allPayoutsSum
 
-        const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
         const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
         const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
         const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
@@ -119,7 +117,7 @@ async function findWinners() {
             await fishLottery.save()
             messagePayload = {
                 ...messagePayload,
-                fishWinner: accountLink(fishWinner.login),
+                fishWinner: accountLink(fishWinner.login, '🐟'),
                 fishPrize: fishPrize.toFixed(3)
             }
         }
@@ -143,7 +141,7 @@ async function findWinners() {
             await dolphinLottery.save()
             messagePayload = {
                 ...messagePayload,
-                dolphinWinner: accountLink(dolphinWinner.login),
+                dolphinWinner: accountLink(dolphinWinner.login, '🐬'),
                 dolphinPrize: dolphinPrize.toFixed(3)
             }
         }
@@ -167,7 +165,7 @@ async function findWinners() {
             await whaleLottery.save()
             messagePayload = {
                 ...messagePayload,
-                whaleWinner: accountLink(whaleWinner.login),
+                whaleWinner: accountLink(whaleWinner.login, '🐳'),
                 whalePrize: whalePrize.toFixed(3)
             }
         }
@@ -179,9 +177,9 @@ async function findWinners() {
                     block: currentBlock,
                     hashSum: hashSumResult,
                     count: allParticipants.length,
-                    fishUsers: fishParticipants.map(u => accountLink(u.login)).join(', '),
-                    dolphinUsers: dolphinParticipants.map(u => accountLink(u.login)).join(', '),
-                    whaleUsers: whaleParticipants.map(u => accountLink(u.login)).join(', '),
+                    fishUsers: fishParticipants.map(u => accountLink(u.login, '🐟')).join(', '),
+                    dolphinUsers: dolphinParticipants.map(u => accountLink(u.login, '🐬')).join(', '),
+                    whaleUsers: whaleParticipants.map(u => accountLink(u.login, '🐳')).join(', '),
                     fund: fund.toFixed(3)
                 }
                 allParticipants.forEach(u => {
@@ -202,8 +200,8 @@ async function findWinners() {
     }
 }
 
-function accountLink(account: string): string {
-    return '<a href="https://info.viz.plus/accounts/' + account + '/">' + account + '</a>'
+export function accountLink(account: string, prefix: string): string {
+    return prefix+'<a href="https://info.viz.plus/accounts/' + account + '/">' + account + '</a>'
 }
 
 async function processAward(data: BlockchainAward) {
@@ -255,7 +253,9 @@ async function processAward(data: BlockchainAward) {
                                                     firstTime: firstTime
                                                 }
                                                 bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
-                                                    reply_markup: mainKeyboardByLanguage(user.language)
+                                                    reply_markup: mainKeyboardByLanguage(user.language),
+                                                    parse_mode: 'HTML',
+                                                    disable_web_page_preview: true
                                                 })
                                             }
                                         )

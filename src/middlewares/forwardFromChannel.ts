@@ -22,7 +22,7 @@ export async function checkForward(ctx: Context, next: () => any) {
             return
         }
         const channelMessageID = ctx.message.forward_from_message_id
-        await getUsersByLang(lang)
+        getUsersByLang(lang)
             .then(async users => {
                 var users = users
                 console.log('Start sending to', users.length, 'users')

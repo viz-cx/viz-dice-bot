@@ -1,11 +1,11 @@
 import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
-import { getAwardsSum, getAllAwardsSum, participantsCount } from "../models/Award"
+import { getAwardsSum, getAllAwardsSum } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
 import { findUser, User } from "../models/User"
 import { timeUnitsBetween } from "../commands/play"
 import { mainKeyboard } from "./start"
 import { VIZ } from "../helpers/viz"
-import { participantIdsByCategory } from "../lottery"
+import { accountLink, participantIdsByCategory } from "../lottery"
 
 export function setupLottery(bot: Telegraf<Context>) {
     bot.hears(new RegExp('🍀 .*'), async ctx => {
@@ -44,8 +44,12 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const userAwardsSum = await getAwardsSum(user.id, latestLotteryBlock)
     const participated = userAwardsSum > 0
     const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
-    const participantCount = await participantsCount(latestLotteryBlock)
     const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
+    const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
+    const participantCount = [...fishIDs, ...dolphinIDs, ...whaleIDs].length
+    const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
+    const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
+    const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
     var energy = 10
     if (vizAccount) {
         energy = vizAccount['energy'] / 5
@@ -62,13 +66,15 @@ export async function lotteryParams(viz: VIZ, user: User) {
         seconds: seconds,
         allAwardsSum: allAwardsSum.toFixed(3),
         participants: participantCount,
+        fishUsers: fishParticipants.map(u => accountLink(u.login, '🐟')).join(', '),
+        dolphinUsers: dolphinParticipants.map(u => accountLink(u.login, '🐬')).join(', '),
+        whaleUsers: whaleParticipants.map(u => accountLink(u.login, '🐳')).join(', '),
         prize: '0.000',
         userAwardsSum: '0.000'
     }
     if (participated) {
         var multiplier = 0
-        const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
-        if (userAwardsSum > 10) {
+        if (userAwardsSum >= 10) {
             multiplier = whaleIDs.length
         } else if (userAwardsSum >= 1) {
             multiplier = dolphinIDs.length

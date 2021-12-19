@@ -38,9 +38,9 @@ stats: |
   Всего пользователей: ${all} 
   За последний месяц: ${month}
 lottery: |
-  ${participated ? '✅ Вы участвуете': '⛔️ Вы ещё не участвуете в лотерее'} ${participated ? 'со ставкой ' + userAwardsSum + ' VIZ' + '\n🎁 При выигрыше претендуете на ' + prize + ' VIZ' : ''}
-  💰 Призовой фонд составляет ${allAwardsSum} VIZ 
-  👀 Принимают участие ${pluralize(participants, 'человек', 'человека', 'человек')}
+  ${participated ? '✅ Вы участвуете': '⛔️ Вы ещё не участвуете в лотерее'} ${participated ? 'со ставкой ' + userAwardsSum + ' VIZ' + '\n🎁 Претендуете на ' + prize + ' VIZ' : ''}
+  💰 Призовой фонд ${allAwardsSum} VIZ 
+  👀 Участвуют ${pluralize(participants, 'человек', 'человека', 'человек')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ До окончания ~${hours > 0 ? ' ' + pluralize(hours, 'час', 'часа', 'часов') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'минута', 'минуты', 'минут') : ''} ${pluralize(seconds, 'секунда', 'секунды', 'секунд')}
 
   Для участия в лотерее необходимо <b>наградить</b> произвольным количеством энергии аккаунт <code>${account}</code> с заметкой <code>${memo}</code> (короткий тап для копирования на мобильных устройствах)
@@ -48,11 +48,11 @@ lottery: |
   Награждать можно через <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS приложение</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android приложение</a> или любым другим способом
 new_award: |
   ✅ Получена новая ставка ${shares} VIZ${firstTime ? '' : '. Всего ' + sum + ' VIZ'}
-  🎁 При выигрыше претендуете на ${prize} VIZ
-  💰 Призовой фонд составляет ${allAwardsSum} VIZ 
-  👀 Принимают участие ${pluralize(participants, 'человек', 'человека', 'человек')}
+  🎁 Претендуете на ${prize} VIZ
+  💰 Призовой фонд ${allAwardsSum} VIZ 
+  👀 Участвуют ${pluralize(participants, 'человек', 'человека', 'человек')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ До окончания ~${hours > 0 ? ' ' + pluralize(hours, 'час', 'часа', 'часов') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'минута', 'минуты', 'минут') : ''} ${pluralize(seconds, 'секунда', 'секунды', 'секунд')}
 lottery_result: |
-  🏆 Победитель ${fishWinner.length > 0 ? '🐟' + fishWinner + ' получает ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + '🐬' + dolphinWinner + ' получает ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + '🐳' + whaleWinner + ' получает ' + whalePrize + ' VIZ' : ''} из ${fund} VIZ
+  🏆 Победитель ${fishWinner.length > 0 ? fishWinner + ' получает ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + ' получает ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + ' получает ' + whalePrize + ' VIZ' : ''} из призового фонда ${fund} VIZ
    
-  🤹 Розыгрыш завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, хеш-сумма <i>${hashSum}</i>, всего ${pluralize(count, 'участник', 'участника', 'участников')}:${fishUsers.length > 0 ? '\n🐟 ' + fishUsers : ''}${dolphinUsers.length > 0 ? '\n🐬 ' + dolphinUsers : ''}${whaleUsers.length > 0 ? '\n🐳 ' + whaleUsers : ''}
+  🤹 Розыгрыш завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, хеш-сумма <i>${hashSum}</i>, всего ${pluralize(count, 'участник', 'участника', 'участников')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
