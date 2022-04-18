@@ -43,7 +43,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const seconds = between['seconds']
     const userAwardsSum = await getAwardsSum(user.id, latestLotteryBlock)
     const participated = userAwardsSum > 0
-    const allAwardsSum = (await getAllAwardsSum()) - (await getAllPayoutsSum())
+    const allAwardsSum = Math.abs((await getAllAwardsSum()) - (await getAllPayoutsSum()))
     const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
     const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
     const participantCount = [...fishIDs, ...dolphinIDs, ...whaleIDs].length
