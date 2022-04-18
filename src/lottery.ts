@@ -11,7 +11,7 @@ const viz = new VIZ()
 var currentBlock: number = 0
 
 export function startLottery() {
-    var promises = Promise.all([viz.getDynamicGlobalProperties()])
+    var promises: Promise<Object[]> = Promise.all([viz.getDynamicGlobalProperties()])
     if (currentBlock === 0) {
         promises = Promise.all([
             viz.getDynamicGlobalProperties(),
@@ -207,12 +207,8 @@ export function accountLink(account: string, prefix: string): string {
 async function processAward(data: BlockchainAward) {
     if (data.receiver === process.env.ACCOUNT && data.memo !== '') {
         const userID = parseInt(data.memo)
-        if (isNaN(userID)) {
-            sendToAdmin('Bet failed: empty memo from ' + data.initiator + ' with ' + data.shares)
-            return
-        }
-        if (userID === 0) {
-            sendToAdmin('Bet failed: memo from ' + data.initiator + ' with memo ' + data.memo + ' and ' + data.shares)
+        if (isNaN(userID) || userID === 0) {
+            sendToAdmin('Bet failed: empty userID from ' + data.initiator + ' with ' + data.shares)
             return
         }
         await findUser(userID).then(
