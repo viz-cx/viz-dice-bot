@@ -2,17 +2,14 @@ export class VIZ {
     public static vizJS = require("viz-js-lib")
 
     constructor() {
-        VIZ.vizJS.config.set('websocket', 'https://node.viz.cx/')
+        this.changeNode()
     }
 
     public changeNode() {
         var nodes = [
             'https://node.viz.cx/',
-            'https://node.viz.plus/',
-            'https://node.viz.media/',
-            'https://viz-node.dpos.space/',
-            'https://vizrpc.lexai.host/',
             'https://viz.lexai.host/',
+            'https://api.viz.world/'
         ]
         const oldNode = VIZ.vizJS.config.get('websocket')
         nodes = nodes.filter(e => e !== oldNode)
