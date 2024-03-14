@@ -4,10 +4,16 @@ import { safeLoad } from 'js-yaml'
 import { sendMainKeyboard } from './start'
 
 function emojiByLocaleName(localeName: string) {
-  if (localeName === 'Русский') {
-    return '🇷🇺'
+  switch (localeName) {
+    case 'Русский':
+      return '🇷🇺'
+    case 'English':
+      return '🇺🇸'
+    case 'Татарча':
+      return ''
+    default:
+      return ''
   }
-  return '🇺🇸'
 }
 
 function localeCodeByLocaleName(localeName: string): string {
@@ -29,7 +35,13 @@ export function setupLanguage(bot: Telegraf<Context>) {
   ])
 
   const locWithEmojis = Array.from(locales().values())
-    .map(value => emojiByLocaleName(value) + ' ' + value)
+    .map(value => {
+      const emoji = emojiByLocaleName(value) 
+      if (emoji) {
+        return emoji + ' ' + value
+      }
+      return value
+    })
   bot.hears(locWithEmojis, async ctx => {
     let user = ctx.dbuser
     const message = ctx.update.message
