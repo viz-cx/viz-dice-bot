@@ -1,11 +1,11 @@
 name: Татарча
 help: |
   @${botname} — <a href="https://reg.readdle.me/?set_lang=ru">VIZ блокчейны</a> механикасын кулланучы ботның мисалы.
-  
+
   Һәр уен <b>${minutes} минут</b> көтүне таләп итә һәм синең <b>VIZ аккаунтыңны</b> нәтиҗәгә карап бүләкли: алынган бүләк сайланган уен төренә, уен нәтиҗәсенә бәйле зурлыкка һәм бер-бер артлы чыккан тәңгәл кыйммәтләр санына тапкырлана һәм, шулай ук, лотереяда катнашсаң, тагын өчкә тапкырлана /lottery
 
   ${encodedlogin ? 'Чакыру өчен сылтама (рефералларның барлык уеннарыннан 10%ын бирә): https://t.me/' + botname + '?start=' + encodedlogin : '<b>Сез әле авторизацияне үтмәдегез.</b>'}
-  
+
   Код тулысынча ачык һәм <a href="https://github.com/viz-cx/viz-dice-bot">монда ята</a>. Сораулар туса, аларны @viz_cx группасына яз.
 language: Телне сайлагызчы
 language_selected: Моннан соң мин татар телендә сөйләшәчәкмен. /help командасы ярдәмендә минем кем икәнемне һәм нәрсә эшли белгәнемне сора.
@@ -44,7 +44,7 @@ lottery: |
   ⌛️ Тәмамлануга кадәр ~${hours > 0 ? ' ' + pluralize(hours, 'сәгать', 'сәгать', 'сәгать') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'минут', 'минут', 'минут') : ''} ${pluralize(seconds, 'секунд', 'секунд', 'секунд')}
 
   Лотереяда катнашу өчен <code>${memo}</code> язмасын өстәп (мобиль җиһазларда күчермәләү өчен кыска тап) <code>${account}</code> аккаунтын энергиянең теләсә нинди күләме белән <b>бүләкләргә</b> кирәк.
-  
+
   Бүләкләргә <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS кушымтасы</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android кушмымтасы</a> аркылы яки теләгән башка ысул белән була.
 new_award: |
   ✅ Яңа ставка алынды — ${shares} VIZ${firstTime ? '' : '. Барлыгы ' + sum + ' VIZ'}
@@ -53,6 +53,6 @@ new_award: |
   👀 ${pluralize(participants, 'кеше катнаша', 'кеше катнаша', 'кеше катнаша')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ Тәмамлануга кадәр ~${hours > 0 ? ' ' + pluralize(hours, 'сәгать', 'сәгать', 'сәгать') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'минут', 'минут', 'минут') : ''} ${pluralize(seconds, 'секунд', 'секунд', 'секунд')}
 lottery_result: |
-  🏆 Җиңүче ${fishWinner.length > 0 ? fishWinner + fishPrize + ' VIZ ота' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + dolphinPrize + ' VIZ ота' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + whalePrize + ' VIZ ота' : ''}. Приз фонды ${fund} VIZ тәшкил итте.
+  🏆 Җиңүче ${fishWinner.length > 0 ? fishWinner + ' ' + fishPrize + ' VIZ ота' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + ' ' + dolphinPrize + ' VIZ ота' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + ' ' + whalePrize + ' VIZ ота' : ''}. Приз фонды ${fund} VIZ тәшкил итте.
    
   🤹 Уйнату <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a> блокында тәмамланды, һәш-сумма <i>${hashSum}</i>, барлыгы ${pluralize(count, 'катнашучы', 'катнашучы', 'катнашучы')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
