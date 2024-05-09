@@ -50,11 +50,11 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
     const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
     const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
-    var energy = 10
+    let energy = 10
     if (vizAccount) {
         energy = vizAccount['energy'] / 5
     }
-    var params = {
+    const params = {
         account: process.env.ACCOUNT,
         participated: participated,
         memo: user.id,
@@ -73,7 +73,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
         userAwardsSum: '0.000'
     }
     if (participated) {
-        var multiplier = 0
+        let multiplier = 0
         if (userAwardsSum >= 10) {
             multiplier = whaleIDs.length
         } else if (userAwardsSum >= 1) {

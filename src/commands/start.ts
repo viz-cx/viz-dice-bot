@@ -11,7 +11,7 @@ export function setupStart(bot: Telegraf<Context>) {
         sendLanguageKeyboard(ctx)
         const payload = (ctx as any)['startPayload']
         const referrer = Buffer.from(payload, 'base64').toString()
-        var user = ctx.dbuser
+        let user = ctx.dbuser
         if (!user.referrer && referrer && user.login !== referrer) {
             ctx.viz.isAccountExists(referrer)
                 .then(
@@ -30,7 +30,7 @@ export function setupStart(bot: Telegraf<Context>) {
 }
 
 export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
-    var params = {
+    const params = {
         botname: bot.options.username,
         minutes: process.env.MINUTES,
         encodedlogin: null,

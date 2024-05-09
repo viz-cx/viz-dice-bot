@@ -65,7 +65,7 @@ export function sendLanguageKeyboard(ctx: Context, addBackButton = false) {
 function languageKeyboard(ctx: Context, addBackButton = false) {
   const locWithEmojis = Array.from(locales().values())
     .map(value => emojiByLocaleName(value) + ' ' + value)
-  var result = []
+  const result = []
   locWithEmojis.forEach((locale, index) => {
     if (index % 2 === 0) {
       if (index === 0) {
@@ -93,7 +93,7 @@ function languageKeyboard(ctx: Context, addBackButton = false) {
 
 // { 'en' => 'English', 'ru' => 'Русский' }
 function locales() {
-  var result = new Map()
+  const result = new Map()
   localesFiles().forEach(locale => {
     const localeCode = locale.split('.')[0]
     const localeName = safeLoad(

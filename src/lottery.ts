@@ -8,10 +8,10 @@ import { mainKeyboardByLanguage } from "./commands/start"
 import { lotteryParams } from "./commands/lottery"
 
 const viz = new VIZ()
-var currentBlock: number = 0
+let currentBlock: number = 0
 
 export function startLottery() {
-    var promises: Promise<Object[]> = Promise.all([viz.getDynamicGlobalProperties()])
+    let promises: Promise<Object[]> = Promise.all([viz.getDynamicGlobalProperties()])
     if (currentBlock === 0) {
         promises = Promise.all([
             viz.getDynamicGlobalProperties(),
@@ -51,7 +51,7 @@ export async function participantIdsByCategory(fromBlock: number): Promise<{
     dolphinIDs: number[]
     whaleIDs: number[]
 }> {
-    let currentAwards: DocumentType<Award>[] = await getAllAwards(fromBlock)
+    const currentAwards: DocumentType<Award>[] = await getAllAwards(fromBlock)
     let sumByUser = {}
     currentAwards.forEach(function (a) {
         if (sumByUser.hasOwnProperty(a.userID)) {
@@ -60,10 +60,10 @@ export async function participantIdsByCategory(fromBlock: number): Promise<{
             sumByUser[a.userID] = a.shares
         }
     })
-    var fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
-    for (var userIDStr in sumByUser) {
-        let shares = sumByUser[userIDStr]
-        let userID = parseInt(userIDStr)
+    let fishIDs: number[] = [], dolphinIDs: number[] = [], whaleIDs: number[] = []
+    for (const userIDStr in sumByUser) {
+        const shares = sumByUser[userIDStr]
+        const userID = parseInt(userIDStr)
         if (shares >= 10) {
             whaleIDs.push(userID)
         } else if (shares >= 1) {
@@ -94,14 +94,14 @@ async function findWinners() {
         const dolphinParticipants = await Promise.all(dolphinIDs.map(userID => findUser(userID)))
         const whaleParticipants = await Promise.all(whaleIDs.map(userID => findUser(userID)))
         const allParticipants = [...fishParticipants, ...dolphinParticipants, ...whaleParticipants]
-        var messagePayload = {}
+        let messagePayload = {}
         messagePayload = { ...messagePayload, fishWinner: '', dolphinWinner: '', whaleWinner: '' }
-        var pays: Promise<Object>[] = []
+        const pays: Promise<Object>[] = []
 
         if (fishParticipants.length > 0) {
             const fishWinnerCode = hashSumResult % fishParticipants.length
             const fishWinner = fishParticipants[fishWinnerCode]
-            var fishPrize = fund
+            let fishPrize = fund
             const winnerAwardSum = await getAwardsSum(fishWinner.id, latestLotteryBlock)
             const maxFishWinnerPrize = winnerAwardSum * fishParticipants.length
             if (fishPrize > maxFishWinnerPrize) {
@@ -109,7 +109,7 @@ async function findWinners() {
             }
             console.log('Fish winner', fishWinner.login, 'with price', fishPrize)
             pays.push(viz.pay(fishWinner.login, fishPrize))
-            var fishLottery = new LotteryModel()
+            const fishLottery = new LotteryModel()
             fishLottery.block = currentBlock
             fishLottery.winner = fishWinner.login
             fishLottery.type = 'fish'
@@ -125,7 +125,7 @@ async function findWinners() {
         if (dolphinParticipants.length > 0) {
             const dolphinWinnerCode = hashSumResult % dolphinParticipants.length
             const dolphinWinner = dolphinParticipants[dolphinWinnerCode]
-            var dolphinPrize = fund
+            let dolphinPrize = fund
             const winnerAwardSum = await getAwardsSum(dolphinWinner.id, latestLotteryBlock)
             const maxdolphinWinnerPrize = winnerAwardSum * dolphinParticipants.length
             if (dolphinPrize > maxdolphinWinnerPrize) {
@@ -133,7 +133,7 @@ async function findWinners() {
             }
             console.log('Dolphin winner', dolphinWinner.login, 'with price', dolphinPrize)
             pays.push(viz.pay(dolphinWinner.login, dolphinPrize))
-            var dolphinLottery = new LotteryModel()
+            const dolphinLottery = new LotteryModel()
             dolphinLottery.block = currentBlock
             dolphinLottery.winner = dolphinWinner.login
             dolphinLottery.type = 'dolphin'
@@ -149,7 +149,7 @@ async function findWinners() {
         if (whaleParticipants.length > 0) {
             const whaleWinnerCode = hashSumResult % whaleParticipants.length
             const whaleWinner = whaleParticipants[whaleWinnerCode]
-            var whalePrize = fund
+            let whalePrize = fund
             const winnerAwardSum = await getAwardsSum(whaleWinner.id, latestLotteryBlock)
             const maxwhaleWinnerPrize = winnerAwardSum * whaleParticipants.length
             if (whalePrize > maxwhaleWinnerPrize) {
@@ -157,7 +157,7 @@ async function findWinners() {
             }
             console.log('Whale winner', whaleWinner.login, 'with price', whalePrize)
             pays.push(viz.pay(whaleWinner.login, whalePrize))
-            var whaleLottery = new LotteryModel()
+            const whaleLottery = new LotteryModel()
             whaleLottery.block = currentBlock
             whaleLottery.winner = whaleWinner.login
             whaleLottery.type = 'whale'
@@ -182,26 +182,25 @@ async function findWinners() {
                     whaleUsers: whaleParticipants.map(u => accountLink(u.login, '🐳')).join(', '),
                     fund: fund.toFixed(3)
                 }
-                allParticipants.forEach(u => {
+                allParticipants.forEach(async u => {
                     try {
-                        bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', messagePayload), { parse_mode: 'HTML', disable_web_page_preview: true })
+                        await bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', messagePayload), { parse_mode: 'HTML', disable_web_page_preview: true })
                     } catch (e) {
                         console.log(e)
                     }
                 })
                 // TODO: write result to blockchain: lottery number, block number, winner, hashsum, participants
             },
-            failure => sendToAdmin('Failed to pay winners ' + failure)
-        ).catch(error => { sendToAdmin(error) })
+            async failure => await sendToAdmin('Failed to pay winners ' + failure)
+        ).catch(async error => { await sendToAdmin(error) })
     } catch (err) {
         console.log('Finding winners error: ', err)
-        sendToAdmin(err)
-        viz.changeNode()
+        await sendToAdmin(err)
     }
 }
 
 export function accountLink(account: string, prefix: string): string {
-    return prefix+'<a href="https://info.viz.plus/accounts/' + account + '/">' + account + '</a>'
+    return prefix + '<a href="https://info.viz.plus/accounts/' + account + '/">' + account + '</a>'
 }
 
 async function processAward(data: BlockchainAward) {
@@ -222,9 +221,9 @@ async function processAward(data: BlockchainAward) {
                     return
                 }
                 // anti-spam
-                var withMessage: boolean = data.initiator == user.login
+                const withMessage: boolean = data.initiator == user.login
                 // console.log(participants)
-                var award = new AwardModel()
+                const award = new AwardModel()
                 award.block = currentBlock
                 award.initiator = data.initiator
                 award.userID = user.id
@@ -241,14 +240,14 @@ async function processAward(data: BlockchainAward) {
                                     sum => {
                                         const firstTime = sum == award.shares
                                         lotteryParams(viz, user).then(
-                                            params => {
+                                            async params => {
                                                 const payload = {
                                                     ...params,
                                                     shares: award.shares.toFixed(3),
                                                     sum: sum.toFixed(3),
                                                     firstTime: firstTime
                                                 }
-                                                bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
+                                                await bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
                                                     reply_markup: mainKeyboardByLanguage(user.language),
                                                     parse_mode: 'HTML',
                                                     disable_web_page_preview: true
@@ -291,7 +290,7 @@ async function processNextBlock() {
                 viz.changeNode()
             }
         )
-    var winnerBlockDelimiter: number
+    let winnerBlockDelimiter: number
     if (process.env.PRODUCTION === "false") {
         winnerBlockDelimiter = 50
     } else {
@@ -309,8 +308,8 @@ function hashSum(s: string): number {
     }, 0)
 }
 
-function sendToAdmin(message: string) {
+async function sendToAdmin(message: string) {
     console.log(message)
     const myUserID = 38968897
-    bot.telegram.sendMessage(myUserID, message)
+    await bot.telegram.sendMessage(myUserID, message)
 }

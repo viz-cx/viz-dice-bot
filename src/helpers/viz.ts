@@ -6,7 +6,7 @@ export class VIZ {
     }
 
     public changeNode() {
-        var nodes = [
+        let nodes = [
             'https://node.viz.cx/',
             'https://viz.lexai.host/',
             'https://api.viz.world/'
@@ -33,8 +33,8 @@ export class VIZ {
 
     private award(receiver: string, from: string, wif: string, energy: number, memo: string, referrer: string, account: any) {
         return new Promise((resolve, reject) => {
-            var custom_sequence = 0
-            var beneficiaries = []
+            const custom_sequence = 0
+            const beneficiaries = []
             if (referrer) {
                 beneficiaries.push({ account: referrer, weight: 1000 })
             }
@@ -60,7 +60,7 @@ export class VIZ {
                             const totalRewardShares = parseFloat(dgp['total_reward_shares']) + voteShares
                             const totalRewardFund = parseFloat(dgp['total_reward_fund']) * 1000
                             const reward = Math.ceil(totalRewardFund * voteShares / totalRewardShares) / 1000
-                            var finalReward = reward * 0.995 // because final value could be less
+                            let finalReward = reward * 0.995 // because final value could be less
                             if (beneficiaries.length > 0) {
                                 finalReward = finalReward * 0.9
                             }
@@ -160,7 +160,7 @@ export class VIZ {
         })
     }
 
-    getOpsInBlock(blockID: number, onlyVirtual: Boolean = true): Promise<Object> {
+    getOpsInBlock(blockID: number, onlyVirtual: boolean = true): Promise<Object> {
         const virtualOpsOnly = onlyVirtual ? 1 : 0
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getOpsInBlock(blockID, virtualOpsOnly, function (err, result) {

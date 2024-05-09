@@ -26,7 +26,7 @@ export async function checkForward(ctx: Context, next: () => any) {
             .then(async users => {
                 var users = users
                 console.log('Start sending to', users.length, 'users')
-                var successCounter = 0
+                let successCounter = 0
                 while (users.length > 0) {
                     const messages: Promise<Message>[] = users.splice(0, 29)
                         .map(u => u.id)

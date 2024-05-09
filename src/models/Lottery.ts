@@ -23,7 +23,7 @@ export const LotteryModel = getModelForClass(Lottery, {
 export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
     const count = await LotteryModel.countDocuments().exec()
     if (count === 0) {
-        var l = new LotteryModel()
+        let l = new LotteryModel()
         l.block = 0
         l.winner = ''
         l.type = 'fish'

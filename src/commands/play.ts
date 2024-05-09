@@ -34,7 +34,7 @@ export function setupPlay(bot: Telegraf<Context>) {
       }))
       return
     }
-    var user = ctx.dbuser
+    let user = ctx.dbuser
     const hours = Math.random() * 10
     const zeroingDate = new Date(
       user.payoutDate.getTime()
@@ -43,7 +43,7 @@ export function setupPlay(bot: Telegraf<Context>) {
     user.payoutDate = now
     user.save()
 
-    var value: number, multiplier: number, participated: Boolean
+    let value: number, multiplier: number, participated: boolean
     await Promise.all([
       ctx.replyWithDice({ emoji: ctx.dbuser.game }),
       getLatestLottery().then(lottery => getAwardsSum(ctx.dbuser.id, lottery.block))
@@ -104,9 +104,9 @@ export function setupPlay(bot: Telegraf<Context>) {
         return ctx.viz.getAccount(process.env.ACCOUNT)
       })
       .then(account => {
-        let lastVoteTime = Date.parse(account['last_vote_time'])
-        let deltaTime = (new Date().getTime() - lastVoteTime + (new Date().getTimezoneOffset() * 60000)) / 1000
-        let energy = account['energy']
+        const lastVoteTime = Date.parse(account['last_vote_time'])
+        const deltaTime = (new Date().getTime() - lastVoteTime + (new Date().getTimezoneOffset() * 60000)) / 1000
+        const energy = account['energy']
         let new_energy = parseInt(energy + (deltaTime * 10000 / 432000)) //CHAIN_ENERGY_REGENERATION_SECONDS 5 days
         if (new_energy > 10000) {
           new_energy = 10000

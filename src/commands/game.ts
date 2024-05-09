@@ -14,7 +14,7 @@ export function setupGame(bot: Telegraf<Context>) {
   const regExp = new RegExp('(' + games.join('|') + ') .*')
   bot.hears(regExp, async ctx => {
     const game = ctx.match[1] as DiceEmoji
-    var user = ctx.dbuser
+    let user = ctx.dbuser
     user.game = game
     user.value = 0
     user.series = 1

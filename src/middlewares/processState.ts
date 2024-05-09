@@ -7,7 +7,7 @@ export async function processState(ctx: Context, next: () => any) {
         const login = ctx.message.text
         const accountExists = await ctx.viz.isAccountExists(login)
         if (accountExists) {
-          var user = ctx.dbuser
+          let user = ctx.dbuser
           user.login = login
           user.state = null
           await user.save().then(

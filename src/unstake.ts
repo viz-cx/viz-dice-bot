@@ -13,5 +13,5 @@ export function startUnstaking() {
 function unstake() {
     viz.unstakeExcessShares()
         .then(result => console.log(result['operations'][0][1]))
-        .catch(_ => console.error("Unsuccessful vesting withdrawal!"))
+        .catch(() => console.error("Unsuccessful vesting withdrawal!"))
 }

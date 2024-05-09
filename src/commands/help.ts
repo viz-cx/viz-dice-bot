@@ -10,7 +10,7 @@ export function setupHelp(bot: Telegraf<Context>) {
 }
 
 function sendHelp(bot: Telegraf<Context>, ctx: Context) {
-  var params = {
+  const params = {
     botname: bot.options.username,
     minutes: process.env.MINUTES,
     encodedlogin: null

@@ -2,7 +2,7 @@ import { Telegraf, Context } from "telegraf"
 
 export function setupStop(bot: Telegraf<Context>) {
     bot.command(['stop'], async ctx => {
-        var user = ctx.dbuser
+        let user = ctx.dbuser
         user.login = ""
         user.state = "waitLogin"
         await user.save()
