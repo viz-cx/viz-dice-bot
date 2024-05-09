@@ -30,7 +30,8 @@ async function sendLottery(ctx: Context) {
 }
 
 export async function lotteryParams(viz: VIZ, user: User) {
-    const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties().catch(_ => viz.changeNode()))['last_irreversible_block_num']
+    const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties()
+        .catch(_ => viz.changeNode()))['last_irreversible_block_num']
     const latestLotteryBlock = (await getLatestLottery()).block
     const lotteryHours = parseInt(process.env.LOTTERY_HOURS)
     const roundTime = lotteryHours * 60 * 60
@@ -44,7 +45,9 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const userAwardsSum = await getAwardsSum(user.id, latestLotteryBlock)
     const participated = userAwardsSum > 0
     const allAwardsSum = Math.abs((await getAllAwardsSum()) - (await getAllPayoutsSum()))
-    const vizAccount = await findUser(user.id).then(user => viz.getAccount(user.login).catch(_ => viz.changeNode()))
+    const vizAccount = await findUser(user.id)
+        .then(user => viz.getAccount(user.login)
+            .catch(_ => viz.changeNode()))
     const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
     const participantCount = [...fishIDs, ...dolphinIDs, ...whaleIDs].length
     const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))

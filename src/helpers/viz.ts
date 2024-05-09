@@ -1,7 +1,9 @@
 export class VIZ {
     public static vizJS = require("viz-js-lib")
 
-    constructor() {
+    static origin = new VIZ()
+
+    private constructor() {
         this.changeNode()
     }
 

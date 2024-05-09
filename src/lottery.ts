@@ -7,7 +7,7 @@ import { DocumentType } from "@typegoose/typegoose"
 import { mainKeyboardByLanguage } from "./commands/start"
 import { lotteryParams } from "./commands/lottery"
 
-const viz = new VIZ()
+const viz = VIZ.origin
 let currentBlock = 0
 
 export function startLottery() {

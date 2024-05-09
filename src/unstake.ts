@@ -1,6 +1,6 @@
 import { VIZ } from "./helpers/viz"
 
-const viz = new VIZ()
+const viz = VIZ.origin
 
 export function startUnstaking() {
     setTimeout(() => {
