@@ -1,4 +1,9 @@
 import { Context, Telegraf } from 'telegraf'
-const TelegrafBot = require('telegraf')
+import { Agent } from "node:https";
+const TelegrafBot = require('telegraf');
 
-export const bot = new TelegrafBot(process.env.TOKEN) as Telegraf<Context>
+export const bot = new TelegrafBot(process.env.TOKEN, {
+    telegram: {
+        agent: new Agent({ keepAlive: false }),
+    },
+}) as Telegraf<Context>
