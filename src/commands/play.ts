@@ -149,6 +149,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         if (err.toString().search(/Duplicate transaction check failed/) !== -1) {
           message = ctx.i18n.t('too_fast')
         }
+        console.log(message)
         ctx.replyWithHTML(message, { reply_markup: mainKeyboard(ctx) })
       })
   })
