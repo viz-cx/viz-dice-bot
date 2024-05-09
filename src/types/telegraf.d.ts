@@ -16,7 +16,7 @@ declare module 'telegraf' {
     action(
       action: string | string[] | RegExp,
       middleware: Middleware<TelegrafContext>,
-      ...middlewares: Array<Middleware<TelegrafContext>>
+      ...middlewares: Middleware<TelegrafContext>[]
     ): Composer<TContext>
   }
 }

@@ -160,7 +160,7 @@ export class VIZ {
         })
     }
 
-    getOpsInBlock(blockID: number, onlyVirtual: boolean = true): Promise<Object> {
+    getOpsInBlock(blockID: number, onlyVirtual = true): Promise<Object> {
         const virtualOpsOnly = onlyVirtual ? 1 : 0
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getOpsInBlock(blockID, virtualOpsOnly, function (err, result) {

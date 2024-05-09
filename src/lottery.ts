@@ -8,7 +8,7 @@ import { mainKeyboardByLanguage } from "./commands/start"
 import { lotteryParams } from "./commands/lottery"
 
 const viz = new VIZ()
-let currentBlock: number = 0
+let currentBlock = 0
 
 export function startLottery() {
     let promises: Promise<Object[]> = Promise.all([viz.getDynamicGlobalProperties()])
