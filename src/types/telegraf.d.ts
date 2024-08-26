@@ -6,7 +6,7 @@ import { TelegrafContext } from 'telegraf/typings/context'
 import { VIZ } from '../helpers/viz'
 
 declare module 'telegraf' {
-  export class Context {
+  export interface Context {
     dbuser: DocumentType<User>
     i18n: I18N
     viz: VIZ

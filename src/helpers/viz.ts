@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 export class VIZ {
     public static vizJS = require("viz-js-lib")
 
@@ -48,7 +53,7 @@ export class VIZ {
                 custom_sequence,
                 memo,
                 beneficiaries,
-                function (err, _) {
+                function (err: any) {
                     if (err) {
                         reject(err)
                         return
@@ -73,7 +78,7 @@ export class VIZ {
         })
     }
 
-    public getAccount(login: string): Promise<Object> {
+    public getAccount(login: string): Promise<object> {
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getAccounts([login], function (err, result) {
                 if (err) {
@@ -138,7 +143,7 @@ export class VIZ {
         })
     }
 
-    getDynamicGlobalProperties(): Promise<Object> {
+    getDynamicGlobalProperties(): Promise<object> {
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getDynamicGlobalProperties(function (err, result) {
                 if (err) {
@@ -150,7 +155,7 @@ export class VIZ {
         })
     }
 
-    getBlockHeader(blockID: number): Promise<Object> {
+    getBlockHeader(blockID: number): Promise<object> {
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getBlockHeader(blockID, function (err, result) {
                 if (err) {
@@ -162,7 +167,7 @@ export class VIZ {
         })
     }
 
-    getOpsInBlock(blockID: number, onlyVirtual = true): Promise<Object> {
+    getOpsInBlock(blockID: number, onlyVirtual = true): Promise<object> {
         const virtualOpsOnly = onlyVirtual ? 1 : 0
         return new Promise((resolve, reject) => {
             VIZ.vizJS.api.getOpsInBlock(blockID, virtualOpsOnly, function (err, result) {
@@ -175,7 +180,7 @@ export class VIZ {
         })
     }
 
-    private transferToVesting(wif, from, to, amount: string): Promise<Object> {
+    private transferToVesting(wif, from, to, amount: string): Promise<object> {
         return new Promise((resolve, reject) => {
             VIZ.vizJS.broadcast.transferToVesting(wif, from, to, amount, function (err, result) {
                 if (err) {

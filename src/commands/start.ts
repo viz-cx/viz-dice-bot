@@ -3,22 +3,24 @@ import { Telegraf, Context, Markup as m } from "telegraf"
 import { sendLanguageKeyboard } from "./language"
 
 export function setupStart(bot: Telegraf<Context>) {
-    bot.hears(new RegExp('🔙 .*'), async ctx => {
+    bot.hears(new RegExp('🔙 .*'), ctx => {
         sendMainKeyboard(bot, ctx)
     })
 
     bot.start((ctx) => {
         sendLanguageKeyboard(ctx)
-        const payload = (ctx as any)['startPayload']
+        const payload = (ctx as unknown as { startPayload: string }).startPayload
         const referrer = Buffer.from(payload, 'base64').toString()
-        let user = ctx.dbuser
+        const user = ctx.dbuser
         if (!user.referrer && referrer && user.login !== referrer) {
             ctx.viz.isAccountExists(referrer)
                 .then(
                     result => {
                         if (result) {
                             user.referrer = referrer
-                            user.save()
+                            user.save().catch(error => {
+                              console.error('Failed to save user:', error);
+                            })
                         } else {
                             console.log('Referrer', referrer, 'doesn\'t exists')
                         }
@@ -42,6 +44,8 @@ export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
     ctx.replyWithHTML(ctx.i18n.t('help', params), {
         reply_markup: mainKeyboard(ctx),
         disable_web_page_preview: true
+    }).catch(error => {
+      console.error('Failed to send main keyboard:', error);
     })
 }
 

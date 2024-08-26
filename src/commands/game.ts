@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { Telegraf, Context, Markup as m } from 'telegraf'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
 import { mainKeyboard } from './start'
+import { CallbackButton } from 'telegraf/typings/markup'
 
 const games: DiceEmoji[] = ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳']
 
 export function setupGame(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('(🎮|🧩) .*'), ctx => {
-    ctx.reply(ctx.i18n.t('game_button'), {
+  bot.hears(new RegExp('(🎮|🧩) .*'), async ctx => {
+    await ctx.reply(ctx.i18n.t('game_button'), {
       reply_markup: gameKeyboard(ctx),
     })
   })
@@ -30,7 +32,7 @@ function gameButtonText(ctx: Context, emoji: string): string {
 }
 
 function gameKeyboard(ctx: Context) {
-  const result = []
+  const result: CallbackButton[][] = []
   games.forEach((emoji, _index) => {
     const cb = m.callbackButton(gameButtonText(ctx, emoji), emoji)
     if (_index % 2 === 0) {

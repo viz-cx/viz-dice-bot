@@ -1,7 +1,7 @@
 import { Context } from 'telegraf'
 
-export async function checkChatType(ctx: Context, next: () => any) {
+export function checkChatType(ctx: Context, next: () => unknown): void {
     if (ctx.chat && ctx.chat.type === 'private') {
-        return next()
+        next()
     }
 }

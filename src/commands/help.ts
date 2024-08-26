@@ -1,10 +1,10 @@
 import { Telegraf, Context } from "telegraf"
 
 export function setupHelp(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('🙋 .*'), async ctx => {
+  bot.hears(new RegExp('🙋 .*'), ctx => {
     sendHelp(bot, ctx)
   })
-  bot.command(['help'], async ctx => {
+  bot.command(['help'], ctx => {
     sendHelp(bot, ctx)
   })
 }
@@ -20,4 +20,8 @@ function sendHelp(bot: Telegraf<Context>, ctx: Context) {
     params['encodedlogin'] = Buffer.from(login, 'utf-8').toString('base64')
   }
   ctx.replyWithHTML(ctx.i18n.t('help', params), {disable_web_page_preview: true})
+    .catch(err => {
+      console.error('Failed to send help message:', err)
+    })
+  
 }

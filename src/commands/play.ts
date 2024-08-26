@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { getLatestLottery } from "../models/Lottery"
 import { getAwardsSum } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
@@ -5,13 +8,13 @@ import { mainKeyboard } from "./start"
 
 export function setupPlay(bot: Telegraf<Context>) {
   bot.command('play', async ctx => {
-    ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
+    await ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
   })
   bot.hears(new RegExp('♟ .*'), async ctx => {
     if (!ctx.dbuser.login) {
       ctx.dbuser.state = "waitLogin"
-      ctx.dbuser.save()
-      ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
+      await ctx.dbuser.save()
+      await ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
         disable_web_page_preview: true
       })
       return
@@ -28,27 +31,27 @@ export function setupPlay(bot: Telegraf<Context>) {
       const between = timeUnitsBetween(now, waitDate)
       const minutes = between['minutes']
       const seconds = between['seconds']
-      ctx.replyWithHTML(ctx.i18n.t('wait_play', {
+      await ctx.replyWithHTML(ctx.i18n.t('wait_play', {
         minutes: minutes,
         seconds: seconds
       }))
       return
     }
-    let user = ctx.dbuser
+    const user = ctx.dbuser
     const hours = Math.random() * 10
     const zeroingDate = new Date(
       user.payoutDate.getTime()
       + (hours * 60 * 60 * 1000)
     )
     user.payoutDate = now
-    user.save()
+    await user.save()
 
     let value: number, multiplier: number, participated: boolean
     await Promise.all([
       ctx.replyWithDice({ emoji: ctx.dbuser.game }),
-      getLatestLottery().then(lottery => getAwardsSum(ctx.dbuser.id, lottery.block))
+      getLatestLottery().then(lottery => getAwardsSum(Number(ctx.dbuser.id), lottery.block))
     ]).then(
-      result => {
+      async result => {
         const msg = result[0]
         participated = result[1] > 0
         value = msg.dice.value
@@ -100,14 +103,14 @@ export function setupPlay(bot: Telegraf<Context>) {
         multiplier = multiplier / user.payouts
 
         user.payoutDate = now
-        user.save()
+        await user.save()
         return ctx.viz.getAccount(process.env.ACCOUNT)
       })
       .then(account => {
-        const lastVoteTime = Date.parse(account['last_vote_time'])
+        const lastVoteTime = Date.parse(account['last_vote_time'] as string)
         const deltaTime = (new Date().getTime() - lastVoteTime + (new Date().getTimezoneOffset() * 60000)) / 1000
-        const energy = account['energy']
-        let new_energy = parseInt(energy + (deltaTime * 10000 / 432000)) //CHAIN_ENERGY_REGENERATION_SECONDS 5 days
+        const energy = parseInt(account['energy'] as string, 10)
+        let new_energy = Math.floor(energy + (deltaTime * 10000 / 432000)) //CHAIN_ENERGY_REGENERATION_SECONDS 5 days
         if (new_energy > 10000) {
           new_energy = 10000
         }
@@ -122,7 +125,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
-        ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
+        return ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
           reward: reward,
           user: ctx.dbuser.login,
           number: ctx.dbuser.value,
@@ -150,7 +153,9 @@ export function setupPlay(bot: Telegraf<Context>) {
           message = ctx.i18n.t('too_fast')
         }
         console.log(message)
-        ctx.replyWithHTML(message, { reply_markup: mainKeyboard(ctx) })
+        ctx.replyWithHTML(message, { reply_markup: mainKeyboard(ctx) }).catch(error => {
+          console.error('Failed to send error play message:', error);
+        })
       })
   })
 }

@@ -3,7 +3,7 @@ import { Context } from 'telegraf'
 import { bot } from '../helpers/bot'
 import { Message } from 'telegram-typings'
 
-export async function checkForward(ctx: Context, next: () => any) {
+export async function checkForward(ctx: Context, next: () => unknown) {
     const myUserID = 38968897
     const russianChannelID = -1001277359853
     const englishChannelID = -1001454664691
@@ -22,14 +22,13 @@ export async function checkForward(ctx: Context, next: () => any) {
             return
         }
         const channelMessageID = ctx.message.forward_from_message_id
-        getUsersByLang(lang)
+        await getUsersByLang(lang)
             .then(async users => {
-                var users = users
                 console.log('Start sending to', users.length, 'users')
                 let successCounter = 0
                 while (users.length > 0) {
                     const messages: Promise<Message>[] = users.splice(0, 29)
-                        .map(u => u.id)
+                        .map(u => (u as { id: number }).id)
                         .map(userID => {
                             return bot.telegram.forwardMessage(
                                 userID,

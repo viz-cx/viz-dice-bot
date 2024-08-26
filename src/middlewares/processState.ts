@@ -1,17 +1,17 @@
 import { Context } from 'telegraf'
 
-export async function processState(ctx: Context, next: () => any) {
+export async function processState(ctx: Context, next: () => unknown) {
   switch (ctx.dbuser.state) {
     case 'waitLogin':
       if (ctx.message.text) {
         const login = ctx.message.text
         const accountExists = await ctx.viz.isAccountExists(login)
         if (accountExists) {
-          let user = ctx.dbuser
+          const user = ctx.dbuser
           user.login = login
           user.state = null
           await user.save().then(
-            _ => ctx.replyWithHTML(ctx.i18n.t('lets_play')),
+            () => ctx.replyWithHTML(ctx.i18n.t('lets_play')),
             rejected => console.log(rejected)
           )
           return next()

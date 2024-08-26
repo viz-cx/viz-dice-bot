@@ -4,7 +4,7 @@ import { Context } from 'telegraf'
 
 const viz = VIZ.origin
 
-export async function attachUser(ctx: Context, next: () => any) {
+export async function attachUser(ctx: Context, next: () => unknown) {
   if (ctx.from) {
     const dbuser = await getOrCreateUser(ctx.from.id)
     ctx.dbuser = dbuser

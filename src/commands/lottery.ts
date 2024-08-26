@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
 import { getAwardsSum, getAllAwardsSum } from "../models/Award"
 import { Telegraf, Context } from "telegraf"
@@ -31,7 +33,7 @@ async function sendLottery(ctx: Context) {
 
 export async function lotteryParams(viz: VIZ, user: User) {
     const lastIrreversibleBlock = (await viz.getDynamicGlobalProperties()
-        .catch(_ => viz.changeNode()))['last_irreversible_block_num']
+        .catch(() => viz.changeNode()))['last_irreversible_block_num']
     const latestLotteryBlock = (await getLatestLottery()).block
     const lotteryHours = parseInt(process.env.LOTTERY_HOURS)
     const roundTime = lotteryHours * 60 * 60
@@ -47,7 +49,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
     const allAwardsSum = Math.abs((await getAllAwardsSum()) - (await getAllPayoutsSum()))
     const vizAccount = await findUser(user.id)
         .then(user => viz.getAccount(user.login)
-            .catch(_ => viz.changeNode()))
+            .catch(() => viz.changeNode()))
     const { fishIDs, dolphinIDs, whaleIDs } = await participantIdsByCategory(latestLotteryBlock)
     const participantCount = [...fishIDs, ...dolphinIDs, ...whaleIDs].length
     const fishParticipants = await Promise.all(fishIDs.map(userID => findUser(userID)))
