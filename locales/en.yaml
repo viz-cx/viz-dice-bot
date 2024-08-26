@@ -25,7 +25,7 @@ wait_login: Please send me your <code>login</code> in <a href="https://reg.readd
 wrong_login: Incorrect login. You can sign up at <a href="https://reg.readdle.me/?set_lang=en">reg.readdle.me</a>
 lets_play: Now let's play!
 wait_play: |
-  You can play again after${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
+  You can play again in${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 successful_payout: |
   Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.plus/accounts/${user}/">@${user}</a> successfully awarded!
 
@@ -38,17 +38,17 @@ stats: |
   All users: ${all} 
   Last month: ${month}
 lottery: |
-  ${participated ? '✅ You alredy participating': '⛔️ You are not yet participating'} ${participated ? 'with bet ' + userAwardsSum + ' VIZ' + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
+  ${participated ? '✅ You already participating': '⛔️ You are not yet participating'} ${participated ? 'with bet ' + userAwardsSum + ' VIZ' + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
   💰 Total prize pool ${allAwardsSum} VIZ 
-  👀 Total participate ${pluralize(participants, 'person', 'people')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
-  ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
+  👀 Participants ${pluralize(participants, 'person', 'people')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
+  ⌛️ Time remaining ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 
   To participate lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
 
-  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a>, <a href="https://testflight.apple.com/join/G1VtJ0NA">iOS app</a>, <a href="https://play.google.com/store/apps/details?id=my.viz">Android app</a> or otherwise
+  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> or otherwise.
 new_award: |
-  ✅ Received new bid ${shares} VIZ${firstTime ? '' : '. Total ' + sum + ' VIZ'}
-  🎁 If you win you will get ${prize} VIZ
+  ✅ New bet received ${shares} VIZ${firstTime ? '' : '. Total ' + sum + ' VIZ'}
+  🎁 Potential winnings ${prize} VIZ
   💰 Total prize pool ${allAwardsSum} VIZ 
   👀 Total participate ${pluralize(participants, 'person', 'people')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
