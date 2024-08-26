@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
+ 
 import { Telegraf, Context, Markup as m } from 'telegraf'
 import { DiceEmoji } from 'telegraf/typings/telegram-types'
 import { mainKeyboard } from './start'
