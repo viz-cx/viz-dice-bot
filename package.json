@@ -15,25 +15,25 @@
     "watch-js": "nodemon dist/app.js --ext js,yaml"
   },
   "devDependencies": {
-    "@eslint/js": "^9.2.0",
-    "@typegoose/typegoose": "^12.4.0",
-    "@types/mongoose": "^5.11.96",
-    "@types/node": "^20.12.11",
+    "@eslint/js": "^9.9.1",
+    "@typegoose/typegoose": "^12.6.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^22.5.0",
     "concurrently": "^8.2.2",
-    "eslint": "^9.2.0",
-    "globals": "^15.1.0",
-    "nodemon": "^3.1.0",
-    "typescript-eslint": "^7.8.0"
+    "eslint": "^9.9.1",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.4",
+    "typescript-eslint": "^8.3.0"
   },
   "dependencies": {
-    "@babel/core": "^7.24.5",
-    "@babel/eslint-parser": "^7.24.5",
+    "@babel/core": "^7.25.2",
+    "@babel/eslint-parser": "^7.25.1",
     "dotenv": "^16.4.5",
     "markdown-table-ts": "^1.0.3",
-    "mongoose": "8.3.4",
+    "mongoose": "8.5.4",
     "telegraf": "github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c",
     "telegraf-i18n": "^6.6.0",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.4",
     "viz-js-lib": "^0.11.0"
   }
 }
