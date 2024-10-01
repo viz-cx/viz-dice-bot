@@ -3,7 +3,7 @@ import { Context } from 'telegraf'
 export async function processState(ctx: Context, next: () => unknown) {
   switch (ctx.dbuser.state) {
     case 'waitLogin':
-      if (ctx.message.text) {
+      if (ctx.message?.text) {
         const login = ctx.message.text
         const accountExists = await ctx.viz.isAccountExists(login)
         if (accountExists) {
