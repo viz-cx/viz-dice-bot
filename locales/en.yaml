@@ -5,7 +5,7 @@ help: |
   Each next game requires <b>${minutes} minutes</b> and award your <b>VIZ account</b> depending on result: reward multiplied depending on selected game and result and multiplied by the number of series in a row and multiplied by three if you participate in the /lottery
 
   ${encodedlogin ? 'Link to invite (to receive 10% of all games of your referrals): https://t.me/' + botname + '?start=' + encodedlogin : 'You are not logged in yet.'}
-  
+
   Code is fully open and <a href="https://github.com/viz-cx/viz-dice-bot">can be found here</a>. If you have any problems or suggestions, please write them in the @viz_cx group
 language: Please, select the language
 language_selected: Now I will speaks in English. Ask me who I am and what I can do by command /help
@@ -35,24 +35,24 @@ too_fast: Stay! not so fast!
 try_later: Out of rewards temporarily... Please try again later
 something_wrong: Something wrong.
 stats: |
-  All users: ${all} 
+  All users: ${all}
   Last month: ${month}
 lottery: |
   ${participated ? '✅ You already participating': '⛔️ You are not yet participating'} ${participated ? 'with bet ' + userAwardsSum + ' VIZ' + '\n🎁 If you win you will get ' + prize + ' VIZ' : ''}
-  💰 Total prize pool ${allAwardsSum} VIZ 
+  💰 Total prize pool ${allAwardsSum} VIZ
   👀 Participants ${pluralize(participants, 'person', 'people')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ Time remaining ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 
   To participate lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
 
-  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.world/assets/award/">my.viz.world</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> or otherwise.
+  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://wallet.viz.world/assets/award/">wallet.viz.world</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> or otherwise.
 new_award: |
   ✅ New bet received ${shares} VIZ${firstTime ? '' : '. Total ' + sum + ' VIZ'}
   🎁 Potential winnings ${prize} VIZ
-  💰 Total prize pool ${allAwardsSum} VIZ 
+  💰 Total prize pool ${allAwardsSum} VIZ
   👀 Total participate ${pluralize(participants, 'person', 'people')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
   ⌛️ Time left ~${hours > 0 ? ' ' + pluralize(hours, 'hour', 'hours') : ''}${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 lottery_result: |
   🏆 Winner ${fishWinner.length > 0 ? fishWinner + ' receives ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + ' receives ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + ' receives ' + whalePrize + ' VIZ' : ''} of total ${fund} VIZ
-   
+
   🤹 Lottery ended on block <a href="https://info.viz.world/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
