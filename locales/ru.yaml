@@ -27,7 +27,7 @@ lets_play: Теперь можно играть!
 wait_play: |
   Повторно сыграть можно через${minutes > 0 ? ' ' + pluralize(minutes, 'минуту', 'минуты', 'минут') : ''} ${pluralize(seconds, 'секунду', 'секунды', 'секунд')}
 successful_payout: |
-  Выпал номер ${number}${series > 1 ? ' <b>' + series + '-й</b> раз подряд' : ''}. Награда <b>≈${reward} Ƶ</b> для <a href="https://info.viz.plus/accounts/${user}/">@${user}</a> успешно отправлена!
+  Выпал номер ${number}${series > 1 ? ' <b>' + series + '-й</b> раз подряд' : ''}. Награда <b>≈${reward} Ƶ</b> для <a href="https://info.viz.world/accounts/${user}/">@${user}</a> успешно отправлена!
 
   ${participated ? '' : '<b>Можно утроить награды</b>, принимая участие в /lottery (и получить шанс выиграть VIZ в самой лотерее)'}
 out_of_energy: Недостаточно энергии для игры
@@ -45,7 +45,7 @@ lottery: |
 
   Для участия в лотерее необходимо <b>наградить</b> произвольным количеством энергии аккаунт <code>${account}</code> с заметкой <code>${memo}</code> (короткий тап для копирования на мобильных устройствах)
   
-  Награждать можно через <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> или любым другим способом.
+  Награждать можно через <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.world/assets/award/">my.viz.world</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> или любым другим способом.
 new_award: |
   ✅ Получена новая ставка ${shares} VIZ${firstTime ? '' : '. Всего ' + sum + ' VIZ'}
   🎁 Претендуете на ${prize} VIZ
@@ -55,4 +55,4 @@ new_award: |
 lottery_result: |
   🏆 Победитель ${fishWinner.length > 0 ? fishWinner + ' получает ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + ' получает ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + ' получает ' + whalePrize + ' VIZ' : ''} из призового фонда ${fund} VIZ
    
-  🤹 Розыгрыш завершился на блоке <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, хеш-сумма <i>${hashSum}</i>, всего ${pluralize(count, 'участник', 'участника', 'участников')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
+  🤹 Розыгрыш завершился на блоке <a href="https://info.viz.world/explorer/block/${block}/">${block}</a>, хеш-сумма <i>${hashSum}</i>, всего ${pluralize(count, 'участник', 'участника', 'участников')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}

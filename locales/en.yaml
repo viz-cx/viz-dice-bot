@@ -27,7 +27,7 @@ lets_play: Now let's play!
 wait_play: |
   You can play again in${minutes > 0 ? ' ' + pluralize(minutes, 'minute', 'minutes') : ''} ${pluralize(seconds, 'second', 'seconds')}
 successful_payout: |
-  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.plus/accounts/${user}/">@${user}</a> successfully awarded!
+  Dropped out number ${number}${series > 1 ? ' for the <b>' + series + 'th</b> time in a row' : ''}. Prize <b>≈${reward} Ƶ</b> to <a href="https://info.viz.world/accounts/${user}/">@${user}</a> successfully awarded!
 
   ${participated ? '' : 'You can <b>triple your reward</b> by taking part in the /lottery (and get a chance to win VIZ in lottery itself)'}
 out_of_energy: Account does not have enough energy to vote
@@ -45,7 +45,7 @@ lottery: |
 
   To participate lottery, you need to <b>award</b> any number of energy an account <code>${account}</code> with memo <code>${memo}</code> (short tap to copy on mobile devices)
 
-  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.plus/assets/award/">my.viz.plus</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> or otherwise.
+  You can award through <a href="http://t.me/viz_social_bot?start=1${botBase64}">VIZ Social Telegram bot</a>, <a href="https://my.viz.world/assets/award/">my.viz.world</a>, <a href="https://dpos.space/viz/awards/link/${account}/0/${memo}/${percent}">dpos.space</a>, <a href="https://viz.cx/award?receiver=${account}&energy=${percent}&memo=${memo}">viz.cx</a> or otherwise.
 new_award: |
   ✅ New bet received ${shares} VIZ${firstTime ? '' : '. Total ' + sum + ' VIZ'}
   🎁 Potential winnings ${prize} VIZ
@@ -55,4 +55,4 @@ new_award: |
 lottery_result: |
   🏆 Winner ${fishWinner.length > 0 ? fishWinner + ' receives ' + fishPrize + ' VIZ' : ''}${dolphinWinner.length > 0 ? (fishWinner.length > 0 ? ', ' : '') + dolphinWinner + ' receives ' + dolphinPrize + ' VIZ' : ''}${whaleWinner.length > 0 ? ((fishWinner.length > 0 || dolphinWinner.length > 0) ? ', ' : '') + whaleWinner + ' receives ' + whalePrize + ' VIZ' : ''} of total ${fund} VIZ
    
-  🤹 Lottery ended on block <a href="https://info.viz.plus/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
+  🤹 Lottery ended on block <a href="https://info.viz.world/explorer/block/${block}/">${block}</a>, hash sum <i>${hashSum}</i>, ${pluralize(count, 'participant', 'participants')}${fishUsers.length > 0 ? ': ' + fishUsers : ''}${dolphinUsers.length > 0 ? (fishUsers.length > 0 ? ', ' : ': ') + dolphinUsers : ''}${whaleUsers.length > 0 ? ((fishUsers.length > 0 || dolphinUsers.length > 0) ? ', ' : ': ') + whaleUsers : ''}
