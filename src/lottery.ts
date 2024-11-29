@@ -207,7 +207,7 @@ async function findWinners() {
 }
 
 export function accountLink(account: string, prefix: string): string {
-    return prefix + '<a href="https://info.viz.worlds/accounts/' + account + '/">' + account + '</a>'
+    return prefix + '<a href="https://info.viz.world/accounts/' + account + '/">' + account + '</a>'
 }
 
 async function processAward(data: BlockchainAward) {
