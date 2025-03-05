@@ -15,25 +15,25 @@
     "watch-js": "nodemon dist/app.js --ext js,yaml"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.1",
-    "@typegoose/typegoose": "^12.6.0",
+    "@eslint/js": "^9.21.0",
+    "@typegoose/typegoose": "^12.13.0",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^22.5.0",
-    "concurrently": "^8.2.2",
-    "eslint": "^9.9.1",
-    "globals": "^15.9.0",
-    "nodemon": "^3.1.4",
-    "typescript-eslint": "^8.3.0"
+    "@types/node": "^22.13.9",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.21.0",
+    "globals": "^16.0.0",
+    "nodemon": "^3.1.9",
+    "typescript-eslint": "^8.26.0"
   },
   "dependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/eslint-parser": "^7.25.1",
-    "dotenv": "^16.4.5",
+    "@babel/core": "^7.26.9",
+    "@babel/eslint-parser": "^7.26.8",
+    "dotenv": "^16.4.7",
     "markdown-table-ts": "^1.0.3",
-    "mongoose": "8.5.4",
+    "mongoose": "8.12.1",
     "telegraf": "github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c",
     "telegraf-i18n": "^6.6.0",
-    "typescript": "^5.5.4",
+    "typescript": "^5.8.2",
     "viz-js-lib": "^0.11.0"
   }
 }
