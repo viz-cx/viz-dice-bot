@@ -1,20 +1,60 @@
-import I18N from 'telegraf-i18n'
-import Telegraf, { Context } from 'telegraf'
-const dirtyI18N = require('telegraf-i18n')
+import { readdirSync, readFileSync } from 'fs'
+import { load } from 'js-yaml'
+import { NextFunction } from 'grammy'
+import { BotContext, I18nContext } from '../types/context'
 
-export const i18n = new dirtyI18N({
-  directory: `${__dirname}/../../locales`,
-  defaultLanguage: 'en',
-  sessionName: 'session',
-  useSession: false,
-  allowMissing: false,
-}) as I18N
+type LocaleData = Record<string, string>
+const localesMap = new Map<string, LocaleData>()
 
-export function setupI18N(bot: Telegraf<Context>) {
-  bot.use(i18n.middleware())
-  bot.use((ctx, next: () => any) => {
-    const anyI18N = ctx.i18n as any
-    anyI18N.locale(ctx.dbuser.language)
-    return next()
-  })
+const localesDir = `${__dirname}/../../locales`
+for (const file of readdirSync(localesDir)) {
+  if (file.endsWith('.yaml')) {
+    const code = file.replace('.yaml', '')
+    const content = readFileSync(`${localesDir}/${file}`, 'utf8')
+    localesMap.set(code, load(content) as LocaleData)
+  }
+}
+
+function pluralize(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`
+}
+
+function compileTemplate(template: string, params: Record<string, unknown>): string {
+  const keys = Object.keys(params)
+  const values = Object.values(params)
+  const fn = new Function('pluralize', ...keys, `return \`${template}\``)
+  return fn(pluralize, ...values) as string
+}
+
+export function t(locale: string, key: string, params: Record<string, unknown> = {}): string {
+  const data = localesMap.get(locale) ?? localesMap.get('en')
+  const template = data?.[key]
+  if (!template) return key
+  return compileTemplate(template, params)
+}
+
+export function i18nMiddleware(ctx: BotContext, next: NextFunction) {
+  let currentLocale = 'en'
+
+  ctx.i18n = {
+    t(key: string, params?: Record<string, unknown>): string {
+      return t(currentLocale, key, params)
+    },
+    locale(code?: string): string | void {
+      if (code !== undefined) {
+        currentLocale = code
+      } else {
+        return currentLocale
+      }
+    },
+  } as I18nContext
+
+  return next()
+}
+
+export function setLocaleMiddleware(ctx: BotContext, next: NextFunction) {
+  if (ctx.dbuser) {
+    ctx.i18n.locale(ctx.dbuser.language)
+  }
+  return next()
 }

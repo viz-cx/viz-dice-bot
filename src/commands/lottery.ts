@@ -2,33 +2,39 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { getAllPayoutsSum, getLatestLottery } from "../models/Lottery"
 import { getAwardsSum, getAllAwardsSum } from "../models/Award"
-import { Telegraf, Context } from "telegraf"
+import { Bot } from "grammy"
+import { BotContext } from "../types/context"
 import { findUser, User } from "../models/User"
 import { timeUnitsBetween } from "../commands/play"
 import { mainKeyboard } from "./start"
 import { VIZ } from "../helpers/viz"
 import { accountLink, participantIdsByCategory } from "../lottery"
 
-export function setupLottery(bot: Telegraf<Context>) {
-    bot.hears(new RegExp('🍀 .*'), async ctx => {
+export function setupLottery(bot: Bot<BotContext>) {
+    bot.hears(/🍀 .*/, async ctx => {
         await sendLottery(ctx)
     })
-    bot.command(['lottery'], async ctx => {
+    bot.command('lottery', async ctx => {
         await sendLottery(ctx)
     })
 }
 
-async function sendLottery(ctx: Context) {
+async function sendLottery(ctx: BotContext) {
     if (!ctx.dbuser.login) {
         ctx.dbuser.state = "waitLogin"
         ctx.dbuser.save()
-        ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
-            disable_web_page_preview: true
+        ctx.reply(ctx.i18n.t('wait_login'), {
+            parse_mode: 'HTML',
+            link_preview_options: { is_disabled: true }
         })
         return
     }
     const params = await lotteryParams(ctx.viz, ctx.dbuser)
-    ctx.replyWithHTML(ctx.i18n.t('lottery', params), { reply_markup: mainKeyboard(ctx), disable_web_page_preview: true })
+    ctx.reply(ctx.i18n.t('lottery', params), {
+        parse_mode: 'HTML',
+        reply_markup: mainKeyboard(ctx),
+        link_preview_options: { is_disabled: true }
+    })
 }
 
 export async function lotteryParams(viz: VIZ, user: User) {

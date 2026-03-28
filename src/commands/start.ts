@@ -1,15 +1,16 @@
-import { i18n } from "../helpers/i18n"
-import { Telegraf, Context, Markup as m } from "telegraf"
+import { t } from "../helpers/i18n"
+import { Bot, Keyboard } from "grammy"
+import { BotContext } from "../types/context"
 import { sendLanguageKeyboard } from "./language"
 
-export function setupStart(bot: Telegraf<Context>) {
-    bot.hears(new RegExp('🔙 .*'), ctx => {
+export function setupStart(bot: Bot<BotContext>) {
+    bot.hears(/🔙 .*/, ctx => {
         sendMainKeyboard(bot, ctx)
     })
 
-    bot.start((ctx) => {
+    bot.command('start', (ctx) => {
         sendLanguageKeyboard(ctx)
-        const payload = (ctx as unknown as { startPayload: string }).startPayload
+        const payload = ctx.match
         const referrer = Buffer.from(payload, 'base64').toString()
         const user = ctx.dbuser
         if (!user.referrer && referrer && user.login !== referrer) {
@@ -31,32 +32,33 @@ export function setupStart(bot: Telegraf<Context>) {
     })
 }
 
-export function sendMainKeyboard(bot: Telegraf<Context>, ctx: Context) {
+export function sendMainKeyboard(bot: Bot<BotContext>, ctx: BotContext) {
     const params = {
-        botname: bot.options.username,
+        botname: bot.botInfo.username,
         minutes: process.env.MINUTES,
-        encodedlogin: null,
+        encodedlogin: null as string | null,
     }
     const login = ctx.dbuser.login
     if (login) {
-        params['encodedlogin'] = Buffer.from(login, 'utf-8').toString('base64')
+        params.encodedlogin = Buffer.from(login, 'utf-8').toString('base64')
     }
-    ctx.replyWithHTML(ctx.i18n.t('help', params), {
+    ctx.reply(ctx.i18n.t('help', params), {
+        parse_mode: 'HTML',
         reply_markup: mainKeyboard(ctx),
-        disable_web_page_preview: true
+        link_preview_options: { is_disabled: true }
     }).catch(error => {
       console.error('Failed to send main keyboard:', error);
     })
 }
 
-export function mainKeyboard(ctx: Context) {
-    return mainKeyboardByLanguage(ctx.i18n.locale())
+export function mainKeyboard(ctx: BotContext) {
+    return mainKeyboardByLanguage(ctx.i18n.locale() as string)
 }
 
 export function mainKeyboardByLanguage(language: string) {
-    const play = m.callbackButton('♟ ' + i18n.t(language, 'play_button'), 'play')
-    const game = m.callbackButton('🎮 ' + i18n.t(language, 'game_button'), 'game')
-    const lang = m.callbackButton('🌐 ' + i18n.t(language, 'language_button'), 'language')
-    const lottery = m.callbackButton('🍀 ' + i18n.t(language, 'lottery_button'), 'lottery')
-    return m.keyboard([[play, game], [lang, lottery]]).resize()
+    const play = '♟ ' + t(language, 'play_button')
+    const game = '🎮 ' + t(language, 'game_button')
+    const lang = '🌐 ' + t(language, 'language_button')
+    const lottery = '🍀 ' + t(language, 'lottery_button')
+    return new Keyboard([[play, game], [lang, lottery]]).resized()
 }

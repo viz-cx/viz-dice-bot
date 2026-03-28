@@ -1,13 +1,12 @@
- 
-import { Telegraf, Context, Markup as m } from 'telegraf'
-import { DiceEmoji } from 'telegraf/typings/telegram-types'
+import { Bot, Keyboard } from 'grammy'
+import { BotContext } from '../types/context'
+import { DiceEmoji } from '../models/User'
 import { mainKeyboard } from './start'
-import { CallbackButton } from 'telegraf/typings/markup'
 
-const games: DiceEmoji[] = ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳']
+const games = ['🎲', '🎯', '🏀', '⚽️', '🎰', '🎳'] as const
 
-export function setupGame(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('(🎮|🧩) .*'), async ctx => {
+export function setupGame(bot: Bot<BotContext>) {
+  bot.hears(/(?:🎮|🧩) .*/, async ctx => {
     await ctx.reply(ctx.i18n.t('game_button'), {
       reply_markup: gameKeyboard(ctx),
     })
@@ -27,32 +26,32 @@ export function setupGame(bot: Telegraf<Context>) {
   })
 }
 
-function gameButtonText(ctx: Context, emoji: string): string {
+function gameButtonText(ctx: BotContext, emoji: string): string {
   return emoji + ' ' + ctx.i18n.t(emoji)
 }
 
-function gameKeyboard(ctx: Context) {
-  const result: CallbackButton[][] = []
-  games.forEach((emoji, _index) => {
-    const cb = m.callbackButton(gameButtonText(ctx, emoji), emoji)
-    if (_index % 2 === 0) {
-      if (_index === 0) {
-        result.push([cb])
+function gameKeyboard(ctx: BotContext) {
+  const buttons: string[][] = []
+  games.forEach((emoji, index) => {
+    const text = gameButtonText(ctx, emoji)
+    if (index % 2 === 0) {
+      if (index === 0) {
+        buttons.push([text])
       } else {
-        result[result.length - 1].push(cb)
+        buttons[buttons.length - 1].push(text)
       }
     } else {
-      result[result.length - 1].push(cb)
-      if (_index < games.length - 1) {
-        result.push([])
+      buttons[buttons.length - 1].push(text)
+      if (index < games.length - 1) {
+        buttons.push([])
       }
     }
   })
-  const backButton = m.callbackButton('🔙 ' + ctx.i18n.t('back_button'), '🔙')
-  if (result.length === 0 || result[result.length-1].length % 2 === 0) {
-    result.push([backButton])
+  const backButton = '🔙 ' + ctx.i18n.t('back_button')
+  if (buttons.length === 0 || buttons[buttons.length-1].length % 2 === 0) {
+    buttons.push([backButton])
   } else {
-    result[result.length - 1].push(backButton)
+    buttons[buttons.length - 1].push(backButton)
   }
-  return m.keyboard(result).resize()
+  return Keyboard.from(buttons.map(row => row.map(text => Keyboard.text(text)))).resized()
 }

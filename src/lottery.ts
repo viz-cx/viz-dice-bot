@@ -3,7 +3,7 @@ import { findUser, getAllPayoutsSum, getLatestLottery, Lottery, LotteryModel } f
 import { VIZ } from './helpers/viz'
 import { AwardModel, getAwardsSum, getLatestAward, Award, getAllAwardsSum, getAllAwards } from "./models/Award"
 import { bot } from "./helpers/bot"
-import { i18n } from "./helpers/i18n"
+import { t } from "./helpers/i18n"
 import { DocumentType } from "@typegoose/typegoose"
 import { mainKeyboardByLanguage } from "./commands/start"
 import { lotteryParams } from "./commands/lottery"
@@ -188,7 +188,7 @@ async function findWinners() {
                 await Promise.all(allParticipants.map(async u => {
                     try {
                         if (typeof u.id === 'string' || typeof u.id === 'number') {
-                            await bot.telegram.sendMessage(u.id, i18n.t(u.language, 'lottery_result', messagePayload), { parse_mode: 'HTML', disable_web_page_preview: true });
+                            await bot.api.sendMessage(u.id, t(u.language, 'lottery_result', messagePayload), { parse_mode: 'HTML', link_preview_options: { is_disabled: true } });
                         } else {
                             throw new Error('Invalid user id');
                         }
@@ -229,7 +229,6 @@ async function processAward(data: BlockchainAward) {
                 }
                 // anti-spam
                 const withMessage: boolean = data.initiator == user.login
-                // console.log(participants)
                 const award = new AwardModel()
                 award.block = currentBlock
                 award.initiator = data.initiator
@@ -254,10 +253,10 @@ async function processAward(data: BlockchainAward) {
                                                     sum: sum.toFixed(3),
                                                     firstTime: firstTime
                                                 }
-                                                await bot.telegram.sendMessage(userID, i18n.t(user.language, 'new_award', payload), {
+                                                await bot.api.sendMessage(userID, t(user.language, 'new_award', payload), {
                                                     reply_markup: mainKeyboardByLanguage(user.language),
                                                     parse_mode: 'HTML',
-                                                    disable_web_page_preview: true
+                                                    link_preview_options: { is_disabled: true }
                                                 })
                                             }
                                         )
@@ -318,5 +317,5 @@ function hashSum(s: string): number {
 async function sendToAdmin(message: string) {
     console.log(message)
     const myUserID = 38968897
-    await bot.telegram.sendMessage(myUserID, message)
+    await bot.api.sendMessage(myUserID, message)
 }

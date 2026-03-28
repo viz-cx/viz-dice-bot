@@ -1,5 +1,6 @@
 import { prop, getModelForClass, DocumentType } from '@typegoose/typegoose'
-import { DiceEmoji } from 'telegraf/typings/telegram-types'
+
+export type DiceEmoji = '🎲' | '🎯' | '🏀' | '⚽️' | '🎰' | '🎳'
 
 export type UserState = 'waitLogin'
 

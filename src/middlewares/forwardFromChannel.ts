@@ -1,17 +1,17 @@
 import { getUsersByLang } from '../models/User'
-import { Context } from 'telegraf'
+import { NextFunction } from 'grammy'
+import { BotContext } from '../types/context'
 import { bot } from '../helpers/bot'
-import { Message } from 'telegram-typings'
 
-export async function checkForward(ctx: Context, next: () => unknown) {
+export async function checkForward(ctx: BotContext, next: NextFunction) {
     const myUserID = 38968897
     const russianChannelID = -1001277359853
     const englishChannelID = -1001454664691
-    if (ctx.updateType === 'message'
+    if (ctx.message
         && ctx.chat.id === myUserID
-        && ctx.message.forward_from_chat
-        && ctx.message.forward_from_chat.id) {
-        const channelID = ctx.message.forward_from_chat.id
+        && ctx.message.forward_origin
+        && ctx.message.forward_origin.type === 'channel') {
+        const channelID = ctx.message.forward_origin.chat.id
         let lang: string
         if (channelID === russianChannelID) {
             lang = 'ru'
@@ -21,16 +21,17 @@ export async function checkForward(ctx: Context, next: () => unknown) {
             console.log('Unknown channel')
             return
         }
-        const channelMessageID = ctx.message.forward_from_message_id
+        const channelMessageID = ctx.message.forward_origin.message_id
         await getUsersByLang(lang)
             .then(async users => {
                 console.log('Start sending to', users.length, 'users')
                 let successCounter = 0
                 while (users.length > 0) {
-                    const messages: Promise<Message>[] = users.splice(0, 29)
+                    const batch = users.splice(0, 29)
+                    const messages = batch
                         .map(u => (u as { id: number }).id)
                         .map(userID => {
-                            return bot.telegram.forwardMessage(
+                            return bot.api.forwardMessage(
                                 userID,
                                 channelID,
                                 channelMessageID)
@@ -43,7 +44,7 @@ export async function checkForward(ctx: Context, next: () => unknown) {
                         })
                     await sleep(3000)
                 }
-                await bot.telegram.sendMessage(myUserID, 'Post successfully sended to ' + successCounter + ' users')
+                await bot.api.sendMessage(myUserID, 'Post successfully sended to ' + successCounter + ' users')
             })
     } else {
         return next()

@@ -3,19 +3,21 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 import { getLatestLottery } from "../models/Lottery"
 import { getAwardsSum } from "../models/Award"
-import { Telegraf, Context } from "telegraf"
+import { Bot } from "grammy"
+import { BotContext } from "../types/context"
 import { mainKeyboard } from "./start"
 
-export function setupPlay(bot: Telegraf<Context>) {
+export function setupPlay(bot: Bot<BotContext>) {
   bot.command('play', async ctx => {
-    await ctx.replyWithHTML(ctx.i18n.t('something_wrong'))
+    await ctx.reply(ctx.i18n.t('something_wrong'), { parse_mode: 'HTML' })
   })
-  bot.hears(new RegExp('♟ .*'), async ctx => {
+  bot.hears(/♟ .*/, async ctx => {
     if (!ctx.dbuser.login) {
       ctx.dbuser.state = "waitLogin"
       await ctx.dbuser.save()
-      await ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
-        disable_web_page_preview: true
+      await ctx.reply(ctx.i18n.t('wait_login'), {
+        parse_mode: 'HTML',
+        link_preview_options: { is_disabled: true }
       })
       return
     }
@@ -31,10 +33,10 @@ export function setupPlay(bot: Telegraf<Context>) {
       const between = timeUnitsBetween(now, waitDate)
       const minutes = between['minutes']
       const seconds = between['seconds']
-      await ctx.replyWithHTML(ctx.i18n.t('wait_play', {
+      await ctx.reply(ctx.i18n.t('wait_play', {
         minutes: minutes,
         seconds: seconds
-      }))
+      }), { parse_mode: 'HTML' })
       return
     }
     const user = ctx.dbuser
@@ -48,7 +50,7 @@ export function setupPlay(bot: Telegraf<Context>) {
 
     let value: number, multiplier: number, participated: boolean
     await Promise.all([
-      ctx.replyWithDice({ emoji: ctx.dbuser.game }),
+      ctx.replyWithDice(ctx.dbuser.game),
       getLatestLottery().then(lottery => getAwardsSum(Number(ctx.dbuser.id), lottery.block))
     ]).then(
       async result => {
@@ -125,7 +127,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
       })
       .then(reward => {
-        return ctx.replyWithHTML(ctx.i18n.t('successful_payout', {
+        return ctx.reply(ctx.i18n.t('successful_payout', {
           reward: reward,
           user: ctx.dbuser.login,
           number: ctx.dbuser.value,
@@ -133,7 +135,8 @@ export function setupPlay(bot: Telegraf<Context>) {
           participated: participated,
           account: process.env.ACCOUNT
         }), {
-          disable_web_page_preview: true,
+          parse_mode: 'HTML',
+          link_preview_options: { is_disabled: true },
           disable_notification: true,
           reply_markup: mainKeyboard(ctx)
         })
@@ -153,7 +156,7 @@ export function setupPlay(bot: Telegraf<Context>) {
           message = ctx.i18n.t('too_fast')
         }
         console.log(message)
-        ctx.replyWithHTML(message, { reply_markup: mainKeyboard(ctx) }).catch(error => {
+        ctx.reply(message, { parse_mode: 'HTML', reply_markup: mainKeyboard(ctx) }).catch(error => {
           console.error('Failed to send error play message:', error);
         })
       })

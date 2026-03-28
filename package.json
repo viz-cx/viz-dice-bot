@@ -16,25 +16,26 @@
     "update": "npx npm-check-updates -u"
   },
   "devDependencies": {
-    "@eslint/js": "^9.23.0",
-    "@typegoose/typegoose": "^12.14.0",
+    "@eslint/js": "^9",
+    "@typegoose/typegoose": "^13.2.1",
     "@types/mongoose": "^5.11.97",
-    "@types/node": "^22.14.0",
-    "concurrently": "^9.1.2",
-    "eslint": "^9.23.0",
-    "globals": "^16.0.0",
-    "nodemon": "^3.1.9",
-    "typescript-eslint": "^8.29.0"
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^25.5.0",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "globals": "^17.4.0",
+    "nodemon": "^3.1.14",
+    "typescript-eslint": "^8.57.2"
   },
   "dependencies": {
-    "@babel/core": "^7.26.10",
-    "@babel/eslint-parser": "^7.27.0",
-    "dotenv": "^16.4.7",
+    "@babel/core": "^7.29.0",
+    "@babel/eslint-parser": "^7.28.6",
+    "dotenv": "^17.3.1",
     "markdown-table-ts": "^1.0.3",
-    "mongoose": "8.13.1",
-    "telegraf": "github:viz-cx/telegraf#e6a9b0b002255e8fad45abb597dcd596217b503c",
-    "telegraf-i18n": "^6.6.0",
-    "typescript": "^5.8.2",
+    "mongoose": "^9",
+    "grammy": "^1.41.1",
+    "js-yaml": "^4.1.1",
+    "typescript": "<6.0.0",
     "viz-js-lib": "^0.11.0"
   }
 }

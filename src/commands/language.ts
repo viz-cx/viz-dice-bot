@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
- 
-import { Telegraf, Context, Markup as m } from 'telegraf'
+
+import { Bot, Keyboard } from 'grammy'
+import { BotContext } from '../types/context'
 import { readdirSync, readFileSync } from 'fs'
-import { safeLoad } from 'js-yaml'
+import { load } from 'js-yaml'
 import { sendMainKeyboard } from './start'
 
 function emojiByLocaleName(localeName: string) {
@@ -31,14 +32,14 @@ function localeCodeByLocaleName(localeName: string): string {
   return 'en'
 }
 
-export function setupLanguage(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('🌐 .*'), async ctx => [
+export function setupLanguage(bot: Bot<BotContext>) {
+  bot.hears(/🌐 .*/, async ctx => {
     sendLanguageKeyboard(ctx, true)
-  ])
+  })
 
   const locWithEmojis = Array.from(locales().values())
     .map(value => {
-      const emoji = emojiByLocaleName(value) 
+      const emoji = emojiByLocaleName(value)
       if (emoji) {
         return emoji + ' ' + value
       }
@@ -46,19 +47,18 @@ export function setupLanguage(bot: Telegraf<Context>) {
     })
   bot.hears(locWithEmojis, async ctx => {
     let user = ctx.dbuser
-    const message = ctx.update.message
+    const message = ctx.message
     const languageCode = localeCodeByLocaleName(message.text)
     user.language = languageCode
     user = await user.save()
 
-    const anyI18N = ctx.i18n as unknown as { locale: (code: string) => void }
-    anyI18N.locale(languageCode)
+    ctx.i18n.locale(languageCode)
 
     sendMainKeyboard(bot, ctx)
   })
 }
 
-export function sendLanguageKeyboard(ctx: Context, addBackButton = false) {
+export function sendLanguageKeyboard(ctx: BotContext, addBackButton = false) {
   ctx.reply(ctx.i18n.t('language'), {
     reply_markup: languageKeyboard(ctx, addBackButton),
   }).catch(error => {
@@ -66,7 +66,7 @@ export function sendLanguageKeyboard(ctx: Context, addBackButton = false) {
   })
 }
 
-function languageKeyboard(ctx: Context, addBackButton = false) {
+function languageKeyboard(ctx: BotContext, addBackButton = false) {
   const locWithEmojis = Array.from(locales().values())
     .map(value => emojiByLocaleName(value) + ' ' + value)
   const result: string[][]= []
@@ -92,27 +92,25 @@ function languageKeyboard(ctx: Context, addBackButton = false) {
       result[result.length - 1].push(backTitle)
     }
   }
-  return m.keyboard(result).resize()
+  return Keyboard.from(result.map(row => row.map(text => Keyboard.text(text)))).resized()
 }
-
 
 // { 'en' => 'English', 'ru' => 'Русский' }
 function locales() {
   const result = new Map<string, string>();
-  
+
   localesFiles().forEach(locale => {
     const localeCode = locale.split('.')[0];
     const fileContent = readFileSync(`${__dirname}/../../locales/${locale}`, 'utf8');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-    const localeData = safeLoad(fileContent) as { name: string } | null;
-    
+    const localeData = load(fileContent) as { name: string } | null;
+
     if (localeData && typeof localeData.name === 'string') {
       result.set(localeCode, localeData.name);
     } else {
       throw new Error(`Invalid locale data for ${locale}`);
     }
   });
-  
+
   return result;
 }
 

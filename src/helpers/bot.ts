@@ -1,8 +1,4 @@
-import { Telegraf } from 'telegraf'
-import { Agent } from "node:https";
+import { Bot } from 'grammy'
+import { BotContext } from '../types/context'
 
-export const bot = new Telegraf(process.env.TOKEN, {
-    telegram: {
-        agent: new Agent({ keepAlive: false }),
-    },
-}) 
+export const bot = new Bot<BotContext>(process.env.TOKEN)

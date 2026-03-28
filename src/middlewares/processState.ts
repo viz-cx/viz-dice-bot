@@ -1,6 +1,7 @@
-import { Context } from 'telegraf'
+import { NextFunction } from 'grammy'
+import { BotContext } from '../types/context'
 
-export async function processState(ctx: Context, next: () => unknown) {
+export async function processState(ctx: BotContext, next: NextFunction) {
   switch (ctx.dbuser.state) {
     case 'waitLogin':
       if (ctx.message?.text) {
@@ -11,18 +12,20 @@ export async function processState(ctx: Context, next: () => unknown) {
           user.login = login
           user.state = null
           await user.save().then(
-            () => ctx.replyWithHTML(ctx.i18n.t('lets_play')),
+            () => ctx.reply(ctx.i18n.t('lets_play'), { parse_mode: 'HTML' }),
             rejected => console.log(rejected)
           )
           return next()
         } else {
-          await ctx.replyWithHTML(ctx.i18n.t('wrong_login'), {
-            disable_web_page_preview: true
+          await ctx.reply(ctx.i18n.t('wrong_login'), {
+            parse_mode: 'HTML',
+            link_preview_options: { is_disabled: true }
           })
         }
       } else {
-        await ctx.replyWithHTML(ctx.i18n.t('wait_login'), {
-          disable_web_page_preview: true
+        await ctx.reply(ctx.i18n.t('wait_login'), {
+          parse_mode: 'HTML',
+          link_preview_options: { is_disabled: true }
         })
       }
       break

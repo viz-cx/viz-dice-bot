@@ -1,27 +1,29 @@
-import { Telegraf, Context } from "telegraf"
+import { Bot } from "grammy"
+import { BotContext } from "../types/context"
 
-export function setupHelp(bot: Telegraf<Context>) {
-  bot.hears(new RegExp('🙋 .*'), ctx => {
+export function setupHelp(bot: Bot<BotContext>) {
+  bot.hears(/🙋 .*/, ctx => {
     sendHelp(bot, ctx)
   })
-  bot.command(['help'], ctx => {
+  bot.command('help', ctx => {
     sendHelp(bot, ctx)
   })
 }
 
-function sendHelp(bot: Telegraf<Context>, ctx: Context) {
+function sendHelp(bot: Bot<BotContext>, ctx: BotContext) {
   const params = {
-    botname: bot.options.username,
+    botname: bot.botInfo.username,
     minutes: process.env.MINUTES,
-    encodedlogin: null
+    encodedlogin: null as string | null
   }
   const login = ctx.dbuser.login
   if (login) {
-    params['encodedlogin'] = Buffer.from(login, 'utf-8').toString('base64')
+    params.encodedlogin = Buffer.from(login, 'utf-8').toString('base64')
   }
-  ctx.replyWithHTML(ctx.i18n.t('help', params), {disable_web_page_preview: true})
-    .catch(err => {
+  ctx.reply(ctx.i18n.t('help', params), {
+    parse_mode: 'HTML',
+    link_preview_options: { is_disabled: true }
+  }).catch(err => {
       console.error('Failed to send help message:', err)
     })
-  
 }
