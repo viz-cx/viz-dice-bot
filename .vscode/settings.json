@@ -1,0 +1,36 @@
+{
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "eslint.codeActionsOnSave.mode": "problems",
+    "eslint.format.enable": true,
+    "typescript.format.semicolons": "remove",
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+    "typescript.format.insertSpaceAfterTypeAssertion": true,
+    "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+    "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+    "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+    "typescript.format.enable": true,
+    "editor.insertSpaces": true,
+    "editor.detectIndentation": false,
+    "[typescript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.tabSize": 4
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.tabSize": 4
+    },
+    "[vue]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+        "editor.tabSize": 4
+    },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "always",
+        "source.fixAll.tslint": "always",
+        "source.fixAll.stylelint": "always"
+    },
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 120
+}

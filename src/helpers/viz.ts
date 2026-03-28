@@ -15,7 +15,6 @@ export class VIZ {
     public changeNode() {
         let nodes = [
             'https://node.viz.cx/',
-            'https://viz.lexai.host/',
             'https://api.viz.world/'
         ]
         const oldNode = VIZ.vizJS.config.get('websocket')

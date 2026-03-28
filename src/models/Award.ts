@@ -46,7 +46,7 @@ export async function getAllAwards(afterBlock: number): Promise<DocumentType<Awa
 export async function getLatestAward(): Promise<DocumentType<Award>> {
     const count = await AwardModel.countDocuments().exec()
     if (count === 0) {
-        let l = new AwardModel()
+        const l = new AwardModel()
         l.block = 1
         l.initiator = 'id'
         l.shares = 0

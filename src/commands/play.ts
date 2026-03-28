@@ -119,7 +119,7 @@ export function setupPlay(bot: Telegraf<Context>) {
         const memo = ctx.dbuser.game
         if (finalEnergy <= 0) {
           console.log(`Decline award to ${ctx.dbuser.login} because multiplier = ${multiplier} (${ctx.dbuser.payouts} payouts)`)
-          return Promise.reject('Zero final energy')
+          throw new Error('Zero final energy')
         }
         console.log(`Award ${ctx.dbuser.login} with energy ${finalEnergy}, multiplier ${multiplier}, payouts: ${ctx.dbuser.payouts}, series ${ctx.dbuser.series}`)
         return ctx.viz.makeAward(ctx.dbuser.login, memo, finalEnergy, ctx.dbuser.referrer, account)
