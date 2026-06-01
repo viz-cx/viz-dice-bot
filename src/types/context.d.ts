@@ -1,6 +1,5 @@
 import { Context as GrammyContext } from 'grammy'
-import { User } from '../models'
-import { DocumentType } from '@typegoose/typegoose'
+import { UserDocument } from '../models'
 import { VIZ } from '../helpers/viz'
 
 export interface I18nContext {
@@ -10,7 +9,7 @@ export interface I18nContext {
 }
 
 export interface BotContext extends GrammyContext {
-  dbuser: DocumentType<User>
+  dbuser: UserDocument
   i18n: I18nContext
   viz: VIZ
 }

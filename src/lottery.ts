@@ -232,7 +232,7 @@ async function processAward(data: BlockchainAward) {
                 const award = new AwardModel()
                 award.block = currentBlock
                 award.initiator = data.initiator
-                award.userID = user.id as number
+                award.userID = user.id
                 award.shares = parseFloat(data.shares)
                 Promise.all([
                     award.save(),
@@ -241,7 +241,7 @@ async function processAward(data: BlockchainAward) {
                    async result => {
                         console.log("New award", data.shares, "from", data.initiator, "with memo", data.memo)
                         if (withMessage) {
-                            await getAwardsSum(user.id as number, result[1].block)
+                            await getAwardsSum(user.id, result[1].block)
                                 .then(
                                     async sum => {
                                         const firstTime = sum == award.shares

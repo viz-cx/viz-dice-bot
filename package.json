@@ -16,26 +16,26 @@
     "update": "npx npm-check-updates -u"
   },
   "devDependencies": {
-    "@eslint/js": "^9",
-    "@typegoose/typegoose": "^13.2.1",
+    "@eslint/js": "^10",
+    "@typegoose/typegoose": "^13.3.0",
     "@types/mongoose": "^5.11.97",
     "@types/js-yaml": "^4.0.9",
-    "@types/node": "^25.5.0",
-    "concurrently": "^9.2.1",
-    "eslint": "^9",
-    "globals": "^17.4.0",
+    "@types/node": "^25.9.1",
+    "concurrently": "^10.0.1",
+    "eslint": "^10",
+    "globals": "^17.6.0",
     "nodemon": "^3.1.14",
-    "typescript-eslint": "^8.57.2"
+    "typescript-eslint": "^8.60.0"
   },
   "dependencies": {
-    "@babel/core": "^7.29.0",
-    "@babel/eslint-parser": "^7.28.6",
-    "dotenv": "^17.3.1",
+    "@babel/core": "^7.29.7",
+    "@babel/eslint-parser": "^7.29.7",
+    "dotenv": "^17.4.2",
     "markdown-table-ts": "^1.0.3",
-    "mongoose": "^9",
-    "grammy": "^1.41.1",
-    "js-yaml": "^4.1.1",
-    "typescript": "<6.0.0",
-    "viz-js-lib": "^0.11.0"
+    "mongoose": "^9.6.0",
+    "grammy": "^1.43.0",
+    "js-yaml": "^4.2.0",
+    "typescript": "^6.0.3",
+    "viz-js-lib": "^0.12.6"
   }
 }
