@@ -13,13 +13,7 @@ export function startUnstaking() {
 function unstake() {
     viz.unstakeExcessShares()
         .then(result => {
-            const operations: unknown = result['operations'];
-            if (Array.isArray(operations) && operations.length > 0) {
-                const operation = operations[0] as [string, Record<string, unknown>];
-                console.log(operation[1]);
-            } else {
-                console.error("No operations found!");
-            }
+            console.log("Vesting withdrawal broadcasted, trx id %s in block %d", result.id, result.blockNum);
         })
         .catch(() => console.error("Unsuccessful vesting withdrawal!"))
 }
