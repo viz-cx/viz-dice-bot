@@ -176,20 +176,20 @@ describe('VIZ.getOpsInBlock', () => {
 })
 
 describe('VIZ.changeNode', () => {
-    it('rebuilds the client against a known endpoint', () => {
+    it('rebuilds the client with a legacy transport against a known endpoint', () => {
         viz.changeNode()
         expect(createClientMock).toHaveBeenCalledTimes(1)
         const opts = createClientMock.mock.calls[0][0]
-        expect(['https://node.viz.cx', 'https://api.viz.world']).toContain(opts.endpoint)
+        expect(['https://node.viz.cx', 'https://api.viz.world']).toContain(opts.transport.endpoint)
         expect(opts.account).toBe('vizbot')
         expect(opts.activeKey).toBe('5wif')
     })
 
     it('switches to the other node on the next change', () => {
         viz.changeNode()
-        const first = createClientMock.mock.calls[0][0].endpoint
+        const first = createClientMock.mock.calls[0][0].transport.endpoint
         viz.changeNode()
-        const second = createClientMock.mock.calls[1][0].endpoint
+        const second = createClientMock.mock.calls[1][0].transport.endpoint
         expect(second).not.toBe(first)
     })
 })

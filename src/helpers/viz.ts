@@ -8,7 +8,57 @@ import {
     shares as sharesAsset,
     type VizClient,
     type Beneficiary,
+    type Transport,
+    type SignedTransaction,
+    type TransactionResult,
 } from '@viz-cx/core'
+
+// The public VIZ nodes (node.viz.cx, api.viz.world) only speak the legacy
+// JSON-RPC envelope: {"method":"call","params":[api, method, args]}. The
+// transport bundled with @viz-cx/core sends appbase-style dotted methods
+// ("database_api.get_dynamic_global_properties"), which those nodes reject
+// with a "Bad Cast" error. This adapter translates the library's dotted calls
+// back into the legacy envelope so we can keep using the typed client.
+function createLegacyTransport(endpoint: string, timeoutMs = 15000): Transport & { endpoint: string } {
+    let nextId = 1
+
+    async function rpc<T>(method: string, params: unknown[]): Promise<T> {
+        const dot = method.indexOf('.')
+        const api = method.slice(0, dot)
+        const apiMethod = method.slice(dot + 1)
+        const id = nextId++
+        const ac = new AbortController()
+        const timer = setTimeout(() => ac.abort(), timeoutMs)
+        let res: Response
+        try {
+            res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ jsonrpc: '2.0', id, method: 'call', params: [api, apiMethod, params] }),
+                signal: ac.signal,
+            })
+        } finally {
+            clearTimeout(timer)
+        }
+        const body = await res.json() as { result?: T; error?: { message?: string } }
+        if (body.error) {
+            throw new Error(`${method}: ${body.error.message ?? JSON.stringify(body.error)}`)
+        }
+        return body.result
+    }
+
+    return {
+        endpoint,
+        call: rpc,
+        broadcast: async (signed: SignedTransaction): Promise<TransactionResult> => {
+            const r = await rpc<{ id: string; block_num: number; expiration: string }>(
+                'network_broadcast_api.broadcast_transaction_synchronous',
+                [signed],
+            )
+            return { id: r.id, blockNum: r.block_num, expiration: r.expiration }
+        },
+    }
+}
 
 export class VIZ {
     static origin = new VIZ()
@@ -30,7 +80,7 @@ export class VIZ {
         this.endpoint = candidates[Math.floor(Math.random() * candidates.length)]
         console.log('Change public node from %s to %s', oldNode, this.endpoint)
         this.client = createClient({
-            endpoint: this.endpoint,
+            transport: createLegacyTransport(this.endpoint),
             account: process.env.ACCOUNT,
             activeKey: process.env.WIF,
         })
