@@ -13,6 +13,8 @@
     "build-ts": "tsc --skipLibCheck",
     "watch-ts": "tsc -w --skipLibCheck",
     "watch-js": "nodemon dist/app.js --ext js,yaml",
+    "test": "vitest run",
+    "test-watch": "vitest",
     "update": "npx npm-check-updates -u"
   },
   "devDependencies": {
@@ -25,7 +27,8 @@
     "eslint": "^10",
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
-    "typescript-eslint": "^8.60.0"
+    "typescript-eslint": "^8.60.0",
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "@babel/core": "^7.29.7",
