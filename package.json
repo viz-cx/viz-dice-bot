@@ -33,7 +33,7 @@
   "dependencies": {
     "@babel/core": "^7.29.7",
     "@babel/eslint-parser": "^7.29.7",
-    "@viz-cx/core": "^0.5.1",
+    "@viz-cx/core": "^0.5.2",
     "dotenv": "^17.4.2",
     "grammy": "^1.43.0",
     "js-yaml": "^4.2.0",

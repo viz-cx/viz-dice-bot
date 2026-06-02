@@ -3,77 +3,16 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
     createClient,
+    account as accountName,
     viz as vizAsset,
     shares as sharesAsset,
     type VizClient,
-    type AccountName,
     type Beneficiary,
-    type Transport,
-    type SignedTransaction,
-    type TransactionResult,
 } from '@viz-cx/core'
 
-// VIZ permits account names that @viz-cx/core's account() validator rejects
-// (e.g. 2-char names like "id"). Logins are already verified on-chain via
-// isAccountExists before we ever pay/award them, and the node validates again
-// on broadcast, so we brand the name here without re-validating its format.
-function toAccount(name: string): AccountName {
-    return name as unknown as AccountName
-}
-
-// The public VIZ nodes (node.viz.cx, api.viz.world) only speak the legacy
-// JSON-RPC envelope: {"method":"call","params":[api, method, args]}. The
-// transport bundled with @viz-cx/core sends appbase-style dotted methods
-// ("database_api.get_dynamic_global_properties"), which those nodes reject
-// with a "Bad Cast" error. This adapter translates the library's dotted calls
-// back into the legacy envelope so we can keep using the typed client.
 // broadcast_transaction_synchronous holds the connection open until the
-// transaction is confirmed in a block, so the broadcast (write) path needs a
-// more generous timeout than the fast read calls.
-const READ_TIMEOUT_MS = 15000
-const BROADCAST_TIMEOUT_MS = 45000
-
-function createLegacyTransport(endpoint: string): Transport & { endpoint: string } {
-    let nextId = 1
-
-    async function rpc<T>(method: string, params: unknown[], timeoutMs = READ_TIMEOUT_MS): Promise<T> {
-        const dot = method.indexOf('.')
-        const api = method.slice(0, dot)
-        const apiMethod = method.slice(dot + 1)
-        const id = nextId++
-        const ac = new AbortController()
-        const timer = setTimeout(() => ac.abort(), timeoutMs)
-        let res: Response
-        try {
-            res = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ jsonrpc: '2.0', id, method: 'call', params: [api, apiMethod, params] }),
-                signal: ac.signal,
-            })
-        } finally {
-            clearTimeout(timer)
-        }
-        const body = await res.json() as { result?: T; error?: { message?: string } }
-        if (body.error) {
-            throw new Error(`${method}: ${body.error.message ?? JSON.stringify(body.error)}`)
-        }
-        return body.result
-    }
-
-    return {
-        endpoint,
-        call: rpc,
-        broadcast: async (signed: SignedTransaction): Promise<TransactionResult> => {
-            const r = await rpc<{ id: string; block_num: number; expiration: string }>(
-                'network_broadcast_api.broadcast_transaction_synchronous',
-                [signed],
-                BROADCAST_TIMEOUT_MS,
-            )
-            return { id: r.id, blockNum: r.block_num, expiration: r.expiration }
-        },
-    }
-}
+// transaction is confirmed in a block, so we use a generous client timeout.
+const TIMEOUT_MS = 45000
 
 export class VIZ {
     static origin = new VIZ()
@@ -95,15 +34,16 @@ export class VIZ {
         this.endpoint = candidates[Math.floor(Math.random() * candidates.length)]
         console.log('Change public node from %s to %s', oldNode, this.endpoint)
         this.client = createClient({
-            transport: createLegacyTransport(this.endpoint),
+            endpoint: this.endpoint,
             account: process.env.ACCOUNT,
             activeKey: process.env.WIF,
+            timeoutMs: TIMEOUT_MS,
         })
     }
 
     public pay(to: string, amount: number) {
         return this.client.transferToVesting({
-            to: toAccount(to),
+            to: accountName(to),
             amount: vizAsset(amount.toFixed(3)),
         })
     }
@@ -115,10 +55,10 @@ export class VIZ {
     private async award(receiver: string, energy: number, memo: string, referrer: string, account: any) {
         const beneficiaries: Beneficiary[] = []
         if (referrer) {
-            beneficiaries.push({ account: toAccount(referrer), weight: 1000 })
+            beneficiaries.push({ account: accountName(referrer), weight: 1000 })
         }
         await this.client.award({
-            receiver: toAccount(receiver),
+            receiver: accountName(receiver),
             energy,
             customSequence: 0,
             memo,

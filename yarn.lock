@@ -645,10 +645,10 @@
     convert-source-map "^2.0.0"
     tinyrainbow "^3.1.0"
 
-"@viz-cx/core@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@viz-cx/core/-/core-0.5.1.tgz#d81f39e0e9b69f7eef6111ec5eb6862dd537c502"
-  integrity sha512-QPxFTfdUfaCJ4VUju81VdU8BE7v7v9M+8Lo+/jghFpqaqjlzj+3daSEOXhlPF8fY7oCdR3ZdWX+wIfijWDCAyg==
+"@viz-cx/core@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@viz-cx/core/-/core-0.5.2.tgz#91ab7c2a122fad9933947444dbe6af03cada0194"
+  integrity sha512-sL45yHmlHRAwyMfFFESFCd3ek2E0c5YHOODI+u9rdfdrA1N4heuUK/KLtVDnLEwbRxhAahb0GUDyksIiWwZZeA==
 
 abbrev@1:
   version "1.1.1"
