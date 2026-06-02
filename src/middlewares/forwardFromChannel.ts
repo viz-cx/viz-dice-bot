@@ -2,12 +2,14 @@ import { getUsersByLang } from '../models/User'
 import { NextFunction } from 'grammy'
 import { BotContext } from '../types/context'
 import { bot } from '../helpers/bot'
+import { isReplayingBacklog } from '../helpers/drainBacklog'
 
 export async function checkForward(ctx: BotContext, next: NextFunction) {
     const myUserID = 38968897
     const russianChannelID = -1001277359853
     const englishChannelID = -1001454664691
-    if (ctx.message
+    if (!isReplayingBacklog()
+        && ctx.message
         && ctx.chat.id === myUserID
         && ctx.message.forward_origin
         && ctx.message.forward_origin.type === 'channel') {
