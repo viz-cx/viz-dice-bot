@@ -1,10 +1,10 @@
 import { NextFunction } from 'grammy'
 import { BotContext } from '../types/context'
 
-export function checkTime(ctx: BotContext, next: NextFunction) {
+export async function checkTime(ctx: BotContext, next: NextFunction): Promise<void> {
   if (ctx.message) {
     if (new Date().getTime() / 1000 - ctx.message.date < 5 * 60) {
-      next()
+      await next()
     } else {
       console.log(
         `Ignoring message from ${ctx.from.id} at ${
@@ -13,6 +13,6 @@ export function checkTime(ctx: BotContext, next: NextFunction) {
       )
     }
   } else {
-    next()
+    await next()
   }
 }

@@ -84,7 +84,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
         userAwardsSum: '0.000'
     }
     if (participated) {
-        let multiplier = 0
+        let multiplier: number
         if (userAwardsSum >= 10) {
             multiplier = whaleIDs.length
         } else if (userAwardsSum >= 1) {

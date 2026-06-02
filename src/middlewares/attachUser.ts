@@ -10,6 +10,6 @@ export async function attachUser(ctx: BotContext, next: NextFunction) {
     const dbuser = await getOrCreateUser(ctx.from.id)
     ctx.dbuser = dbuser
     ctx.viz = viz
-    next()
+    await next()
   }
 }

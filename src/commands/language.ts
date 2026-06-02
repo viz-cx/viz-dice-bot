@@ -46,11 +46,11 @@ export function setupLanguage(bot: Bot<BotContext>) {
       return value
     })
   bot.hears(locWithEmojis, async ctx => {
-    let user = ctx.dbuser
+    const user = ctx.dbuser
     const message = ctx.message
     const languageCode = localeCodeByLocaleName(message.text)
     user.language = languageCode
-    user = await user.save()
+    await user.save()
 
     ctx.i18n.locale(languageCode)
 

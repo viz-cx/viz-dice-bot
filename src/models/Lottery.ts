@@ -33,8 +33,8 @@ export async function getLatestLottery(): Promise<DocumentType<Lottery>> {
     return await LotteryModel.findOne().sort({ block: -1 })
 }
 
-export async function getTopLuckers(sortBy = "count") {
-    return await LotteryModel.aggregate([
+export async function getTopLuckers(sortBy = "count"): Promise<{ winner: string; count: number; sum: number }[]> {
+    return await LotteryModel.aggregate<{ winner: string; count: number; sum: number }>([
         {
             $group: {
                 _id: { "name": "$winner" },
@@ -49,12 +49,12 @@ export async function getTopLuckers(sortBy = "count") {
 }
 
 export async function getAllPayoutsSum(): Promise<number> {
-    const result = await LotteryModel.aggregate([
+    const result = await LotteryModel.aggregate<{ sum: number }>([
         { $match: { amount: { $gt: 0 } } },
         { $group: { _id: null, sum: { $sum: "$amount" } } }
     ]).exec()
     if (result.length === 0) {
         return 0
     }
-    return parseFloat(result[0]["sum"])
+    return result[0].sum
 }

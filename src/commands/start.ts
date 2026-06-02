@@ -52,7 +52,7 @@ export function sendMainKeyboard(bot: Bot<BotContext>, ctx: BotContext) {
 }
 
 export function mainKeyboard(ctx: BotContext) {
-    return mainKeyboardByLanguage(ctx.i18n.locale() as string)
+    return mainKeyboardByLanguage(ctx.i18n.locale())
 }
 
 export function mainKeyboardByLanguage(language: string) {

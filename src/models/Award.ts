@@ -19,24 +19,24 @@ export const AwardModel = getModelForClass(Award, {
 })
 
 export async function getAwardsSum(userID: number, afterBlock: number): Promise<number> {
-    const result = await AwardModel.aggregate([
+    const result = await AwardModel.aggregate<{ sum: number }>([
         { $match: { userID: userID, block: { $gt: afterBlock } } },
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
     if (result.length === 0) {
         return 0
     }
-    return parseFloat(result[0]["sum"])
+    return result[0].sum
 }
 
 export async function getAllAwardsSum(): Promise<number> {
-    const result = await AwardModel.aggregate([
+    const result = await AwardModel.aggregate<{ sum: number }>([
         { $group: { _id: null, sum: { $sum: "$shares" } } }
     ]).exec()
     if (result.length === 0) {
         return 0
     }
-    return parseFloat(result[0]["sum"])
+    return result[0].sum
 }
 
 export async function getAllAwards(afterBlock: number): Promise<DocumentType<Award>[]> {

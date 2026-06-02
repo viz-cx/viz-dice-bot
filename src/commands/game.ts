@@ -15,11 +15,11 @@ export function setupGame(bot: Bot<BotContext>) {
   const regExp = new RegExp('(' + games.join('|') + ') .*')
   bot.hears(regExp, async ctx => {
     const game = ctx.match[1] as DiceEmoji
-    let user = ctx.dbuser
+    const user = ctx.dbuser
     user.game = game
     user.value = 0
     user.series = 1
-    user = await user.save()
+    await user.save()
     await ctx.reply(ctx.i18n.t('game_selected'), {
       reply_markup: mainKeyboard(ctx)
     })

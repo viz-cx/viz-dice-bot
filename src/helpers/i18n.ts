@@ -22,8 +22,15 @@ function pluralize(n: number, one: string, many: string): string {
 function compileTemplate(template: string, params: Record<string, unknown>): string {
   const keys = Object.keys(params)
   const values = Object.values(params)
-  const fn = new Function('pluralize', ...keys, `return \`${template}\``)
-  return fn(pluralize, ...values) as string
+  // Locale templates are trusted, developer-authored YAML (never user input) and
+  // use full JS expression syntax (ternaries, string concat, pluralize() calls),
+  // so we compile them with the Function constructor rather than a custom parser.
+  // eslint-disable-next-line @typescript-eslint/no-implied-eval
+  const fn = new Function('pluralize', ...keys, `return \`${template}\``) as (
+    pluralizeFn: typeof pluralize,
+    ...args: unknown[]
+  ) => string
+  return fn(pluralize, ...values)
 }
 
 export function t(locale: string, key: string, params: Record<string, unknown> = {}): string {
