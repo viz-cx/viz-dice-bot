@@ -43,12 +43,16 @@
     "viz-js-lib": "^0.12.6"
   },
   "resolutions": {
-    "//": "Neutralize advisories from viz-js-lib's dependency tree (we never import viz-js-lib directly; it is a peer dep of @viz-cx/core). babel-preset-env and cross-env are build/script tooling wrongly listed in viz-js-lib's runtime deps and are never loaded at runtime, so we stub them. The rest are real transitive crypto utils pinned to their patched versions. Drop these once VIZ-Blockchain/viz-js-lib ships a release with the fixes.",
+    "//": "Neutralize advisories from viz-js-lib's dependency tree (we never import viz-js-lib directly; it is a peer dep of @viz-cx/core). babel-preset-env and cross-env are build/script tooling wrongly listed in viz-js-lib's runtime deps and are never loaded at runtime, so we stub them. The rest are real transitive crypto utils pinned to their patched versions. Drop these once VIZ-Blockchain/viz-js-lib ships a release with the fixes. The braces/flatted/picomatch pins below patch dev-only transitive vulns from nodemon/eslint (never shipped): braces<3.0.3 (CVE-2024-4068), flatted<3.4.2 (prototype pollution), picomatch<2.3.2 (CVE-2026-33672, scoped to anymatch/readdirp; hoisted 4.0.4 is already patched). Drop those once nodemon/eslint ship updated transitive deps.",
     "viz-js-lib/babel-preset-env": "npm:@favware/skip-dependency@1.2.2",
     "viz-js-lib/cross-env": "npm:@favware/skip-dependency@1.2.2",
     "sha.js": "^2.4.12",
     "cipher-base": "^1.0.5",
     "base-x": "^3.0.11",
-    "lodash": "^4.18.1"
+    "lodash": "^4.18.1",
+    "braces": "^3.0.3",
+    "flatted": "^3.4.2",
+    "nodemon/chokidar/anymatch/picomatch": "2.3.2",
+    "nodemon/chokidar/readdirp/picomatch": "2.3.2"
   }
 }
