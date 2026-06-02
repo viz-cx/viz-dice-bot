@@ -1,6 +1,16 @@
 import * as dotenv from 'dotenv'
 dotenv.config({ path: `${__dirname}/../.env` })
 
+// Keep the bot alive through transient network failures (flaky VIZ nodes,
+// Telegram API timeouts) instead of letting an unhandled rejection in a
+// background loop crash the process.
+process.on('unhandledRejection', reason => {
+  console.error('Unhandled promise rejection:', reason)
+})
+process.on('uncaughtException', err => {
+  console.error('Uncaught exception:', err)
+})
+
 import { bot } from './helpers/bot'
 import { i18nMiddleware, setLocaleMiddleware } from './helpers/i18n'
 

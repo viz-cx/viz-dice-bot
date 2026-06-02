@@ -19,10 +19,16 @@ import {
 // ("database_api.get_dynamic_global_properties"), which those nodes reject
 // with a "Bad Cast" error. This adapter translates the library's dotted calls
 // back into the legacy envelope so we can keep using the typed client.
-function createLegacyTransport(endpoint: string, timeoutMs = 15000): Transport & { endpoint: string } {
+// broadcast_transaction_synchronous holds the connection open until the
+// transaction is confirmed in a block, so the broadcast (write) path needs a
+// more generous timeout than the fast read calls.
+const READ_TIMEOUT_MS = 15000
+const BROADCAST_TIMEOUT_MS = 45000
+
+function createLegacyTransport(endpoint: string): Transport & { endpoint: string } {
     let nextId = 1
 
-    async function rpc<T>(method: string, params: unknown[]): Promise<T> {
+    async function rpc<T>(method: string, params: unknown[], timeoutMs = READ_TIMEOUT_MS): Promise<T> {
         const dot = method.indexOf('.')
         const api = method.slice(0, dot)
         const apiMethod = method.slice(dot + 1)
@@ -54,6 +60,7 @@ function createLegacyTransport(endpoint: string, timeoutMs = 15000): Transport &
             const r = await rpc<{ id: string; block_num: number; expiration: string }>(
                 'network_broadcast_api.broadcast_transaction_synchronous',
                 [signed],
+                BROADCAST_TIMEOUT_MS,
             )
             return { id: r.id, blockNum: r.block_num, expiration: r.expiration }
         },

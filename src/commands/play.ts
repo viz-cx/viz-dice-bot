@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { getLatestLottery } from "../models/Lottery"
 import { getAwardsSum } from "../models/Award"
 import { Bot } from "grammy"
@@ -142,18 +140,18 @@ export function setupPlay(bot: Bot<BotContext>) {
         })
       })
       .catch(err => {
+        console.error('Play action failed:', err)
+        const errString = String(err)
         let message = ctx.i18n.t('something_wrong')
-        if (err.toString().search(/Bad Gateway/) !== -1) {
-          ctx.viz.changeNode()
-        }
-        if (err.toString().search(/Zero final energy/) !== -1) {
+        if (errString.search(/Zero final energy/) !== -1) {
           message = ctx.i18n.t('try_later')
-        }
-        if (err.toString().search(/does not have enough energy to vote/) !== -1) {
+        } else if (errString.search(/does not have enough energy to vote/) !== -1) {
           message = ctx.i18n.t('out_of_energy')
-        }
-        if (err.toString().search(/Duplicate transaction check failed/) !== -1) {
+        } else if (errString.search(/Duplicate transaction check failed/) !== -1) {
           message = ctx.i18n.t('too_fast')
+        } else if (/Bad Gateway|fetch failed|aborted|timeout|ETIMEDOUT|ECONNREFUSED|ENOTFOUND/i.test(errString)) {
+          // Network/node problem (incl. broadcast timeouts): switch public node so the next play hits a healthy one.
+          ctx.viz.changeNode()
         }
         console.log(message)
         ctx.reply(message, { parse_mode: 'HTML', reply_markup: mainKeyboard(ctx) }).catch(error => {
