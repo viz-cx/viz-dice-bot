@@ -57,9 +57,10 @@ describe('VIZ.pay', () => {
         expect(mockClient.transferToVesting.mock.calls[0][0].amount.toString()).toBe('1.500 VIZ')
     })
 
-    it('rejects an invalid account name', () => {
-        expect(() => viz.pay('Invalid Name', 1)).toThrow()
-        expect(mockClient.transferToVesting).not.toHaveBeenCalled()
+    it('accepts short account names the strict validator would reject (e.g. "id")', async () => {
+        mockClient.transferToVesting.mockResolvedValue({})
+        await viz.pay('id', 1)
+        expect(String(mockClient.transferToVesting.mock.calls[0][0].to)).toBe('id')
     })
 })
 

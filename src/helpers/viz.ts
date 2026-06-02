@@ -3,15 +3,23 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import {
     createClient,
-    account as accountName,
     viz as vizAsset,
     shares as sharesAsset,
     type VizClient,
+    type AccountName,
     type Beneficiary,
     type Transport,
     type SignedTransaction,
     type TransactionResult,
 } from '@viz-cx/core'
+
+// VIZ permits account names that @viz-cx/core's account() validator rejects
+// (e.g. 2-char names like "id"). Logins are already verified on-chain via
+// isAccountExists before we ever pay/award them, and the node validates again
+// on broadcast, so we brand the name here without re-validating its format.
+function toAccount(name: string): AccountName {
+    return name as unknown as AccountName
+}
 
 // The public VIZ nodes (node.viz.cx, api.viz.world) only speak the legacy
 // JSON-RPC envelope: {"method":"call","params":[api, method, args]}. The
@@ -95,7 +103,7 @@ export class VIZ {
 
     public pay(to: string, amount: number) {
         return this.client.transferToVesting({
-            to: accountName(to),
+            to: toAccount(to),
             amount: vizAsset(amount.toFixed(3)),
         })
     }
@@ -107,10 +115,10 @@ export class VIZ {
     private async award(receiver: string, energy: number, memo: string, referrer: string, account: any) {
         const beneficiaries: Beneficiary[] = []
         if (referrer) {
-            beneficiaries.push({ account: accountName(referrer), weight: 1000 })
+            beneficiaries.push({ account: toAccount(referrer), weight: 1000 })
         }
         await this.client.award({
-            receiver: accountName(receiver),
+            receiver: toAccount(receiver),
             energy,
             customSequence: 0,
             memo,
