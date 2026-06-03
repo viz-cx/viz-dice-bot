@@ -34,6 +34,12 @@ export class User {
 
   @prop({ required: true, default: 1 })
   payouts: number
+
+  // False once the user blocks/deletes the bot (Telegram returns 403 on send,
+  // or a my_chat_member "kicked" update arrives). Broadcasts skip inactive
+  // users; flips back to true the moment they interact again.
+  @prop({ required: true, default: true })
+  active: boolean
 }
 
 // Get User model
@@ -74,5 +80,16 @@ export async function getUsersCount(afterDate: Date = new Date(0)) {
 }
 
 export async function getUsersByLang(lang: string): Promise<UserDocument[]> {
-  return (await UserModel.find({ language: { $eq: lang } })) as unknown as UserDocument[]
+  // `$ne: false` keeps legacy documents that predate the `active` field
+  // (where it is undefined) while excluding users known to have blocked the bot.
+  return (await UserModel.find({
+    language: { $eq: lang },
+    active: { $ne: false },
+  })) as unknown as UserDocument[]
+}
+
+// Flag a user (in)active. No upsert: a block from someone who never used the
+// bot shouldn't create a record. Missing user → no-op.
+export async function setUserActive(id: number, active: boolean): Promise<void> {
+  await UserModel.updateOne({ id }, { $set: { active } }).exec()
 }
