@@ -15,6 +15,7 @@ import { bot } from './helpers/bot'
 import { i18nMiddleware, setLocaleMiddleware } from './helpers/i18n'
 
 import { checkChatType } from './middlewares/checkChat'
+import { trackBlockStatus } from './middlewares/chatMemberStatus'
 import { checkTime } from './middlewares/checkTime'
 import { attachUser } from './middlewares/attachUser'
 import { processState } from './middlewares/processState'
@@ -32,6 +33,7 @@ import { setupLottery } from './commands/lottery'
 import { setupTop } from './commands/top'
 import { startUnstaking } from './unstake'
 
+bot.use(trackBlockStatus)
 bot.use(checkChatType)
 bot.use(checkTime)
 bot.use(checkForward)

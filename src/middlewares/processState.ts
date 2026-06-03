@@ -4,6 +4,12 @@ import { BotContext } from '../types/context'
 export async function processState(ctx: BotContext, next: NextFunction) {
   switch (ctx.dbuser.state) {
     case 'waitLogin':
+      // Only an actual message can carry a login. Non-message updates that
+      // still reach here (e.g. my_chat_member when a user blocks the bot)
+      // must not trigger a reply — that send would fail and is pointless.
+      if (!ctx.message) {
+        return next()
+      }
       if (ctx.message?.text) {
         const login = ctx.message.text
         const accountExists = await ctx.viz.isAccountExists(login)
