@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Attach this app's container to platform_net on each target host so it can reach
+# the shared mongo (it lives on platform_net, not Kamal's default 'kamal' network).
+# Kamal runs hooks LOCALLY, so we SSH to each host.
+#
+# Kamal 2 hook env: KAMAL_SERVICE / KAMAL_ROLE / KAMAL_VERSION / KAMAL_HOSTS
+# (there is NO KAMAL_CONTAINERS). Container name = service-role-version.
+set -euo pipefail
+container="${KAMAL_SERVICE}-${KAMAL_ROLE:-web}-${KAMAL_VERSION}"
+IFS=',' read -ra hosts <<< "${KAMAL_HOSTS:?}"
+for host in "${hosts[@]}"; do
+    # deploy is in the docker group, so docker runs without sudo; ssh port 666 per
+    # inventory.yml. || true: re-attach is a no-op idempotently across deploys.
+    ssh -p 666 "deploy@${host}" \
+        "docker network connect platform_net '${container}' 2>/dev/null || true"
+done

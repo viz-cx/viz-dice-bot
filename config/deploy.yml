@@ -1,0 +1,52 @@
+# Kamal deploy config for viz-dice-bot — a grammY long-polling Telegram bot that
+# runs an on-chain VIZ lottery (awards/payouts). NO inbound HTTP, so kamal-proxy
+# is disabled (proxy: false, no top-level proxy block). Stateful in the shared
+# platform MongoDB (db `dice`, migrated from the legacy `dice-bot` db).
+#
+# FUNDS-MOVING + STRICT SINGLE-INSTANCE: the lottery loop signs VIZ transfers with
+# the WIF active key. Two instances = double payouts. Cutover MUST stop the legacy
+# container first, then `kamal deploy` (see infra docs/runbook-viz-migration.md §3).
+#
+# Cutover deploys commit 4b3e652 — the exact legacy running commit (= upstream
+# master, rebuilt 2026-06-03) — for a session-safe lift-and-shift. Build context
+# is the repo root; the repo's own Dockerfile (node:lts-slim, USER node) is kept.
+
+service: viz-dice-bot
+image:   chiliec/viz-dice-bot       # GHCR: composed to ghcr.io/chiliec/viz-dice-bot via registry.server
+
+servers:
+  web:
+    hosts:
+      - 5.223.75.86               # axveer VPS public IPv4
+    proxy: false                  # grammY long-polling bot — no inbound HTTP
+
+# (no top-level proxy:, no ssl, no healthcheck — nothing to expose.)
+
+ssh:
+  user: deploy
+  port: 666
+
+# Shared mongo lives on platform_net; the post-deploy hook attaches platform_net
+# and platform-up.sh bridges `mongo` onto the kamal network so it resolves at the
+# container's mongoose.connect(process.env.MONGO) on boot. See runbook §3.2.
+
+env:
+  clear:
+    PRODUCTION: "true"            # from legacy .env (non-secret)
+    ACCOUNT: dice.id              # VIZ account the bot awards from
+    MINUTES: "15"
+    BALANCE: "250000"
+    LOTTERY_HOURS: "10"
+  secret:                         # decrypted from SOPS via .kamal/secrets
+    - MONGO                       # full mongodb:// URI incl. axveer per-app creds
+    - TOKEN                       # Telegram bot token
+    - WIF                         # VIZ active private key — signs on-chain payouts
+
+registry:
+  server: ghcr.io
+  username: chiliec
+  password:
+    - KAMAL_REGISTRY_PASSWORD     # GHCR PAT (write:packages) — SOPS shared.enc.yaml docker_registry_password
+
+builder:
+  arch: amd64
