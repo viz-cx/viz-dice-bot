@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Stop-old-first fence (pattern from cube-worlds-bot/viz-quiz-bot): the lottery
+# loop signs WIF on-chain VIZ payouts and resumes from saved block state at
+# boot. A rolling deploy would run TWO loops for ~30-60s = double-payout
+# hazard. So: stop every running container of this service BEFORE Kamal boots
+# the new one. Downtime ~10-30s; Telegram long-polling queues updates and the
+# loop continues from the saved block — overlap is the only hazard.
+# Kamal runs hooks LOCALLY; fires on deploy, rollback, and app boot.
+# Fail-closed: any error aborts the deploy with the old container still up.
+set -euo pipefail
+IFS=',' read -ra hosts <<< "${KAMAL_HOSTS:?}"
+for host in "${hosts[@]}"; do
+    # deploy is in the docker group; ssh port 666 per infra inventory.
+    # At pre-app-boot time the only running containers with this service
+    # label are OLD ones (the new one hasn't booted) — stop them all.
+    ssh -p 666 "deploy@${host}" \
+        "docker ps -q --filter 'label=service=${KAMAL_SERVICE:?}' | xargs -r docker stop"
+done

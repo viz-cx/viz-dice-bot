@@ -4,8 +4,9 @@
 # platform MongoDB (db `dice`, migrated from the legacy `dice-bot` db).
 #
 # FUNDS-MOVING + STRICT SINGLE-INSTANCE: the lottery loop signs VIZ transfers with
-# the WIF active key. Two instances = double payouts. Cutover MUST stop the legacy
-# container first, then `kamal deploy` (see infra docs/runbook-viz-migration.md §3).
+# the WIF active key. Two instances = double payouts. The .kamal/hooks/pre-app-boot
+# fence (cube-worlds/viz-quiz pattern) stops the old container before the new one
+# boots — rolling redeploys are safe at the cost of ~10-30s downtime.
 #
 # Cutover deploys commit 4b3e652 — the exact legacy running commit (= upstream
 # master, rebuilt 2026-06-03) — for a session-safe lift-and-shift. Build context
