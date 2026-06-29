@@ -15,6 +15,7 @@
     "watch-js": "nodemon dist/app.js --ext js,yaml",
     "test": "vitest run",
     "test-watch": "vitest",
+    "lint": "eslint .",
     "update": "npx npm-check-updates -u"
   },
   "devDependencies": {

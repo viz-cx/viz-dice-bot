@@ -5,9 +5,12 @@ import babelParser from "@babel/eslint-parser";
 
 export default [
   {
+    ignores: ["dist/", "*.config.mjs", "*.config.ts"],
+  },
+  {
     languageOptions: {
       parser: babelParser,
-      globals: globals.browser,
+      globals: globals.node,
       parserOptions: {
         project: ["./tsconfig.json"],
       },
