@@ -51,3 +51,7 @@ registry:
 
 builder:
   arch: amd64
+  remote: ssh://axveer-builder   # build on vpn-amnezia, not the laptop. Bare alias:
+  local: false                   # user/port fall back to ssh: above (deploy/666) +
+                                 # ~/.ssh/config axveer-builder host. See infra
+                                 # docs/runbook-remote-builder.md.
