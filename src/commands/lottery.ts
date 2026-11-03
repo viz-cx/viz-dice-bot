@@ -9,6 +9,7 @@ import { timeUnitsBetween } from "../commands/play"
 import { mainKeyboard } from "./start"
 import { VIZ } from "../helpers/viz"
 import { accountLink, participantIdsByCategory } from "../lottery"
+import { secondsUntilDraw } from "../helpers/blocks"
 
 export function setupLottery(bot: Bot<BotContext>) {
     bot.hears(/🍀 .*/, async ctx => {
@@ -42,10 +43,7 @@ export async function lotteryParams(viz: VIZ, user: User) {
         .catch(() => viz.changeNode()))['last_irreversible_block_num']
     const latestLotteryBlock = (await getLatestLottery()).block
     const lotteryHours = parseInt(process.env.LOTTERY_HOURS)
-    const roundTime = lotteryHours * 60 * 60
-    const timePassed = (lastIrreversibleBlock - latestLotteryBlock) * 3
-    const timeLeft = (roundTime - timePassed) * 1000
-    const finalTime = new Date(new Date().getTime() + timeLeft)
+    const finalTime = new Date(Date.now() + secondsUntilDraw(Number(lastIrreversibleBlock)) * 1000)
     const between = timeUnitsBetween(new Date(), finalTime)
     const hours = between['hours']
     const minutes = between['minutes']

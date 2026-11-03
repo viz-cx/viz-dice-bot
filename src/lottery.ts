@@ -7,6 +7,7 @@ import { t } from "./helpers/i18n"
 import { DocumentType } from "@typegoose/typegoose"
 import { mainKeyboardByLanguage } from "./commands/start"
 import { lotteryParams } from "./commands/lottery"
+import { winnerBlockDelimiter } from "./helpers/blocks"
 
 const viz = VIZ.origin
 let currentBlock = 0
@@ -296,13 +297,7 @@ async function processNextBlock() {
                 viz.changeNode()
             }
         )
-    let winnerBlockDelimiter: number
-    if (process.env.PRODUCTION === "false") {
-        winnerBlockDelimiter = 50
-    } else {
-        winnerBlockDelimiter = parseInt(process.env.LOTTERY_HOURS) * 60 * 60 / 3
-    }
-    if (currentBlock % winnerBlockDelimiter === 0) {
+    if (currentBlock % winnerBlockDelimiter() === 0) {
         await findWinners()
     }
 }
